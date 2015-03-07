@@ -59,6 +59,9 @@ JavaScript Ultimate will work perfectly fine with the [Nodejs](https://packageco
 
 If you'd like to use the [jQuery](https://packagecontrol.io/packages/jQuery) package, you can do that too! But the jQuery package won't be able to detect DOM features (only native JavaScript). I contacted its author, [Zander Martineau](https://github.com/MrMartineau), and hopefully he will make the necessary changes to the jQuery package soon.
 
+**WARNING:**  
+If you have [Better JavaScript](https://github.com/int3h/sublime-better-javascript) installed, you need to first remove it before installing JavaScript Ultimate. JavaScript Ultimate is considered a complete upgrade from `Better JavaScript`, so you won't need it anymore.
+
 ## Themes
 * Monokai JU (just like defualt Monokai, but with regexp comprehension and bitwise operator detection)
 * Twilight JU
