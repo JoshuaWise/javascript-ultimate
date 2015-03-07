@@ -48,7 +48,7 @@ However, some people use the [Unicode Character Highlighter](https://packagecont
 
 Also, each version comes with two JavaScript flavors: `JavaScript`, and `JavaScript (DOM)`.
 
-You can use `JavaScript` when writing Node.js or other JavaScript applications. It includes only bare JavaScript - it doesn't highlight things that are in the DOM.
+You can use `JavaScript` when writing Node.js or other JavaScript applications. It includes only native JavaScript - it doesn't highlight things that are in the DOM.
 The `JavaScript (DOM)` language is available for when you're writing front-end scripts.
 You can switch between these whenever you want.
 
