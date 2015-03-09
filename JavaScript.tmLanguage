@@ -54,15 +54,15 @@
     	</dict>
     	
     	
+        <!-- Built-In Objects/Functions/Properties -->
+        <dict>
+            <key>include</key>
+            <string>#native-library</string>
+        </dict>
     	<!-- Implementation-Dependant Objects/Functions/Properties -->
     	<dict>
     		<key>include</key>
     		<string>#library</string>
-    	</dict>
-    	<!-- Built-In Objects/Functions/Properties -->
-    	<dict>
-    		<key>include</key>
-    		<string>#native-library</string>
     	</dict>
     	
     	
@@ -546,11 +546,11 @@
                 </dict>
                 <dict>
                     <key>include</key>
-                    <string>#library</string>
+                    <string>#native-library</string>
                 </dict>
                 <dict>
                     <key>include</key>
-                    <string>#native-library</string>
+                    <string>#library</string>
                 </dict>
                 <dict>
                     <key>include</key>
