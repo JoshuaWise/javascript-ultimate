@@ -72,7 +72,13 @@ If you have [Better JavaScript](https://github.com/int3h/sublime-better-javascri
 * Tron (best with gray_antialias in user settings)
 
 # Installation
-You can install this package, and any other package mentioned here, using [Package Control](https://packagecontrol.io/).
+You can install this package, and any other package mentioned here, using [Package Control](https://packagecontrol.io/).  
+When JavaScript Ultimate is installed, the default JavaScript package should automatically me disabled. If you need to enable it again, go into your User Settings and remove "JavaScript" from the `ignored_packages` list. This should happen automatically upon uninstalling JavaScript Ultimate.  
+It is **not** recommended to install this package manually. Please go through [Package Control](https://packagecontrol.io/).
+
+## Uninstalling
+When you uninstall JavaScript Ultimate, the default JavaScript package should automatically be enabled again. If you have any open JS or JSON files, it's possible that you'll see some errors about missing syntaxes. If you find yourself without JavaScript or JSON support after uninstallation, just look into your User Settings, and manually remove "JavaScript" from the `ignored_packages` list.  
+If any errors come up during this process, restarting Sublime Text should resolve any problems.
 
 ## Authors
 * Joshua Wise - [@JoshuaWise](https://github.com/JoshuaWise)
