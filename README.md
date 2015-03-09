@@ -32,7 +32,7 @@ Here are some of the **improvements**:
 In short, it's as perfect as a JavaScript language definition can get for Sublime Text.
 
 ## Other Improvements
-If you use JavaScript Ultimate with any of your existing themes, it will work just fine, and you can you enjoy perfect a JavaScript language definition.
+If you use JavaScript Ultimate with any of your existing themes, it will work just fine, and you can you enjoy a perfect JavaScript language definition.
 
 But, if you use any of the themes that come with this bundle, you can get two additional benefits while writing JavaScript:
 * Regular Expression comprehension
@@ -65,8 +65,8 @@ If you have [Better JavaScript](https://github.com/int3h/sublime-better-javascri
 ## Themes
 * Monokai JU (just like defualt Monokai, but with regexp comprehension and bitwise operator detection)
 * Twilight JU
-* Solarized JU
-* Solarized JU
+* Solarized JU (light)
+* Solarized JU (dark)
 * Indiana Jones (best with gray_antialias in user settings)
 * Wes Anderson (best with subpixel_antialias in user settings)
 * Tron (best with gray_antialias in user settings)
