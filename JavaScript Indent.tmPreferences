@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>name</key>
+    <string>JavaScript Indent</string>
+    <key>scope</key>
+    <string>source.js</string>
+    <key>settings</key>
+    <dict>
+        <key>decreaseIndentPattern</key>
+        <string>^(.*\*/)?\s*\}.*$</string>
+        <key>increaseIndentPattern</key>
+        <string>^.*\{[^}"']*$|^\s*+case(?![\p{L}\p{Nl}$\p{Mn}\p{Mc}\p{Nd}\p{Pc}_\x{200C}\x{200D}])\s*+\S+\s*+:$</string>
+
+        <key>bracketIndentNextLinePattern</key>
+        <string>(?x)
+        ^ \s* \b(if|while|else)\b [^;]* $
+        | ^ \s* \b(for)\b .* $;
+        </string>
+    </dict>
+    <key>uuid</key>
+    <string>c0bc7ee8-e623-48fa-9a01-0e528ed43cd3</string>
+</dict>
+</plist>
