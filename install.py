@@ -29,13 +29,13 @@ def disable_js_package():
         disabled.append("JavaScript")
         userSettings.set("ignored_packages", disabled)
         sublime.save_settings("Preferences.sublime-settings")
-	    for window in sublime.windows():
-	        for view in window.views():
-	            syntax = path.basename(view.settings().get('syntax'))
-	            if syntax == "JSON.tmLanguage":
-	                view.set_syntax_file(pathJSON)
-	            if syntax == "JavaScript.tmLanguage":
-	                view.set_syntax_file(pathJS)
+        for window in sublime.windows():
+            for view in window.views():
+                syntax = path.basename(view.settings().get('syntax'))
+                if syntax == "JSON.tmLanguage":
+                    view.set_syntax_file(pathJSON)
+                if syntax == "JavaScript.tmLanguage":
+                    view.set_syntax_file(pathJS)
     
     # # Find any views currently using the built-in JS syntaxes and set them to use ours
     # for window in sublime.windows():
@@ -67,11 +67,11 @@ def enable_js_package():
             syntaxPath = view.settings().get('syntax')
             syntaxPackage = path.split(path.dirname(syntaxPath))[1]
             if syntaxPackage == packageName:
-            	syntax = path.basename(syntaxPath)
-            	if "JSON" in syntax:
-                	view.set_syntax_file(pathJSON)
-            	if "JavaScript" in syntax:
-                	view.set_syntax_file(pathJS)
+                syntax = path.basename(syntaxPath)
+                if "JSON" in syntax:
+                    view.set_syntax_file(pathJSON)
+                if "JavaScript" in syntax:
+                    view.set_syntax_file(pathJS)
 
 def plugin_loaded():
     global userSettings
