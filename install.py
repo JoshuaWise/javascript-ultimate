@@ -24,19 +24,32 @@ def disable_js_package():
     pathJSON = path.join("Packages", packageName, "JSON.tmLanguage")
     pathJS = path.join("Packages", packageName, "JavaScript (DOM).tmLanguage")
     
-    # Find any views currently using the built-in JS syntaxes and set them to use ours
-    for window in sublime.windows():
-        for view in window.views():
-            syntax = path.basename(view.settings().get('syntax'))
-            if syntax == "JSON.tmLanguage":
-                view.set_syntax_file(pathJSON)
-            if syntax == "JavaScript.tmLanguage":
-                view.set_syntax_file(pathJS)
-
+    # Hotfix, because Package Control events aren't working.
     if not "JavaScript" in disabled:
         disabled.append("JavaScript")
         userSettings.set("ignored_packages", disabled)
         sublime.save_settings("Preferences.sublime-settings")
+	    for window in sublime.windows():
+	        for view in window.views():
+	            syntax = path.basename(view.settings().get('syntax'))
+	            if syntax == "JSON.tmLanguage":
+	                view.set_syntax_file(pathJSON)
+	            if syntax == "JavaScript.tmLanguage":
+	                view.set_syntax_file(pathJS)
+    
+    # # Find any views currently using the built-in JS syntaxes and set them to use ours
+    # for window in sublime.windows():
+    #     for view in window.views():
+    #         syntax = path.basename(view.settings().get('syntax'))
+    #         if syntax == "JSON.tmLanguage":
+    #             view.set_syntax_file(pathJSON)
+    #         if syntax == "JavaScript.tmLanguage":
+    #             view.set_syntax_file(pathJS)
+
+    # if not "JavaScript" in disabled:
+    #     disabled.append("JavaScript")
+    #     userSettings.set("ignored_packages", disabled)
+    #     sublime.save_settings("Preferences.sublime-settings")
 
 def enable_js_package():
     disabled = userSettings.get("ignored_packages", [])
@@ -62,18 +75,18 @@ def enable_js_package():
 
 def plugin_loaded():
     global userSettings
-    from package_control import events
+    #from package_control import events
 
-    if events.install(packageName):
+    if True: #if events.install(packageName):
         if userSettings == None:
             userSettings = sublime.load_settings("Preferences.sublime-settings")
         disable_js_package()
 
-def plugin_unloaded():
-    from package_control import events
+# def plugin_unloaded():
+#     from package_control import events
 
-    if events.remove(packageName):
-        enable_js_package()
+#     if events.remove(packageName):
+#         enable_js_package()
 
 # Since ST < 3 does not provide the plugin_loaded() hook, we need to run manually. However, if we
 # run too soon, then the settings loaded will be empty, which can cause problems like all the user
@@ -88,5 +101,5 @@ def ensureLoaded():
         sublime.set_timeout(ensureLoaded, 1000)
 
 if lessThanV3:
-    unload_handler = plugin_unloaded
+    #unload_handler = plugin_unloaded
     ensureLoaded()
