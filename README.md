@@ -55,7 +55,7 @@ JavaScript Ultimate is for Sublime Text 2 and 3, but should also work in Textmat
 
 JavaScript Ultimate will work perfectly fine with the [Nodejs](https://packagecontrol.io/packages/Nodejs) package, [Node Completions](https://packagecontrol.io/packages/Node%20Completions) package, and any other code completions package you can find.
 
-If you'd like to use the [jQuery](https://packagecontrol.io/packages/jQuery) package, you can do that too! But the jQuery package won't be able to detect DOM features (only native JavaScript). I contacted its author, [Zander Martineau](https://github.com/MrMartineau), and hopefully he will make the necessary changes to the jQuery package soon.
+If you'd like to use the [jQuery](https://packagecontrol.io/packages/jQuery) package, you can do that too! Thanks to [Zander Martineau](https://github.com/MrMartineau) for making the [jQuery](https://packagecontrol.io/packages/jQuery) package properly detect and work with JavaScript Ultimate!
 
 **WARNING:**  
 If you have [Better JavaScript](https://github.com/int3h/sublime-better-javascript) installed, you need to first remove it before installing JavaScript Ultimate. JavaScript Ultimate is considered a complete upgrade from `Better JavaScript`, so you won't need it anymore.
