@@ -387,6 +387,8 @@ Released under the MIT License <http://opensource.org/licenses/MIT>
 		    </dict>
 		</dict>
 		<dict>
+			<key>name</key>
+			<string>find in files</string>
 		    <key>scope</key>
 		    <string>constant.numeric.line-number.find-in-files - match</string>
 		    <key>settings</key>
@@ -395,6 +397,34 @@ Released under the MIT License <http://opensource.org/licenses/MIT>
 		        <string>#4ea1df60</string>
 		    </dict>
 		</dict>
+		<dict>
+		    <key>scope</key>
+		    <string>text.html.handlebars string constant.language.expression</string>
+		    <key>settings</key>
+		    <dict>
+		        <key>foreground</key>
+		        <string>#F23A3A</string>
+		    </dict>
+		</dict>
+		<dict>
+		    <key>scope</key>
+		    <!-- <string>text.html.handlebars string meta.function.block</string> -->
+		    <string>text.html.handlebars meta.function.block</string>
+		    <key>settings</key>
+		    <dict>
+		        <key>foreground</key>
+		        <string>#F23A3A</string>
+		    </dict>
+		</dict>
+		<!-- <dict>
+		    <key>scope</key>
+		    <string>text.html.handlebars constant.language.expression.single</string>
+		    <key>settings</key>
+		    <dict>
+		        <key>foreground</key>
+		        <string>#ff9a47</string>
+		    </dict>
+		</dict> -->
 	</array>
 	<key>uuid</key>
 	<string>bd964d80-8bf2-476c-903f-98620541681a</string>
