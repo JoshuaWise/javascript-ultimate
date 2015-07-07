@@ -57,7 +57,14 @@ JavaScript Ultimate will work perfectly fine with the [Nodejs](https://packageco
 
 If you'd like to use the [jQuery](https://packagecontrol.io/packages/jQuery) package, you can do that too! Thanks to [Zander Martineau](https://github.com/MrMartineau) for making the [jQuery](https://packagecontrol.io/packages/jQuery) package properly detect and work with JavaScript Ultimate!
 
-**WARNING:**  
+**WARNING SublimeLinter:**  
+If you are using [SublimeLinter](https://github.com/SublimeLinter/SublimeLinter3) to lint your js files, installing Javascript Ultimate will make SublimeLinter silently fail. You need to add the following line to your user settings to make it work again. In Preferences > Package Settings > SublimeLinter > Settings - User
+
+    "syntax_map: { 
+      "javascript (dom)": "javascript" 
+    }
+
+**WARNING Better Javascript:**  
 If you have [Better JavaScript](https://github.com/int3h/sublime-better-javascript) installed, you need to first remove it before installing JavaScript Ultimate. JavaScript Ultimate is considered a complete upgrade from `Better JavaScript`, so you won't need it anymore.
 
 ## Themes
