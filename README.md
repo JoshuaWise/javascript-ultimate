@@ -60,7 +60,7 @@ If you'd like to use the [jQuery](https://packagecontrol.io/packages/jQuery) pac
 **WARNING SublimeLinter:**  
 If you are using [SublimeLinter](https://github.com/SublimeLinter/SublimeLinter3) to lint your js files, installing Javascript Ultimate will make SublimeLinter silently fail. You need to add the following line to your user settings to make it work again. In Preferences > Package Settings > SublimeLinter > Settings - User
 
-    "syntax_map: { 
+    "syntax_map": { 
       "javascript (dom)": "javascript" 
     }
 
