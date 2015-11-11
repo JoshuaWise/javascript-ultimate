@@ -21,7 +21,7 @@
     <key>keyEquivalent</key>
     <string>^~J</string>
     <key>uuid</key>
-    <string>c003a0b4-91c5-4ce0-b46a-2a1f9af904f6</string>
+    <string>dcbd7ac4-4776-47b3-a938-42f6e676c40c</string>
 
     <!-- CHECK REDUNDANCIES BEFORE EDITING -->
     <key>patterns</key>
@@ -97,7 +97,7 @@
                 <!-- funcName: function(...) -->
                 <dict>
                     <key>match</key>
-                    <string>(?&lt;![\p{L}\p{Nl}$\p{Mn}\p{Mc}\p{Nd}\p{Pc}_\x{200C}\x{200D}])([\p{L}\p{Nl}$_][\p{L}\p{Nl}$\p{Mn}\p{Mc}\p{Nd}\p{Pc}_\x{200C}\x{200D}]*+|(0(?>x|X)[0-9a-fA-F]++)|([0-9]++\.?+[0-9]*+((?>e|E)[-+]?+[0-9]++)?|\.[0-9]++((?>e|E)[-+]?+[0-9]++)?+))(?=\s*+:\s*+(\()?+\s*+function\s*+\()</string>
+                    <string>(?&lt;![\p{L}\p{Nl}$\p{Mn}\p{Mc}\p{Nd}\p{Pc}_\x{200C}\x{200D}])[\p{L}\p{Nl}$_][\p{L}\p{Nl}$\p{Mn}\p{Mc}\p{Nd}\p{Pc}_\x{200C}\x{200D}]*+(?=\s*+:\s*+(\()?+\s*+function\s*+\()</string>
                     <key>name</key>
                     <string>entity.name.function.js</string>
                 </dict>
@@ -124,7 +124,7 @@
                 <!-- property: -->
                 <dict>
                     <key>match</key>
-                    <string>(?&lt;![\p{L}\p{Nl}$\p{Mn}\p{Mc}\p{Nd}\p{Pc}_\x{200C}\x{200D}])([\p{L}\p{Nl}$_][\p{L}\p{Nl}$\p{Mn}\p{Mc}\p{Nd}\p{Pc}_\x{200C}\x{200D}]*+|(0(?>x|X)[0-9a-fA-F]++)|([0-9]++\.?+[0-9]*+((?>e|E)[-+]?+[0-9]++)?|\.[0-9]++((?>e|E)[-+]?+[0-9]++)?+))(?=\s*+\:)</string>
+                    <string>(?&lt;![\p{L}\p{Nl}$\p{Mn}\p{Mc}\p{Nd}\p{Pc}_\x{200C}\x{200D}])[\p{L}\p{Nl}$_][\p{L}\p{Nl}$\p{Mn}\p{Mc}\p{Nd}\p{Pc}_\x{200C}\x{200D}]*+(?=\s*+\:)</string>
                     <key>name</key>
                     <string>entity.other.js</string>
                 </dict>
