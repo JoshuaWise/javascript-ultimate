@@ -233,11 +233,18 @@ contexts:
 
   expression:
     - include: string_literal
+    - include: template_literal
+    # - include: regular_expression_literal
     - include: numeric_literal
+    # - include: array_literal
+    # - include: object_literal
+    # - include: function_expression
+    # - include: class_expression
     - match: '{{b_before}}(true|false|null|undefined|Infinity|NaN){{b_after}}'
       scope: constant.language.js
     - match: '{{b_before}}(this|arguments|super){{b_after}}'
       scope: variable.language.js
+    # - include: identifier_reference
       #===== help prevent errors =====#
     - match: '\.[{{whitespace}}{{line_terminator}}]*{{ident}}{{b_after}}' # why doesn't this extend through new lines?
       scope: text.js
@@ -255,22 +262,40 @@ contexts:
         3: punctuation.definition.string.end.js
     - match: '"'
       scope: punctuation.definition.string.begin.js
-      push: _string_literal_contents
-      with_prototype:
+      push:
+        - meta_include_prototype: false
+        - meta_scope: string.quoted.js
+        - include: _common_string_escape_sequences
+        - match: '[{{line_terminator}}]'
+          set:
+            - meta_include_prototype: false
+            - meta_scope: string.quoted.js
+            - include: _common_string_escape_sequences
+            - match: '"'
+              scope: invalid.illegal.js
+              pop: true
         - match: '"'
           scope: punctuation.definition.string.end.js
           pop: true
     - match: ''''
       scope: punctuation.definition.string.begin.js
-      push: _string_literal_contents
-      with_prototype:
+      push:
+        - meta_include_prototype: false
+        - meta_scope: string.quoted.js
+        - include: _common_string_escape_sequences
+        - match: '[{{line_terminator}}]'
+          set:
+            - meta_include_prototype: false
+            - meta_scope: string.quoted.js
+            - include: _common_string_escape_sequences
+            - match: ''''
+              scope: invalid.illegal.js
+              pop: true
         - match: ''''
           scope: punctuation.definition.string.end.js
           pop: true
 
-  _string_literal_contents:
-    - meta_include_prototype: false
-    - meta_scope: string.quoted.js
+  _common_string_escape_sequences:
     - match: '(\\){{line_terminator_sequence}}'
       scope: constant.character.escape.js
       captures:
@@ -279,6 +304,28 @@ contexts:
       scope: constant.character.escape.js
     - match: '\\(0[0-9]+|[1-9][0-9]*)?'
       scope: invalid.illegal.js
+
+  template_literal:
+    - match: '`'
+      scope: punctuation.definition.string.begin.js
+      push: _template_literal_contents
+
+  _template_literal_contents:
+    - meta_include_prototype: false
+    - meta_scope: string.quoted.template.js
+    - match: '\\\$'
+      scope: constant.character.escape.js
+    - include: _common_string_escape_sequences
+    - match: '\$\{'
+      scope: variable.language.js
+      set:
+        - include: expression
+        - match: '\}'
+          scope: variable.language.js
+          set: _template_literal_contents
+    - match: '`'
+      scope: punctuation.definition.string.end.js
+      pop: true
 
   numeric_literal:
     - match: '{{b_before}}((0|[1-9][0-9]*)(\.[0-9]*)?{{exp}}|\.[0-9]+{{exp}}){{b_after}}'
