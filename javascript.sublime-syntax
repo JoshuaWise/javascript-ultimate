@@ -1,0 +1,291 @@
+%YAML 1.2
+---
+name: JavaScript Test
+file_extensions: [js, htc]
+first_line_match: '^#!/usr/bin/env node([{{whitespace}}].*)?(?=[{{line_terminator}}]|$)'
+scope: source.js
+
+variables:
+  # Very low-level character categories
+  unicode_other_id_start: '\x{2118}\x{212E}\x{309B}\x{309C}'
+  unicode_other_id_continue: '\x{1369}\x{00B7}\x{0387}\x{19DA}'
+  unicode_id_start: '\p{L}\p{Nl}{{unicode_other_id_start}}'
+  unicode_id_continue: '{{unicode_id_start}}\p{Mn}\p{Mc}\p{Nd}\p{Pc}{{unicode_other_id_continue}}'
+  ident_start: '{{unicode_id_start}}_$'
+  ident_part: '{{unicode_id_continue}}\x{200C}\x{200D}_$'
+
+  # Low-level character categories
+  whitespace: '\x{0020}\x{0009}\x{000B}\x{000C}\x{00A0}\x{FEFF}\p{Zs}'
+  line_terminator: '\x{000a}\x{000d}\x{2028}\x{2029}'
+
+  # Low-level JavaScript categories
+  exp: '([eE][+-]?[0-9]+)?'
+  line_terminator_sequence: '(\x{000d}\x{000a}|[{{line_terminator}}])'
+
+  # High-level JavaScript categories
+  keyword: '(break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|function|if|import|in|instanceof|new|return|super|switch|this|throw|try|typeof|var|void|while|with|yield|let|static)'
+  future_reserved_word: '(enum|await|implements|interface|package|private|protected|public)'
+  reserved_word: ({{keyword}}|{{future_reserved_word}}|null|true|false)
+  hex_escape_sequence: '(x\h{2})'
+  unicode_escape_sequence: '(u\h{4}|u\{\h+\})'
+  ident: '([{{ident_start}}][{{ident_part}}]*)'
+  b_before: '(?<![{{ident_part}}])' # word-break before
+  b_after: '(?![{{ident_part}}])' # word-break after
+
+contexts:
+  main:
+    - match: '^#!/usr/bin/env node([{{whitespace}}].*)?(?=[{{line_terminator}}]|$)'
+      scope: comment.line.shebang.js
+    - include: statement
+
+  statement:
+    - include: block_statement
+    # - include: import_statement
+    # - include: export_statement
+    # - include: variable_statement
+    # - include: declaration
+    - include: simple_control_statement
+    - include: do_statement
+    - include: for_statement
+    - include: switch_statement
+    - include: try_statement
+    - include: goto_statement
+    - include: termination_statement
+    - include: debugger_statement
+    - include: expression
+    - include: labelled_statement
+
+  block_statement:
+    - match: '\{'
+      push:
+        - include: statement
+        - match: '\}'
+          pop: true
+
+  # variable_statement:
+  #   - match: '{{b_before}}(var|let|const){{b_after}}'
+  #     scope: storage.type.js
+  #     push:
+  #       - include: _assignment_expression
+  #       - include: _destructuring_assignment_expression
+
+  simple_control_statement:
+    - match: '{{b_before}}(if|while|with){{b_after}}'
+      scope: keyword.control.js
+      push:
+        - match: '[^({{whitespace}}{{line_terminator}}]'
+          scope: invalid.illegal.js
+        # - match: '[{{line_terminator}}]' # for less noisy color changes while writing
+        #   pop: true
+        - match: '\('
+          set:
+            - include: expression # only one expression should be allowed here
+            - match: '\)'
+              pop: true
+
+  do_statement:
+    - match: '{{b_before}}do{{b_after}}'
+      scope: keyword.control.js
+
+  for_statement:
+    - match: '{{b_before}}for{{b_after}}'
+      scope: keyword.control.js
+      push:
+        - match: '[^({{whitespace}}{{line_terminator}}]'
+          scope: invalid.illegal.js
+        # - match: '[{{line_terminator}}]' # for less noisy color changes while writing
+        #   pop: true
+        - match: '\('
+          set:
+            - include: expression # only one expression, or variable_statement, should be allowed here (also add "for in" and "for of")
+            - match: '\)'
+              pop: true
+            - match: ';'
+              set:
+                - include: expression # only one expression should be allowed here
+                - match: '\)'
+                  pop: true
+                - match: ';'
+                  set:
+                    - include: expression # only one expression should be allowed here
+                    - match: '\)'
+                      pop: true
+                    - match: ';'
+                      scope: invalid.illegal.js
+
+  switch_statement:
+    - match: '{{b_before}}switch{{b_after}}'
+      scope: keyword.control.js
+      push:
+        - match: '[^({{whitespace}}{{line_terminator}}]'
+          scope: invalid.illegal.js
+        - match: '\('
+          set:
+            - include: expression # only one expression should be allowed here
+            - match: '\)'
+              set:
+                - match: '[^{{{whitespace}}{{line_terminator}}]'
+                  scope: invalid.illegal.js
+                - match: '\{'
+                  set:
+                    - match: '{{b_before}}case{{b_after}}'
+                      scope: keyword.control.js
+                      push:
+                        - match: '(?<=case)[{{whitespace}}{{line_terminator}}]*:' # why doesn't this extend through new lines?
+                          scope: invalid.illegal.js
+                        - include: expression # only one expression should be allowed here
+                        - match: ':'
+                          pop: true
+                    - match: '{{b_before}}default{{b_after}}'
+                      scope: keyword.control.js
+                      push:
+                        - match: '[^:{{whitespace}}{{line_terminator}}]'
+                          scope: invalid.illegal.js
+                        - match: ':'
+                          pop: true
+                    - include: statement
+                    - match: '\}'
+                      pop: true
+
+  try_statement:
+    - match: '{{b_before}}try{{b_after}}'
+      scope: keyword.control.js
+      push:
+        - match: '[^{{{whitespace}}{{line_terminator}}]'
+          scope: invalid.illegal.js
+        - match: '\{'
+          set:
+            - include: statement
+            - match: '\}'
+              set:
+                - include: _catch_statement
+                - include: _finally_statement
+
+  _catch_statement:
+    - match: '{{b_before}}catch{{b_after}}'
+      scope: keyword.control.js
+      set:
+        - match: '[^({{whitespace}}{{line_terminator}}]'
+          scope: invalid.illegal.js
+        - match: '\('
+          set:
+            - match: '{{b_before}}{{ident}}{{b_after}}' # only one ident should be allowed here
+              scope: variable.language.js
+            - match: '\)'
+              set:
+              - match: '[^{{{whitespace}}{{line_terminator}}]'
+                scope: invalid.illegal.js
+              - match: '\{'
+                set:
+                  - include: statement
+                  - match: '\}'
+                    set:
+                      - include: _finally_statement
+                      - match: '(?<=\})[{{whitespace}}{{line_terminator}}]*+(?!finally($|[^{{ident_part}}]))' # why doesn't this extend through new lines?
+                        pop: true
+
+  _finally_statement:
+    - match: '{{b_before}}finally{{b_after}}'
+      scope: keyword.control.js
+      set:
+        - match: '[^{{{whitespace}}{{line_terminator}}]'
+          scope: invalid.illegal.js
+        - match: '\{'
+          set:
+            - include: statement
+            - match: '\}'
+              pop: true
+
+  goto_statement:
+    - match: '{{b_before}}(break|continue){{b_after}}'
+      scope: keyword.control.js
+      push:
+        - match: '{{b_before}}{{reserved_word}}{{b_after}}'
+          scope: invalid.illegal.js
+          set: _end_of_statement
+        - match: '{{b_before}}{{ident}}{{b_after}}'
+          scope: entity.name.section.js
+          set: _end_of_statement
+        - include: _end_of_statement
+
+  termination_statement:
+    - match: '{{b_before}}(return|throw){{b_after}}'
+      scope: keyword.control.js
+      push:
+        - include: expression # only one expression should be allowed here
+        - match: '[;{{line_terminator}}]'
+          pop: true
+
+  debugger_statement:
+    - match: '{{b_before}}debugger{{b_after}}'
+      scope: keyword.control.js
+      push: _end_of_statement
+
+  labelled_statement:
+    - match: '{{b_before}}{{ident}}{{b_after}}(?=[{{whitespace}}{{line_terminator}}]*:)' # why doesn't this extend through new lines?
+      scope: entity.name.section.js
+
+  _end_of_statement:
+    - match: '[;{{line_terminator}}]'
+      pop: true
+    - match: '[^{{whitespace}}]'
+      scope: invalid.illegal.js
+
+  expression:
+    - include: string_literal
+    - include: numeric_literal
+    - match: '{{b_before}}(true|false|null|undefined|Infinity|NaN){{b_after}}'
+      scope: constant.language.js
+    - match: '{{b_before}}(this|arguments|super){{b_after}}'
+      scope: variable.language.js
+      #===== help prevent errors =====#
+    - match: '\.[{{whitespace}}{{line_terminator}}]*{{ident}}{{b_after}}' # why doesn't this extend through new lines?
+      scope: text.js
+    - match: '\.[{{whitespace}}{{line_terminator}}]*[^{{whitespace}}{{line_terminator}}]+'
+      scope: invalid.illegal.js
+    - match: '{{b_before}}{{reserved_word}}{{b_after}}'
+      scope: invalid.illegal.js
+
+  string_literal:
+    - match: '(''|")(use strict)(\1)'
+      scope: string.quoted.js
+      captures:
+        1: punctuation.definition.string.begin.js
+        2: comment.directive.js
+        3: punctuation.definition.string.end.js
+    - match: '"'
+      scope: punctuation.definition.string.begin.js
+      push: _string_literal_contents
+      with_prototype:
+        - match: '"'
+          scope: punctuation.definition.string.end.js
+          pop: true
+    - match: ''''
+      scope: punctuation.definition.string.begin.js
+      push: _string_literal_contents
+      with_prototype:
+        - match: ''''
+          scope: punctuation.definition.string.end.js
+          pop: true
+
+  _string_literal_contents:
+    - meta_include_prototype: false
+    - meta_scope: string.quoted.js
+    - match: '(\\){{line_terminator_sequence}}'
+      scope: constant.character.escape.js
+      captures:
+        1: linecontinuation.js
+    - match: '\\(0(?![0-9])|[bfnrtv''"\\]|{{hex_escape_sequence}}|{{unicode_escape_sequence}})'
+      scope: constant.character.escape.js
+    - match: '\\(0[0-9]+|[1-9][0-9]*)?'
+      scope: invalid.illegal.js
+
+  numeric_literal:
+    - match: '{{b_before}}((0|[1-9][0-9]*)(\.[0-9]*)?{{exp}}|\.[0-9]+{{exp}}){{b_after}}'
+      scope: constant.numeric.decimal.js
+    - match: '{{b_before}}0[xX]\h+{{b_after}}'
+      scope: constant.numeric.hexadecimal.js
+    - match: '{{b_before}}0[bB][01]+{{b_after}}'
+      scope: constant.numeric.binary.js
+    - match: '{{b_before}}0[oO][0-7]+{{b_after}}'
+      scope: constant.numeric.octal.js
