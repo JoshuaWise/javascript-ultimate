@@ -329,24 +329,24 @@ contexts:
 
   regular_expression_literal:
     - match: '/'
-      scope: punctuation.definition.string.begin.js
+      scope: string.regexp.js punctuation.definition.string.begin.js
       push: _regular_expression_literal_contents
 
   _regular_expression_literal_contents:
     - meta_include_prototype: false
-    - meta_scope: string.regexp.js
+    - meta_content_scope: string.regexp.js
+    # - match: '\\[^{{line_terminator}}]'
+    #   scope: constant.character.escape.js
     - match: '(\[\^?)-?'
       scope: string.regexp.characterclass.js
       captures:
         1: punctuation.definition.string.begin.js
-      push: _regular_expression_literal_class
-    - match: '\\[^{{line_terminator}}]'
-      scope: constant.character.escape.js
+      set: _regular_expression_literal_class
     - match: '{{line_terminator_sequence}}'
       scope: invalid.illegal.js
       pop: true
     - match: '/(([gimuy]*?(?''option''[gimuy])[gimuy]*?\k''option'')|[gimuy]*)({{ident}}|\\)?'
-      scope: punctuation.definition.string.end.js
+      scope: string.regexp.js punctuation.definition.string.end.js
       captures:
         2: invalid.illegal.js
         4: invalid.illegal.js
@@ -354,14 +354,15 @@ contexts:
 
   _regular_expression_literal_class:
     - meta_include_prototype: false
-    - meta_content_scope: string.regexp.characterclass.js
-    - match: '(?={{line_terminator_sequence}})'
+    - meta_content_scope: string.regexp.js string.regexp.characterclass.js
+    # - match: '\\[^{{line_terminator}}]'
+    #   scope: constant.character.escape.js
+    - match: '{{line_terminator_sequence}}'
       pop: true
     - match: '-?(\])'
-      scope: string.regexp.characterclass.js
       captures:
         1: punctuation.definition.string.end.js
-      pop: true
+      set: _regular_expression_literal_contents
 
   numeric_literal:
     - match: '{{b_before}}((0|[1-9][0-9]*)(\.[0-9]*)?{{exp}}|\.[0-9]+{{exp}}){{b_after}}'
