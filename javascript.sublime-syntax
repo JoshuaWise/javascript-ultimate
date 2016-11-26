@@ -335,8 +335,14 @@ contexts:
   _regular_expression_literal_contents:
     - meta_include_prototype: false
     - meta_content_scope: string.regexp.js
-    # - match: '\\[^{{line_terminator}}]'
-    #   scope: constant.character.escape.js
+    - match: '\\([dDsSwWfnrtv]|{{hex_escape_sequence}}|u\h{4}|c[a-zA-Z]|0(?![0-9])|[1-9][0-9]*)'
+      scope: constant.character.escape.js regexp-operator.js
+    - match: '\\(\^|\$|\\|\.|\*|\+|\?|\(|\)|\[|\]|\{|\}|\||\/)'
+      scope: constant.character.escape.js
+    - match: '\^|\$|\||\?|\*|\+|\.|\{[0-9]+(,[0-9]*)?\}|\((\?\!|\?=|\?:)?|\)'
+      scope: regexp-operator.js
+    - match: '\\(0[0-9]+)?'
+      scope: invalid.illegal.js
     - match: '(\[\^?)-?'
       scope: string.regexp.characterclass.js
       captures:
