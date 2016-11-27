@@ -246,6 +246,7 @@ contexts:
     - match: '{{b_before}}(this|arguments|super){{b_after}}'
       scope: variable.language.js
     - include: new_keyword
+    - include: instanceof_keyword
     # - include: identifier_reference
     # - include: bracket_reference_expression
       #===== help prevent errors =====#
@@ -406,33 +407,56 @@ contexts:
             - match: '{{b_before}}target{{b_after}}'
               scope: support.class.js
               pop: true
-        - match: '\('
-          set:
-            - include: expression # only one expression should be allowed here
-            - match: '\)'
-              set: _new_keyword_deep
-        - match: '{{b_before}}{{ident}}{{b_after}}'
-          scope: support.class.js
-          set: _new_keyword_deep
-        - match: '{{skip_to}}(?=[^(.{{ident_start}}])'
+            - match: '{{b_before}}(t|ta|tar|targ|targe){{b_after}}'
+              pop: true
+            - match: '{{b_before}}{{ident}}{{b_after}}'
+              scope: invalid.illegal.js
+              pop: true
+            - match: '[^{{whitespace}}{{line_terminator}}]'
+              scope: invalid.illegal.js
+              pop: true
+        - include: _class_name_shallow
+        - match: '{{skip_to}}([^(.{{ident_start}}])'
+          captures:
+            1: invalid.illegal.js
           pop: true
 
-  _new_keyword_deep:
+  instanceof_keyword: # is this feature's color changes too noisy while typing?
+    - match: '{{b_before}}instanceof{{b_after}}'
+      scope: keyword.operator.js
+      push:
+        - include: _class_name_shallow
+        - match: '{{skip_to}}([^({{ident_start}}])'
+          captures:
+            1: invalid.illegal.js
+          pop: true
+
+  _class_name_shallow:
+    - match: '\('
+      set:
+        - include: expression # only one expression should be allowed here
+        - match: '\)'
+          set: _class_name_deep
+    - match: '{{b_before}}{{ident}}{{b_after}}'
+      scope: support.class.js
+      set: _class_name_deep
+
+  _class_name_deep:
     - match: '\.'
       scope: support.class.js
       set:
         - match: '{{b_before}}{{ident}}{{b_after}}'
           scope: support.class.js
-          set: _new_keyword_deep
+          set: _class_name_deep
     - match: '\('
       set:
         - include: expression # only one expression should be allowed here
         - match: '\)'
-          set: _new_keyword_deep
+          set: _class_name_deep
     - match: '\['
       set:
         - include: expression # only one expression should be allowed here
         - match: '\]'
-          set: _new_keyword_deep
+          set: _class_name_deep
     - match: '{{skip_to}}(?=[^\[(.])'
       pop: true
