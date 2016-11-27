@@ -178,7 +178,7 @@ contexts:
                   - match: '\}'
                     set:
                       - include: _finally_statement
-                      - match: '(?<=\}){{skip_to}}+(?!finally($|[^{{ident_part}}]))'
+                      - match: '{{skip_to}}+(?!finally($|[^{{ident_part}}]))(?=.)'
                         pop: true
 
   _finally_statement:
