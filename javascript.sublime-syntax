@@ -227,6 +227,8 @@ contexts:
           captures:
             1: entity.name.section.js
           pop: true
+    - match: ':'
+      scope: invalid.illegal.js
 
   expression:
     - match: '{{non_token}}'
@@ -241,7 +243,6 @@ contexts:
     # - include: class_expression
     - include: constant_or_variable
     - include: new_keyword
-    - include: instanceof_keyword
     - include: unary_operators
     # - include: illegal_word
     # - include: identifier_reference
@@ -250,7 +251,7 @@ contexts:
 
   parenthesized_expression:
     - match: '\('
-      set: [secondary_expression, _need_closing_parenthesis, expression]
+      push: [secondary_expression, _need_closing_parenthesis, expression]
 
   string_literal:
     - match: '(''|")(use strict)(\1)'
@@ -423,19 +424,9 @@ contexts:
             1: invalid.illegal.js
           set: secondary_expression
 
-  instanceof_keyword:
-    - match: '{{b_before}}instanceof{{b_after}}'
-      scope: keyword.operator.js
-      set:
-        - include: _class_name_shallow
-        - match: '{{to_token}}([^({{ident_start}}])'
-          captures:
-            1: invalid.illegal.js
-          set: secondary_expression
-
   _class_name_shallow:
     - match: '\('
-      set: [_class_name_close_parenthesis, expression]
+      set: [_class_name_deep, _need_closing_parenthesis, expression]
     - match: '{{b_before}}{{ident}}{{b_after}}'
       scope: support.class.js
       set: _class_name_deep
@@ -447,20 +438,10 @@ contexts:
         - match: '{{b_before}}{{ident}}{{b_after}}'
           scope: support.class.js
           set: _class_name_deep
-    - match: '\('
-      set: [_class_name_close_parenthesis, expression]
     - match: '\['
-      set: [_class_name_close_square_brackets, expression]
+      set: [_class_name_deep, _need_closing_square_bracket, expression]
     - match: '{{to_token}}(?=[^\[(.])'
       set: secondary_expression
-
-  _class_name_close_parenthesis:
-    - match: '\)'
-      set: _class_name_deep
-
-  _class_name_close_square_brackets:
-    - match: '\]'
-      set: _class_name_deep
 
   unary_operators:
     - match: '!|--?|\+\+?|{{b_before}}(typeof|void|delete|yield|await){{b_after}}'
@@ -473,6 +454,7 @@ contexts:
 
   secondary_expression:
     - match: '{{non_token}}'
+    # - include: instanceof_keyword
     - match: '(?=.)'
       pop: true
   #   # - include: conditional_expression
@@ -500,3 +482,13 @@ contexts:
   #       - include: expression # only one expression should be allowed here
   #       - match: ':' # these operators should demand an expression afterwards
   #         pop: true
+
+  # instanceof_keyword:
+  #   - match: '{{b_before}}instanceof{{b_after}}'
+  #     scope: keyword.operator.js
+  #     set:
+  #       - include: _class_name_shallow
+  #       - match: '{{to_token}}([^({{ident_start}}])'
+  #         captures:
+  #           1: invalid.illegal.js
+  #         set: secondary_expression
