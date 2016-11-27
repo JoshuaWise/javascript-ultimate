@@ -2,7 +2,7 @@
 ---
 name: JavaScript Test
 file_extensions: [js, htc]
-first_line_match: '^#!/usr/bin/env node([{{whitespace}}].*)?(?=[{{line_terminator}}]|$)'
+first_line_match: '^#!/usr/bin/env node([{{whitespace}}].*)?(?={{line_terminator_sequence}}|$)'
 scope: source.js
 
 variables:
@@ -33,10 +33,12 @@ variables:
   ident: '([{{ident_start}}][{{ident_part}}]*)'
   b_before: '(?<![{{ident_part}}])' # word-break before
   b_after: '(?![{{ident_part}}])' # word-break after
+  skip_to: '[{{whitespace}}{{line_terminator}}]*' # skip to next token (why doesn't this extend through new lines?)
+  end_of_statement: '(;|{{line_terminator_sequence}})'
 
 contexts:
   main:
-    - match: '^#!/usr/bin/env node([{{whitespace}}].*)?(?=[{{line_terminator}}]|$)'
+    - match: '^#!/usr/bin/env node([{{whitespace}}].*)?(?={{line_terminator_sequence}}|$)'
       scope: comment.line.shebang.js
     - include: statement
 
@@ -64,20 +66,13 @@ contexts:
         - match: '\}'
           pop: true
 
-  # variable_statement:
-  #   - match: '{{b_before}}(var|let|const){{b_after}}'
-  #     scope: storage.type.js
-  #     push:
-  #       - include: _assignment_expression
-  #       - include: _destructuring_assignment_expression
-
   simple_control_statement:
     - match: '{{b_before}}(if|while|with){{b_after}}'
       scope: keyword.control.js
       push:
         - match: '[^({{whitespace}}{{line_terminator}}]'
           scope: invalid.illegal.js
-        # - match: '[{{line_terminator}}]' # for less noisy color changes while writing
+        # - match: '{{line_terminator_sequence}}' # for less noisy color changes while writing
         #   pop: true
         - match: '\('
           set:
@@ -95,7 +90,7 @@ contexts:
       push:
         - match: '[^({{whitespace}}{{line_terminator}}]'
           scope: invalid.illegal.js
-        # - match: '[{{line_terminator}}]' # for less noisy color changes while writing
+        # - match: '{{line_terminator_sequence}}' # for less noisy color changes while writing
         #   pop: true
         - match: '\('
           set:
@@ -133,7 +128,7 @@ contexts:
                     - match: '{{b_before}}case{{b_after}}'
                       scope: keyword.control.js
                       push:
-                        - match: '(?<=case)[{{whitespace}}{{line_terminator}}]*:' # why doesn't this extend through new lines?
+                        - match: '(?<=case){{skip_to}}:'
                           scope: invalid.illegal.js
                         - include: expression # only one expression should be allowed here
                         - match: ':'
@@ -183,7 +178,7 @@ contexts:
                   - match: '\}'
                     set:
                       - include: _finally_statement
-                      - match: '(?<=\})[{{whitespace}}{{line_terminator}}]*+(?!finally($|[^{{ident_part}}]))' # why doesn't this extend through new lines?
+                      - match: '(?<=\}){{skip_to}}+(?!finally($|[^{{ident_part}}]))'
                         pop: true
 
   _finally_statement:
@@ -215,7 +210,7 @@ contexts:
       scope: keyword.control.js
       push:
         - include: expression # only one expression should be allowed here
-        - match: '[;{{line_terminator}}]'
+        - match: '{{end_of_statement}}'
           pop: true
 
   debugger_statement:
@@ -224,16 +219,17 @@ contexts:
       push: _end_of_statement
 
   labelled_statement:
-    - match: '{{b_before}}{{ident}}{{b_after}}(?=[{{whitespace}}{{line_terminator}}]*:)' # why doesn't this extend through new lines?
+    - match: '{{b_before}}{{ident}}{{b_after}}(?={{skip_to}}:)'
       scope: entity.name.section.js
 
   _end_of_statement:
-    - match: '[;{{line_terminator}}]'
+    - match: '{{end_of_statement}}'
       pop: true
     - match: '[^{{whitespace}}]'
       scope: invalid.illegal.js
 
   expression:
+    # - include: parenthesized_expression
     - include: string_literal
     - include: template_literal
     - include: regular_expression_literal
@@ -246,12 +242,14 @@ contexts:
       scope: constant.language.js
     - match: '{{b_before}}(this|arguments|super){{b_after}}'
       scope: variable.language.js
+    - match: '{{b_before}}(new{{skip_to}}\.{{skip_to}}target){{b_after}}'
+      scope: support.class.js
     # - include: identifier_reference
       #===== help prevent errors =====#
-    - match: '\.[{{whitespace}}{{line_terminator}}]*{{ident}}{{b_after}}' # why doesn't this extend through new lines?
-      scope: text.js
-    - match: '\.[{{whitespace}}{{line_terminator}}]*[^{{whitespace}}{{line_terminator}}]+'
-      scope: invalid.illegal.js
+    # - match: '\.{{skip_to}}{{ident}}{{b_after}}'
+    #   scope: text.js
+    # - match: '\.{{skip_to}}[^{{whitespace}}{{line_terminator}}]+'
+    #   scope: invalid.illegal.js
     - match: '{{b_before}}{{reserved_word}}{{b_after}}'
       scope: invalid.illegal.js
 
@@ -268,7 +266,7 @@ contexts:
         - meta_include_prototype: false
         - meta_scope: string.quoted.js
         - include: _common_string_escape_sequences
-        - match: '[{{line_terminator}}]'
+        - match: '{{line_terminator_sequence}}'
           set:
             - meta_include_prototype: false
             - meta_scope: string.quoted.js
@@ -285,7 +283,7 @@ contexts:
         - meta_include_prototype: false
         - meta_scope: string.quoted.js
         - include: _common_string_escape_sequences
-        - match: '[{{line_terminator}}]'
+        - match: '{{line_terminator_sequence}}'
           set:
             - meta_include_prototype: false
             - meta_scope: string.quoted.js
@@ -367,7 +365,7 @@ contexts:
       scope: constant.character.escape.js regexp-operator.js
     - match: '\\(-|{{common_regexp_operators}})'
       scope: constant.character.escape.js
-    - match: '\\(0[0-9]+|[wWdDsSB]|c[0-9_])?' # "\c[0-9_]" actually does work in the tested implementations, but it's not in the spec.
+    - match: '\\(0[0-9]+|[wWdDsSB]|c[0-9_])?' # "\c[0-9_]" actually does work in the tested implementations, but it's not in the spec
       scope: invalid.illegal.js
     - match: '{{line_terminator_sequence}}'
       pop: true
