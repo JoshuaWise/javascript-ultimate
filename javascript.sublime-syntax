@@ -33,7 +33,8 @@ variables:
   ident: '([{{ident_start}}][{{ident_part}}]*)'
   b_before: '(?<![{{ident_part}}])' # word-break before
   b_after: '(?![{{ident_part}}])' # word-break after
-  skip_to: '[{{whitespace}}{{line_terminator}}]*+' # skip to next token
+  to_token: '[{{whitespace}}{{line_terminator}}]*+' # skip to next token
+  non_token: '[{{whitespace}}{{line_terminator}}]++' # matches non-tokens
   end_of_statement: '(;|{{line_terminator_sequence}})'
 
 contexts:
@@ -43,6 +44,7 @@ contexts:
     - include: statement
 
   statement:
+    - match: '{{non_token}}'
     - include: block_statement
     # - include: import_statement
     # - include: export_statement
@@ -56,29 +58,44 @@ contexts:
     - include: goto_statement
     - include: termination_statement
     - include: debugger_statement
-    - include: expression
     - include: labelled_statement
+    - match: '(?=.)'
+      push: expression
+
+  _need_closing_parenthesis:
+    - match: '\)'
+      pop: true
+
+  _need_closing_square_bracket:
+    - match: '\]'
+      pop: true
+
+  _need_closing_curly_bracket:
+    - match: '\}'
+      pop: true
+
+  _need_colon:
+    - match: ':'
+      pop: true
+
+  _end_of_statement:
+    - match: '{{end_of_statement}}'
+      pop: true
+    - match: '[^{{whitespace}}]'
+      scope: invalid.illegal.js
 
   block_statement:
     - match: '\{'
       push:
+        - include: _need_closing_curly_bracket
         - include: statement
-        - match: '\}'
-          pop: true
 
   simple_control_statement:
     - match: '{{b_before}}(if|while|with){{b_after}}'
       scope: keyword.control.js
       push:
-        - match: '[^({{whitespace}}{{line_terminator}}]'
-          scope: invalid.illegal.js
-        # - match: '{{line_terminator_sequence}}' # for less noisy color changes while writing
-        #   pop: true
         - match: '\('
-          set:
-            - include: expression # only one expression should be allowed here
-            - match: '\)'
-              pop: true
+          set: [_need_closing_parenthesis, expression]
 
   do_statement:
     - match: '{{b_before}}do{{b_after}}'
@@ -88,113 +105,92 @@ contexts:
     - match: '{{b_before}}for{{b_after}}'
       scope: keyword.control.js
       push:
-        - match: '[^({{whitespace}}{{line_terminator}}]'
-          scope: invalid.illegal.js
-        # - match: '{{line_terminator_sequence}}' # for less noisy color changes while writing
-        #   pop: true
         - match: '\('
-          set:
-            - include: expression # only one expression, or variable_statement, should be allowed here (also add "for in" and "for of")
-            - match: '\)'
-              pop: true
-            - match: ';'
-              set:
-                - include: expression # only one expression should be allowed here
-                - match: '\)'
-                  pop: true
-                - match: ';'
-                  set:
-                    - include: expression # only one expression should be allowed here
-                    - match: '\)'
-                      pop: true
-                    - match: ';'
-                      scope: invalid.illegal.js
+          set: [_for_statement_first_semicolon, expression]
+
+  _for_statement_first_semicolon:
+    - match: ';'
+      set: [_for_statement_second_semicolon, expression]
+
+  _for_statement_second_semicolon:
+    - match: ';'
+      set: [_end_of_for_statement, expression]
+
+  _end_of_for_statement:
+    - match: '[^){{whitespace}}{{line_terminator}}]'
+      scope: invalid.illegal.js
+    - include: _need_closing_parenthesis
 
   switch_statement:
     - match: '{{b_before}}switch{{b_after}}'
       scope: keyword.control.js
       push:
-        - match: '[^({{whitespace}}{{line_terminator}}]'
-          scope: invalid.illegal.js
         - match: '\('
+          set: [_switch_statement_brackets, expression]
+
+  _switch_statement_brackets:
+    - match: '\)'
+      set:
+        - match: '\{'
           set:
-            - include: expression # only one expression should be allowed here
-            - match: '\)'
-              set:
-                - match: '[^{{{whitespace}}{{line_terminator}}]'
-                  scope: invalid.illegal.js
-                - match: '\{'
-                  set:
-                    - match: '{{b_before}}case{{b_after}}'
-                      scope: keyword.control.js
-                      push:
-                        - match: ':'
-                          scope: invalid.illegal.js
-                          pop: true
-                        - match: '{{skip_to}}(?=[^:])'
-                          set:
-                            - include: expression # only one expression should be allowed here
-                            - match: ':'
-                              pop: true
-                    - match: '{{b_before}}default{{b_after}}'
-                      scope: keyword.control.js
-                      push:
-                        - match: '[^:{{whitespace}}{{line_terminator}}]'
-                          scope: invalid.illegal.js
-                        - match: ':'
-                          pop: true
-                    - include: statement
-                    - match: '\}'
-                      pop: true
+          - match: '{{b_before}}case{{b_after}}'
+            scope: keyword.control.js
+            push:
+              - match: ':'
+                scope: invalid.illegal.js
+                pop: true
+              - match: '{{to_token}}(?=[^:])'
+                set: [_need_colon, expression]
+          - match: '{{b_before}}default{{b_after}}'
+            scope: keyword.control.js
+            push:
+              - match: '[^:{{whitespace}}{{line_terminator}}]'
+                scope: invalid.illegal.js
+              - match: ':'
+                pop: true
+          - include: _need_closing_curly_bracket
+          - include: statement
 
   try_statement:
     - match: '{{b_before}}try{{b_after}}'
       scope: keyword.control.js
       push:
-        - match: '[^{{{whitespace}}{{line_terminator}}]'
-          scope: invalid.illegal.js
         - match: '\{'
           set:
-            - include: statement
             - match: '\}'
               set:
                 - include: _catch_statement
                 - include: _finally_statement
+            - include: statement
 
   _catch_statement:
     - match: '{{b_before}}catch{{b_after}}'
       scope: keyword.control.js
       set:
-        - match: '[^({{whitespace}}{{line_terminator}}]'
-          scope: invalid.illegal.js
         - match: '\('
           set:
-            - match: '{{b_before}}{{ident}}{{b_after}}' # only one ident should be allowed here
-              scope: variable.language.js
+            # TODO
+            # - match: '{{b_before}}{{ident}}{{b_after}}(?!{{to_token}}{{ident}})' # only one ident should be allowed here
+            #   scope: variable.language.js
             - match: '\)'
               set:
-              - match: '[^{{{whitespace}}{{line_terminator}}]'
-                scope: invalid.illegal.js
               - match: '\{'
                 set:
-                  - include: statement
                   - match: '\}'
                     set:
                       - include: _finally_statement
-                      - match: '{{skip_to}}(?!finally($|[^{{ident_part}}]))(?=.)'
+                      - match: '{{to_token}}(?!finally($|[^{{ident_part}}]))(?=.)'
                         pop: true
+                  - include: statement
 
   _finally_statement:
     - match: '{{b_before}}finally{{b_after}}'
       scope: keyword.control.js
       set:
-        - match: '[^{{{whitespace}}{{line_terminator}}]'
-          scope: invalid.illegal.js
         - match: '\{'
           set:
+            - include: _need_closing_curly_bracket
             - include: statement
-            - match: '\}'
-              pop: true
 
   goto_statement:
     - match: '{{b_before}}(break|continue){{b_after}}'
@@ -211,29 +207,30 @@ contexts:
   termination_statement:
     - match: '{{b_before}}(return|throw){{b_after}}'
       scope: keyword.control.js
-      push:
-        - include: expression # only one expression should be allowed here
-        - match: '{{end_of_statement}}'
-          pop: true
+      push: [_end_of_statement, expression]
 
   debugger_statement:
     - match: '{{b_before}}debugger{{b_after}}'
       scope: keyword.control.js
       push: _end_of_statement
 
-  labelled_statement:
-    - match: '{{b_before}}{{ident}}{{b_after}}(?=[{{whitespace}}{{line_terminator}}]*:)' # this doesn't extend through new lines
-      scope: entity.name.section.js
-
-  _end_of_statement:
-    - match: '{{end_of_statement}}'
-      pop: true
-    - match: '[^{{whitespace}}]'
-      scope: invalid.illegal.js
+  labelled_statement: # this doesn't extend through new lines
+    - match: '(?={{b_before}}{{reserved_word}}{{to_token}}:)'
+      push:
+        - match: '({{reserved_word}}){{to_token}}:'
+          captures:
+            1: invalid.illegal.js
+          pop: true
+    - match: '(?={{b_before}}{{ident}}{{to_token}}:)'
+      push:
+        - match: '({{ident}}){{to_token}}:'
+          captures:
+            1: entity.name.section.js
+          pop: true
 
   expression:
+    - match: '{{non_token}}'
     - include: parenthesized_expression
-    - include: conditional_expression
     - include: string_literal
     - include: template_literal
     - include: regular_expression_literal
@@ -242,43 +239,18 @@ contexts:
     # - include: object_literal
     # - include: function_expression
     # - include: class_expression
-    - match: '{{b_before}}(true|false|null|undefined|Infinity|NaN){{b_after}}'
-      scope: constant.language.js
-    - match: '{{b_before}}(this|arguments|super){{b_after}}'
-      scope: variable.language.js
-    - match: '>>>?=?|<<=?|&=|\^=|\|=' # these operators should demand an expression afterwards
-      scope: bitwise-operator.js
-    - match: '--|-=|\+\+|\+=|===?|!==?|<=|>=|&&|\|\||\*=|/=|%=' # these operators should demand an expression afterwards
-      scope: keyword.operator.js
-    - match: '!|%|\*|/|-|\+|=|<|>|{{b_before}}(in|typeof|void|delete|yield|await){{b_after}}' # these operators should demand an expression afterwards
-      scope: keyword.operator.js
-    - match: '&|\^|~|\|' # these operators should demand an expression afterwards
-      scope: bitwise-operator.js
+    - include: constant_or_variable
     - include: new_keyword
     - include: instanceof_keyword
+    - include: unary_operators
+    # - include: illegal_word
     # - include: identifier_reference
-    # - include: bracket_reference_expression
-      #===== help prevent errors =====#
-    # - match: '\.[{{whitespace}}{{line_terminator}}]*{{ident}}{{b_after}}' # this doesn't extend through new lines
-    #   scope: text.js
-    # - match: '\.[{{whitespace}}{{line_terminator}}]*[^{{whitespace}}{{line_terminator}}]+' # this doesn't extend through new lines
-    #   scope: invalid.illegal.js
-    - match: '{{b_before}}{{reserved_word}}{{b_after}}'
-      scope: invalid.illegal.js
+    - match: '(?=.)'
+      pop: true
 
   parenthesized_expression:
     - match: '\('
-      push:
-        - include: expression # only one expression should be allowed here
-        - match: '\)'
-          pop: true
-
-  conditional_expression:
-    - match: '\?' # these operators should demand an expression beforehand
-      push:
-        - include: expression # only one expression should be allowed here
-        - match: ':' # these operators should demand an expression afterwards
-          pop: true
+      set: [secondary_expression, _need_closing_parenthesis, expression]
 
   string_literal:
     - match: '(''|")(use strict)(\1)'
@@ -287,9 +259,10 @@ contexts:
         1: punctuation.definition.string.begin.js
         2: comment.directive.js
         3: punctuation.definition.string.end.js
+      set: secondary_expression
     - match: '"'
       scope: punctuation.definition.string.begin.js
-      push:
+      set:
         - meta_include_prototype: false
         - meta_scope: string.quoted.js
         - include: _common_string_escape_sequences
@@ -300,13 +273,13 @@ contexts:
             - include: _common_string_escape_sequences
             - match: '"'
               scope: invalid.illegal.js
-              pop: true
+              set: secondary_expression
         - match: '"'
           scope: punctuation.definition.string.end.js
-          pop: true
+          set: secondary_expression
     - match: ''''
       scope: punctuation.definition.string.begin.js
-      push:
+      set:
         - meta_include_prototype: false
         - meta_scope: string.quoted.js
         - include: _common_string_escape_sequences
@@ -317,10 +290,10 @@ contexts:
             - include: _common_string_escape_sequences
             - match: ''''
               scope: invalid.illegal.js
-              pop: true
+              set: secondary_expression
         - match: ''''
           scope: punctuation.definition.string.end.js
-          pop: true
+          set: secondary_expression
 
   _common_string_escape_sequences:
     - match: '(\\){{line_terminator_sequence}}'
@@ -335,7 +308,7 @@ contexts:
   template_literal:
     - match: '`'
       scope: punctuation.definition.string.begin.js
-      push: _template_literal_contents
+      set: _template_literal_contents
 
   _template_literal_contents:
     - meta_include_prototype: false
@@ -345,19 +318,20 @@ contexts:
     - include: _common_string_escape_sequences
     - match: '\$\{'
       scope: variable.language.js
-      set:
-        - include: expression # only one expression should be allowed here
-        - match: '\}'
-          scope: variable.language.js
-          set: _template_literal_contents
+      set: [_template_literal_close_interpolation, expression]
     - match: '`'
       scope: punctuation.definition.string.end.js
-      pop: true
+      set: secondary_expression
+
+  _template_literal_close_interpolation:
+    - match: '\}'
+      scope: variable.language.js
+      set: _template_literal_contents
 
   regular_expression_literal:
     - match: '/'
       scope: string.regexp.js punctuation.definition.string.begin.js
-      push: _regular_expression_literal_contents
+      set: _regular_expression_literal_contents
 
   _regular_expression_literal_contents:
     - meta_include_prototype: false
@@ -377,13 +351,13 @@ contexts:
       set: _regular_expression_literal_class
     - match: '{{line_terminator_sequence}}'
       scope: invalid.illegal.js
-      pop: true
+      set: secondary_expression
     - match: '/(([gimuy]*?(?''option''[gimuy])[gimuy]*?\k''option'')|[gimuy]*)({{ident}}|\\)?'
-      scope: string.regexp.js punctuation.definition.string.end.js
+      scope: punctuation.definition.string.end.js
       captures:
         2: invalid.illegal.js
         4: invalid.illegal.js
-      pop: true
+      set: secondary_expression
 
   _regular_expression_literal_class:
     - meta_include_prototype: false
@@ -394,8 +368,8 @@ contexts:
       scope: constant.character.escape.js
     - match: '\\(0[0-9]+|[wWdDsSB]|c[0-9_])?' # "\c[0-9_]" actually does work in the tested implementations, but it's not in the spec
       scope: invalid.illegal.js
-    - match: '{{line_terminator_sequence}}'
-      pop: true
+    - match: '(?={{line_terminator_sequence}})'
+      set: secondary_expression
     - match: '-?(\])'
       captures:
         1: punctuation.definition.string.end.js
@@ -406,53 +380,62 @@ contexts:
   numeric_literal:
     - match: '{{b_before}}((0|[1-9][0-9]*)(\.[0-9]*)?{{exp}}|\.[0-9]+{{exp}}){{b_after}}'
       scope: constant.numeric.decimal.js
+      set: secondary_expression
     - match: '{{b_before}}0[xX]\h+{{b_after}}'
       scope: constant.numeric.hexadecimal.js
+      set: secondary_expression
     - match: '{{b_before}}0[bB][01]+{{b_after}}'
       scope: constant.numeric.binary.js
+      set: secondary_expression
     - match: '{{b_before}}0[oO][0-7]+{{b_after}}'
       scope: constant.numeric.octal.js
+      set: secondary_expression
 
-  new_keyword: # is this feature's color changes too noisy while typing?
+  constant_or_variable:
+    - match: '{{b_before}}(true|false|null|undefined|Infinity|NaN){{b_after}}'
+      scope: constant.language.js
+      set: secondary_expression
+    - match: '{{b_before}}(this|arguments|super){{b_after}}'
+      scope: variable.language.js
+      set: secondary_expression
+
+  new_keyword:
     - match: '{{b_before}}new{{b_after}}'
       scope: keyword.operator.js
-      push:
+      set:
         - match: '\.'
           scope: keyword.operator.js
           set:
             - match: '{{b_before}}target{{b_after}}'
               scope: support.class.js
-              pop: true
+              set: secondary_expression
             - match: '{{b_before}}(t|ta|tar|targ|targe){{b_after}}'
-              pop: true
+              set: secondary_expression
             - match: '{{b_before}}{{ident}}{{b_after}}'
               scope: invalid.illegal.js
-              pop: true
+              set: secondary_expression
             - match: '[^{{whitespace}}{{line_terminator}}]'
               scope: invalid.illegal.js
-              pop: true
+              set: secondary_expression
         - include: _class_name_shallow
-        - match: '{{skip_to}}([^(.{{ident_start}}])'
+        - match: '{{to_token}}([^(.{{ident_start}}])'
           captures:
             1: invalid.illegal.js
-          pop: true
+          set: secondary_expression
 
-  instanceof_keyword: # is this feature's color changes too noisy while typing?
+  instanceof_keyword:
     - match: '{{b_before}}instanceof{{b_after}}'
       scope: keyword.operator.js
-      push:
+      set:
         - include: _class_name_shallow
-        - match: '{{skip_to}}([^({{ident_start}}])'
+        - match: '{{to_token}}([^({{ident_start}}])'
           captures:
             1: invalid.illegal.js
-          pop: true
+          set: secondary_expression
 
   _class_name_shallow:
     - match: '\('
-      set:
-        - include: expression # only one expression should be allowed here
-        - match: '\)'
-          set: _class_name_deep
+      set: [_class_name_close_parenthesis, expression]
     - match: '{{b_before}}{{ident}}{{b_after}}'
       scope: support.class.js
       set: _class_name_deep
@@ -465,14 +448,55 @@ contexts:
           scope: support.class.js
           set: _class_name_deep
     - match: '\('
-      set:
-        - include: expression # only one expression should be allowed here
-        - match: '\)'
-          set: _class_name_deep
+      set: [_class_name_close_parenthesis, expression]
     - match: '\['
-      set:
-        - include: expression # only one expression should be allowed here
-        - match: '\]'
-          set: _class_name_deep
-    - match: '{{skip_to}}(?=[^\[(.])'
+      set: [_class_name_close_square_brackets, expression]
+    - match: '{{to_token}}(?=[^\[(.])'
+      set: secondary_expression
+
+  _class_name_close_parenthesis:
+    - match: '\)'
+      set: _class_name_deep
+
+  _class_name_close_square_brackets:
+    - match: '\]'
+      set: _class_name_deep
+
+  unary_operators:
+    - match: '!|--?|\+\+?|{{b_before}}(typeof|void|delete|yield|await){{b_after}}'
+      scope: keyword.operator.js
+
+  illegal_word:
+    - match: '{{b_before}}{{reserved_word}}{{b_after}}'
+      scope: invalid.illegal.js
+      set: secondary_expression
+
+  secondary_expression:
+    - match: '{{non_token}}'
+    - match: '(?=.)'
       pop: true
+  #   # - include: conditional_expression
+  #   - match: '>>>?=?|<<=?|&=|\^=|\|=' # these operators should demand an expression afterwards
+  #     scope: bitwise-operator.js
+  #   - match: '--|-=|\+\+|\+=|===?|!==?|<=|>=|&&|\|\||\*=|/=|%=' # these operators should demand an expression afterwards
+  #     scope: keyword.operator.js
+  #   - match: '!|%|\*|/|-|\+|=|<|>|{{b_before}}(in|typeof|void|delete|yield|await){{b_after}}' # these operators should demand an expression afterwards
+  #     scope: keyword.operator.js
+  #   - match: '&|\^|~|\|' # these operators should demand an expression afterwards
+  #     scope: bitwise-operator.js
+  #   # - include: identifier_reference
+  #   # - include: bracket_reference_expression
+  #     #===== help prevent errors =====#
+  #   # - match: '\.[{{whitespace}}{{line_terminator}}]*{{ident}}{{b_after}}' # this doesn't extend through new lines
+  #   #   scope: text.js
+  #   # - match: '\.[{{whitespace}}{{line_terminator}}]*[^{{whitespace}}{{line_terminator}}]+' # this doesn't extend through new lines
+  #   #   scope: invalid.illegal.js
+  #   - match: '{{b_before}}{{reserved_word}}{{b_after}}'
+  #     scope: invalid.illegal.js
+
+  # conditional_expression:
+  #   - match: '\?' # these operators should demand an expression beforehand
+  #     push:
+  #       - include: expression # only one expression should be allowed here
+  #       - match: ':' # these operators should demand an expression afterwards
+  #         pop: true
