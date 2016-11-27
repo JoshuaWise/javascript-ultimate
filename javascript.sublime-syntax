@@ -233,6 +233,7 @@ contexts:
 
   expression:
     - include: parenthesized_expression
+    - include: conditional_expression
     - include: string_literal
     - include: template_literal
     - include: regular_expression_literal
@@ -245,6 +246,14 @@ contexts:
       scope: constant.language.js
     - match: '{{b_before}}(this|arguments|super){{b_after}}'
       scope: variable.language.js
+    - match: '>>>?=?|<<=?|&=|\^=|\|=' # these operators should demand an expression afterwards
+      scope: bitwise-operator.js
+    - match: '--|-=|\+\+|\+=|===?|!==?|<=|>=|&&|\|\||\*=|/=|%=' # these operators should demand an expression afterwards
+      scope: keyword.operator.js
+    - match: '!|%|\*|/|-|\+|=|<|>|{{b_before}}(in|typeof|void|delete|yield|await){{b_after}}' # these operators should demand an expression afterwards
+      scope: keyword.operator.js
+    - match: '&|\^|~|\|' # these operators should demand an expression afterwards
+      scope: bitwise-operator.js
     - include: new_keyword
     - include: instanceof_keyword
     # - include: identifier_reference
@@ -262,6 +271,13 @@ contexts:
       push:
         - include: expression # only one expression should be allowed here
         - match: '\)'
+          pop: true
+
+  conditional_expression:
+    - match: '\?' # these operators should demand an expression beforehand
+      push:
+        - include: expression # only one expression should be allowed here
+        - match: ':' # these operators should demand an expression afterwards
           pop: true
 
   string_literal:
