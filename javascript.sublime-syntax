@@ -33,7 +33,7 @@ variables:
   ident: '([{{ident_start}}][{{ident_part}}]*)'
   b_before: '(?<![{{ident_part}}])' # word-break before
   b_after: '(?![{{ident_part}}])' # word-break after
-  skip_to: '[{{whitespace}}{{line_terminator}}]*' # skip to next token
+  skip_to: '[{{whitespace}}{{line_terminator}}]*+' # skip to next token
   end_of_statement: '(;|{{line_terminator_sequence}})'
 
 contexts:
@@ -128,11 +128,14 @@ contexts:
                     - match: '{{b_before}}case{{b_after}}'
                       scope: keyword.control.js
                       push:
-                        - match: '(?<=case){{skip_to}}:' # this doesn't extend through new lines
-                          scope: invalid.illegal.js
-                        - include: expression # only one expression should be allowed here
                         - match: ':'
+                          scope: invalid.illegal.js
                           pop: true
+                        - match: '{{skip_to}}(?=[^:])'
+                          set:
+                            - include: expression # only one expression should be allowed here
+                            - match: ':'
+                              pop: true
                     - match: '{{b_before}}default{{b_after}}'
                       scope: keyword.control.js
                       push:
@@ -178,7 +181,7 @@ contexts:
                   - match: '\}'
                     set:
                       - include: _finally_statement
-                      - match: '{{skip_to}}+(?!finally($|[^{{ident_part}}]))(?=.)'
+                      - match: '{{skip_to}}(?!finally($|[^{{ident_part}}]))(?=.)'
                         pop: true
 
   _finally_statement:
@@ -219,7 +222,7 @@ contexts:
       push: _end_of_statement
 
   labelled_statement:
-    - match: '{{b_before}}{{ident}}{{b_after}}(?={{skip_to}}:)' # this doesn't extend through new lines
+    - match: '{{b_before}}{{ident}}{{b_after}}(?=[{{whitespace}}{{line_terminator}}]*:)' # this doesn't extend through new lines
       scope: entity.name.section.js
 
   _end_of_statement:
@@ -229,7 +232,7 @@ contexts:
       scope: invalid.illegal.js
 
   expression:
-    # - include: parenthesized_expression
+    - include: parenthesized_expression
     - include: string_literal
     - include: template_literal
     - include: regular_expression_literal
@@ -242,16 +245,23 @@ contexts:
       scope: constant.language.js
     - match: '{{b_before}}(this|arguments|super){{b_after}}'
       scope: variable.language.js
-    - match: '{{b_before}}(new{{skip_to}}\.{{skip_to}}target){{b_after}}' # this doesn't extend through new lines
-      scope: support.class.js
+    - include: new_keyword
     # - include: identifier_reference
+    # - include: bracket_reference_expression
       #===== help prevent errors =====#
-    # - match: '\.{{skip_to}}{{ident}}{{b_after}}' # this doesn't extend through new lines
+    # - match: '\.[{{whitespace}}{{line_terminator}}]*{{ident}}{{b_after}}' # this doesn't extend through new lines
     #   scope: text.js
-    # - match: '\.{{skip_to}}[^{{whitespace}}{{line_terminator}}]+' # this doesn't extend through new lines
+    # - match: '\.[{{whitespace}}{{line_terminator}}]*[^{{whitespace}}{{line_terminator}}]+' # this doesn't extend through new lines
     #   scope: invalid.illegal.js
     - match: '{{b_before}}{{reserved_word}}{{b_after}}'
       scope: invalid.illegal.js
+
+  parenthesized_expression:
+    - match: '\('
+      push:
+        - include: expression # only one expression should be allowed here
+        - match: '\)'
+          pop: true
 
   string_literal:
     - match: '(''|")(use strict)(\1)'
@@ -319,7 +329,7 @@ contexts:
     - match: '\$\{'
       scope: variable.language.js
       set:
-        - include: expression
+        - include: expression # only one expression should be allowed here
         - match: '\}'
           scope: variable.language.js
           set: _template_literal_contents
@@ -385,3 +395,44 @@ contexts:
       scope: constant.numeric.binary.js
     - match: '{{b_before}}0[oO][0-7]+{{b_after}}'
       scope: constant.numeric.octal.js
+
+  new_keyword: # is this feature's color changes too noisy while typing?
+    - match: '{{b_before}}new{{b_after}}'
+      scope: keyword.operator.js
+      push:
+        - match: '\.'
+          scope: keyword.operator.js
+          set:
+            - match: '{{b_before}}target{{b_after}}'
+              scope: support.class.js
+              pop: true
+        - match: '\('
+          set:
+            - include: expression # only one expression should be allowed here
+            - match: '\)'
+              set: _new_keyword_deep
+        - match: '{{b_before}}{{ident}}{{b_after}}'
+          scope: support.class.js
+          set: _new_keyword_deep
+        - match: '{{skip_to}}(?=[^(.{{ident_start}}])'
+          pop: true
+
+  _new_keyword_deep:
+    - match: '\.'
+      scope: support.class.js
+      set:
+        - match: '{{b_before}}{{ident}}{{b_after}}'
+          scope: support.class.js
+          set: _new_keyword_deep
+    - match: '\('
+      set:
+        - include: expression # only one expression should be allowed here
+        - match: '\)'
+          set: _new_keyword_deep
+    - match: '\['
+      set:
+        - include: expression # only one expression should be allowed here
+        - match: '\]'
+          set: _new_keyword_deep
+    - match: '{{skip_to}}(?=[^\[(.])'
+      pop: true
