@@ -21,6 +21,8 @@ variables:
   # Low-level JavaScript categories
   exp: '([eE][+-]?[0-9]+)?'
   line_terminator_sequence: '(\x{000d}\x{000a}|[{{line_terminator}}])'
+  common_regexp_escape_sequences: '({{hex_escape_sequence}}|{{unicode_escape_sequence}}|c[a-zA-Z]|0(?![0-9])|[1-9][0-9]*)'
+  common_regexp_operators: (\^|\$|\\|\.|\*|\+|\?|\(|\)|\[|\]|\{|\}|\||\/)
 
   # High-level JavaScript categories
   keyword: '(break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|function|if|import|in|instanceof|new|return|super|switch|this|throw|try|typeof|var|void|while|with|yield|let|static)'
@@ -335,9 +337,9 @@ contexts:
   _regular_expression_literal_contents:
     - meta_include_prototype: false
     - meta_content_scope: string.regexp.js
-    - match: '\\([dDsSwWfnrtvbB]|{{hex_escape_sequence}}|{{unicode_escape_sequence}}|c[a-zA-Z]|0(?![0-9])|[1-9][0-9]*)'
+    - match: '\\([dDsSwWfnrtvbB]|{{common_regexp_escape_sequences}})'
       scope: constant.character.escape.js regexp-operator.js
-    - match: '\\(\^|\$|\\|\.|\*|\+|\?|\(|\)|\[|\]|\{|\}|\||\/)'
+    - match: '\\{{common_regexp_operators}}'
       scope: constant.character.escape.js
     - match: '\^|\$|\||\?|\*|\+|\.|\{[0-9]+(,[0-9]*)?\}|\((\?\!|\?=|\?:)?|\)'
       scope: regexp-operator.js
@@ -361,14 +363,20 @@ contexts:
   _regular_expression_literal_class:
     - meta_include_prototype: false
     - meta_content_scope: string.regexp.js string.regexp.characterclass.js
-    # - match: '\\[^{{line_terminator}}]'
-    #   scope: constant.character.escape.js
+    - match: '\\([bfnrtv]|{{common_regexp_escape_sequences}})'
+      scope: constant.character.escape.js regexp-operator.js
+    - match: '\\(-|{{common_regexp_operators}})'
+      scope: constant.character.escape.js
+    - match: '\\(0[0-9]+|[wWdDsSB]|c[0-9_])?' # "\c[0-9_]" actually does work in the tested implementations, but it's not in the spec.
+      scope: invalid.illegal.js
     - match: '{{line_terminator_sequence}}'
       pop: true
     - match: '-?(\])'
       captures:
         1: punctuation.definition.string.end.js
       set: _regular_expression_literal_contents
+    - match: '-'
+      scope: regexp-operator.js
 
   numeric_literal:
     - match: '{{b_before}}((0|[1-9][0-9]*)(\.[0-9]*)?{{exp}}|\.[0-9]+{{exp}}){{b_after}}'
