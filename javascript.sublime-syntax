@@ -33,7 +33,7 @@ variables:
   ident: '([{{ident_start}}][{{ident_part}}]*)'
   b_before: '(?<![{{ident_part}}])' # word-break before
   b_after: '(?![{{ident_part}}])' # word-break after
-  skip_to: '[{{whitespace}}{{line_terminator}}]*' # skip to next token (why doesn't this extend through new lines?)
+  skip_to: '[{{whitespace}}{{line_terminator}}]*' # skip to next token
   end_of_statement: '(;|{{line_terminator_sequence}})'
 
 contexts:
@@ -128,7 +128,7 @@ contexts:
                     - match: '{{b_before}}case{{b_after}}'
                       scope: keyword.control.js
                       push:
-                        - match: '(?<=case){{skip_to}}:'
+                        - match: '(?<=case){{skip_to}}:' # this doesn't extend through new lines
                           scope: invalid.illegal.js
                         - include: expression # only one expression should be allowed here
                         - match: ':'
@@ -219,7 +219,7 @@ contexts:
       push: _end_of_statement
 
   labelled_statement:
-    - match: '{{b_before}}{{ident}}{{b_after}}(?={{skip_to}}:)'
+    - match: '{{b_before}}{{ident}}{{b_after}}(?={{skip_to}}:)' # this doesn't extend through new lines
       scope: entity.name.section.js
 
   _end_of_statement:
@@ -242,13 +242,13 @@ contexts:
       scope: constant.language.js
     - match: '{{b_before}}(this|arguments|super){{b_after}}'
       scope: variable.language.js
-    - match: '{{b_before}}(new{{skip_to}}\.{{skip_to}}target){{b_after}}'
+    - match: '{{b_before}}(new{{skip_to}}\.{{skip_to}}target){{b_after}}' # this doesn't extend through new lines
       scope: support.class.js
     # - include: identifier_reference
       #===== help prevent errors =====#
-    # - match: '\.{{skip_to}}{{ident}}{{b_after}}'
+    # - match: '\.{{skip_to}}{{ident}}{{b_after}}' # this doesn't extend through new lines
     #   scope: text.js
-    # - match: '\.{{skip_to}}[^{{whitespace}}{{line_terminator}}]+'
+    # - match: '\.{{skip_to}}[^{{whitespace}}{{line_terminator}}]+' # this doesn't extend through new lines
     #   scope: invalid.illegal.js
     - match: '{{b_before}}{{reserved_word}}{{b_after}}'
       scope: invalid.illegal.js
