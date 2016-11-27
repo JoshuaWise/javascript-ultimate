@@ -446,6 +446,8 @@ contexts:
   unary_operators:
     - match: '!|--?|\+\+?|{{b_before}}(typeof|void|delete|yield|await){{b_after}}'
       scope: keyword.operator.js
+    - match: '~'
+      scope: bitwise-operator.js
 
   illegal_word:
     - match: '{{b_before}}{{reserved_word}}{{b_after}}'
