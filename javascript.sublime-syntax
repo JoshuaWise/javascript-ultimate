@@ -34,7 +34,7 @@ variables:
   b_before: '(?<![{{ident_part}}])' # word-break before
   b_after: '(?![{{ident_part}}])' # word-break after
   to_token: '[{{whitespace}}{{line_terminator}}]*+' # skip to next token
-  non_token: '[{{whitespace}}{{line_terminator}}]++' # matches non-tokens
+  skip_whitespace: '[{{whitespace}}]++'
   end_of_statement: '(;|{{line_terminator_sequence}})'
 
 contexts:
@@ -44,7 +44,7 @@ contexts:
     - include: statement
 
   statement:
-    - match: '{{non_token}}'
+    - match: '{{skip_whitespace}}'
     - include: block_statement
     # - include: import_statement
     # - include: export_statement
@@ -59,7 +59,7 @@ contexts:
     - include: termination_statement
     - include: debugger_statement
     - include: labelled_statement
-    - match: '(?=.)'
+    - match: '(?=[^{{line_terminator}}])'
       push: expression
 
   _need_closing_parenthesis:
@@ -179,7 +179,7 @@ contexts:
                   - match: '\}'
                     set:
                       - include: _finally_statement
-                      - match: '{{to_token}}(?!finally($|[^{{ident_part}}]))(?=.)'
+                      - match: '{{to_token}}(?!finally($|[^{{ident_part}}]))'
                         pop: true
                   - include: statement
 
@@ -231,7 +231,7 @@ contexts:
       scope: invalid.illegal.js
 
   expression:
-    - match: '{{non_token}}'
+    - match: '{{skip_whitespace}}'
     - include: parenthesized_expression
     - include: string_literal
     - include: template_literal
@@ -246,7 +246,7 @@ contexts:
     - include: unary_operators
     # - include: illegal_word
     # - include: identifier_reference
-    - match: '(?=.)'
+    - match: ''
       pop: true
 
   parenthesized_expression:
@@ -455,9 +455,9 @@ contexts:
       set: secondary_expression
 
   secondary_expression:
-    - match: '{{non_token}}'
+    - match: '{{skip_whitespace}}'
     # - include: instanceof_keyword
-    - match: '(?=.)'
+    - match: ''
       pop: true
   #   # - include: conditional_expression
   #   - match: '>>>?=?|<<=?|&=|\^=|\|=' # these operators should demand an expression afterwards
