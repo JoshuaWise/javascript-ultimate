@@ -575,6 +575,10 @@ contexts:
     #   set:
     #     - include: _need_closing_curly_bracket
     #     - match: '{{b_before}}{{ident}}{{b_after}}'
+          # identifier
+          # numeric literal
+          # string literal
+          # [computed property name]
     - match: '{{b_before}}{{ident}}{{b_after}}' # only one ident should be allowed here (also allow destructuring)
       scope: variable.language.js
       pop: true
