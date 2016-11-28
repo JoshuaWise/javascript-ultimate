@@ -429,11 +429,13 @@ contexts:
         - include: _class_name_shallow
 
   _class_name_shallow:
+    - match: '\('
+      set: [_class_name_deep, _need_closing_parenthesis, optional_expression]
     - match: '{{b_before}}{{ident}}{{b_after}}'
       scope: support.class.js
       set: _class_name_deep
     - match: '{{anything}}'
-      set: [_class_name_deep, expression]
+      set: expression
 
   _class_name_deep:
     - match: '\.'
@@ -442,9 +444,12 @@ contexts:
         - match: '{{b_before}}{{ident}}{{b_after}}'
           scope: support.class.js
           set: _class_name_deep
+        - match: '{{b_before}}[{{ident_part}}]+{{b_after}}'
+          scope: invalid.illegal.js
+          set: _class_name_deep
     - match: '\['
       set: [_class_name_deep, _need_closing_square_bracket, optional_expression]
-    - match: '{{to_token}}(?=[^\[(.])'
+    - match: '(?=[^\[.])'
       set: secondary_expression
 
   unary_operators: # TODO: yield should behave like return/throw
@@ -479,11 +484,6 @@ contexts:
     - include: conditional_expression
     - match: '{{anything}}'
       pop: true
-      #===== help prevent errors =====#
-    # - match: '\.[{{whitespace}}{{line_terminator}}]*{{ident}}{{b_after}}' # this doesn't extend through new lines
-    #   scope: text.js
-    # - match: '\.[{{whitespace}}{{line_terminator}}]*[^{{whitespace}}{{line_terminator}}]+' # this doesn't extend through new lines
-    #   scope: invalid.illegal.js
 
   instanceof_keyword:
     - match: '{{b_before}}instanceof{{b_after}}'
@@ -514,7 +514,14 @@ contexts:
   dot_reference:
     - match: '\.'
       set:
-        - include: identifier_reference
+        - match: '{{b_before}}prototype{{b_after}}'
+          scope: constant.language.js
+          set: secondary_expression
+        - match: '{{b_before}}constructor{{b_after}}'
+          scope: support.class.js
+          set: secondary_expression
+        - match: '{{b_before}}{{ident}}{{b_after}}'
+          set: secondary_expression
         - include: invalid_identifier
 
   square_bracket_reference:
