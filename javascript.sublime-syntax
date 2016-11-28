@@ -205,7 +205,7 @@ contexts:
           set: _end_of_statement
         - include: _end_of_statement
 
-  termination_statement:
+  termination_statement: # TODO: these need more work
     - match: '{{b_before}}(return|throw){{b_after}}'
       scope: keyword.control.js
       push: [_end_of_statement, optional_expression]
@@ -447,7 +447,7 @@ contexts:
     - match: '{{to_token}}(?=[^\[(.])'
       set: secondary_expression
 
-  unary_operators:
+  unary_operators: # TODO: yield should behave like return/throw
     - match: '!|--?|\+\+?|{{b_before}}(typeof|void|delete|yield|await){{b_after}}'
       scope: keyword.operator.js
       set: expression
