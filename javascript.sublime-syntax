@@ -245,8 +245,8 @@ contexts:
     - include: constant_or_variable
     - include: new_keyword
     - include: unary_operators
-    # - include: illegal_word
-    # - include: identifier_reference
+    - include: illegal_word
+    - include: identifier_reference
 
   optional_expression:
     - include: expression
@@ -458,6 +458,10 @@ contexts:
   illegal_word:
     - match: '{{b_before}}{{reserved_word}}{{b_after}}'
       scope: invalid.illegal.js
+      set: secondary_expression
+
+  identifier_reference:
+    - match: '{{b_before}}{{ident}}{{b_after}}'
       set: secondary_expression
 
   secondary_expression:
