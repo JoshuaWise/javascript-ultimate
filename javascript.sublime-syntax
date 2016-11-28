@@ -47,6 +47,7 @@ contexts:
   statement:
     - match: '{{non_token}}'
     - include: block_statement
+    # TODO:
     # - include: import_statement
     # - include: export_statement
     # - include: variable_statement
@@ -238,6 +239,7 @@ contexts:
     - include: template_literal
     - include: regular_expression_literal
     - include: numeric_literal
+    # TODO:
     # - include: array_literal
     # - include: object_literal
     # - include: function_expression
@@ -453,7 +455,7 @@ contexts:
       set: secondary_expression
 
   unary_operators: # TODO: yield should behave like return/throw
-    - match: '!|--?|\+\+?|\.\.\.|{{b_before}}(typeof|void|delete|yield|await){{b_after}}'
+    - match: '!|--?|\+\+?|\.\.\.|{{b_before}}(typeof|void|delete|yield{{skip_to}}\*|await){{b_after}}'
       scope: keyword.operator.js
       set: expression
     - match: '~'
