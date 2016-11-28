@@ -39,6 +39,29 @@ variables:
   anything: (?=[\s\S])
 
 contexts:
+  prototype:
+    - match: '(//)[^{{line_terminator}}]*+{{line_terminator_sequence}}?'
+      scope: comment.line.double-slash.js
+      captures:
+        1: punctuation.definition.comment.js
+    - match: '/\*\*(?!/)'
+      scope: punctuation.definition.comment.js
+      push:
+        - meta_scope: comment.block.documentation.js
+        - match: '\*/'
+          scope: punctuation.definition.comment.js
+          pop: true
+        - match: '^{{to_token}}\*{{to_token}}(@[^{{whitespace}}{{line_terminator}}]++)'
+          captures:
+            1: keyword.other.documentation.custom.js
+    - match: '/\*'
+      scope: punctuation.definition.comment.js
+      push:
+        - meta_scope: comment.block.js
+        - match: '\*/'
+          scope: punctuation.definition.comment.js
+          pop: true
+
   main:
     - match: '^#!/usr/bin/env node([{{whitespace}}].*)?(?={{line_terminator_sequence}}|$)'
       scope: comment.line.shebang.js
@@ -455,7 +478,7 @@ contexts:
       set: secondary_expression
 
   unary_operators: # TODO: yield should behave like return/throw
-    - match: '!|--?|\+\+?|\.\.\.|{{b_before}}(typeof|void|delete|yield{{skip_to}}\*|await){{b_after}}'
+    - match: '!|--?|\+\+?|\.\.\.|{{b_before}}(typeof|void|delete|yield{{to_token}}\*|await){{b_after}}'
       scope: keyword.operator.js
       set: expression
     - match: '~'
