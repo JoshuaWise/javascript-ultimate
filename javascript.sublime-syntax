@@ -247,6 +247,7 @@ contexts:
     - include: unary_operators
     - include: illegal_word
     - include: identifier_reference
+    - include: invalid_identifier
 
   optional_expression:
     - include: expression
@@ -383,7 +384,7 @@ contexts:
       scope: regexp-operator.js
 
   numeric_literal:
-    - match: '{{b_before}}((0|[1-9][0-9]*)(\.[0-9]*)?{{exp}}|\.[0-9]+{{exp}}){{b_after}}'
+    - match: '{{b_before}}((0|[1-9][0-9]*)(\.(?![0-9eE])|(\.[0-9]*)?{{exp}}{{b_after}})|\.[0-9]+{{exp}}{{b_after}})'
       scope: constant.numeric.decimal.js
       set: secondary_expression
     - match: '{{b_before}}0[xX]\h+{{b_after}}'
@@ -461,6 +462,11 @@ contexts:
     - match: '{{b_before}}{{ident}}{{b_after}}'
       set: secondary_expression
 
+  invalid_identifier:
+    - match: '{{b_before}}[{{ident_part}}]+{{b_after}}'
+      scope: invalid.illegal.js
+      set: secondary_expression
+
   secondary_expression:
     - match: '{{non_token}}'
     - include: instanceof_keyword
@@ -506,8 +512,8 @@ contexts:
   dot_reference:
     - match: '\.'
       set:
-        - match: '{{b_before}}{{ident}}{{b_after}}'
-          set: secondary_expression
+        - include: identifier_reference
+        - include: invalid_identifier
 
   square_bracket_reference:
     - match: '\['
