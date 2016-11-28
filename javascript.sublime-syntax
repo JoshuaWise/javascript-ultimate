@@ -579,6 +579,7 @@ contexts:
           # numeric literal
           # string literal
           # [computed property name]
+    # - match: '\['
     - match: '{{b_before}}{{ident}}{{b_after}}' # only one ident should be allowed here (also allow destructuring)
       scope: variable.language.js
       pop: true
