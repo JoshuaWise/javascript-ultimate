@@ -96,7 +96,7 @@ contexts:
       scope: keyword.control.js
       push:
         - match: '\('
-          set: [_need_closing_parenthesis, expression]
+          set: [_need_closing_parenthesis, optional_expression]
 
   do_statement:
     - match: '{{b_before}}do{{b_after}}'
@@ -107,15 +107,15 @@ contexts:
       scope: keyword.control.js
       push:
         - match: '\('
-          set: [_for_statement_first_semicolon, expression]
+          set: [_for_statement_first_semicolon, optional_expression]
 
   _for_statement_first_semicolon:
     - match: ';'
-      set: [_for_statement_second_semicolon, expression]
+      set: [_for_statement_second_semicolon, optional_expression]
 
   _for_statement_second_semicolon:
     - match: ';'
-      set: [_end_of_for_statement, expression]
+      set: [_end_of_for_statement, optional_expression]
 
   _end_of_for_statement:
     - match: '[^){{whitespace}}{{line_terminator}}]'
@@ -127,7 +127,7 @@ contexts:
       scope: keyword.control.js
       push:
         - match: '\('
-          set: [_switch_statement_brackets, expression]
+          set: [_switch_statement_brackets, optional_expression]
 
   _switch_statement_brackets:
     - match: '\)'
@@ -141,7 +141,7 @@ contexts:
                 scope: invalid.illegal.js
                 pop: true
               - match: '{{to_token}}(?=[^:])'
-                set: [_need_colon, expression]
+                set: [_need_colon, optional_expression]
           - match: '{{b_before}}default{{b_after}}'
             scope: keyword.control.js
             push:
@@ -208,7 +208,7 @@ contexts:
   termination_statement:
     - match: '{{b_before}}(return|throw){{b_after}}'
       scope: keyword.control.js
-      push: [_end_of_statement, expression]
+      push: [_end_of_statement, optional_expression]
 
   debugger_statement:
     - match: '{{b_before}}debugger{{b_after}}'
@@ -247,12 +247,15 @@ contexts:
     - include: unary_operators
     # - include: illegal_word
     # - include: identifier_reference
+
+  optional_expression:
+    - include: expression
     - match: '{{anything}}'
       pop: true
 
   parenthesized_expression:
     - match: '\('
-      push: [secondary_expression, _need_closing_parenthesis, expression]
+      set: [secondary_expression, _need_closing_parenthesis, optional_expression]
 
   string_literal:
     - match: '(''|")(use strict)(\1)'
@@ -320,7 +323,7 @@ contexts:
     - include: _common_string_escape_sequences
     - match: '\$\{'
       scope: variable.language.js
-      set: [_template_literal_close_interpolation, expression]
+      set: [_template_literal_close_interpolation, optional_expression]
     - match: '`'
       scope: punctuation.definition.string.end.js
       set: secondary_expression
@@ -427,7 +430,7 @@ contexts:
 
   _class_name_shallow:
     - match: '\('
-      set: [_class_name_deep, _need_closing_parenthesis, expression]
+      set: [_class_name_deep, _need_closing_parenthesis, optional_expression]
     - match: '{{b_before}}{{ident}}{{b_after}}'
       scope: support.class.js
       set: _class_name_deep
@@ -440,15 +443,17 @@ contexts:
           scope: support.class.js
           set: _class_name_deep
     - match: '\['
-      set: [_class_name_deep, _need_closing_square_bracket, expression]
+      set: [_class_name_deep, _need_closing_square_bracket, optional_expression]
     - match: '{{to_token}}(?=[^\[(.])'
       set: secondary_expression
 
   unary_operators:
     - match: '!|--?|\+\+?|{{b_before}}(typeof|void|delete|yield|await){{b_after}}'
       scope: keyword.operator.js
+      set: expression
     - match: '~'
       scope: bitwise-operator.js
+      set: expression
 
   illegal_word:
     - match: '{{b_before}}{{reserved_word}}{{b_after}}'
