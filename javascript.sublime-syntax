@@ -463,38 +463,55 @@ contexts:
 
   secondary_expression:
     - match: '{{non_token}}'
-    # - include: instanceof_keyword
+    - include: instanceof_keyword
+    - include: binary_operators
+    - include: dot_reference
+    - include: square_bracket_reference
+    - include: conditional_expression
     - match: '{{anything}}'
       pop: true
-  #   # - include: conditional_expression
-  #   - match: '>>>?=?|<<=?|&=|\^=|\|=' # these operators should demand an expression afterwards
-  #     scope: bitwise-operator.js
-  #   - match: '--|-=|\+\+|\+=|===?|!==?|<=|>=|&&|\|\||\*=|/=|%=' # these operators should demand an expression afterwards
-  #     scope: keyword.operator.js
-  #   - match: '!|%|\*|/|-|\+|=|<|>|{{b_before}}(in|typeof|void|delete|yield|await){{b_after}}' # these operators should demand an expression afterwards
-  #     scope: keyword.operator.js
-  #   - match: '&|\^|~|\|' # these operators should demand an expression afterwards
-  #     scope: bitwise-operator.js
-  #   # - include: identifier_reference
-  #   # - include: bracket_reference_expression
-  #     #===== help prevent errors =====#
-  #   # - match: '\.[{{whitespace}}{{line_terminator}}]*{{ident}}{{b_after}}' # this doesn't extend through new lines
-  #   #   scope: text.js
-  #   # - match: '\.[{{whitespace}}{{line_terminator}}]*[^{{whitespace}}{{line_terminator}}]+' # this doesn't extend through new lines
-  #   #   scope: invalid.illegal.js
-  #   - match: '{{b_before}}{{reserved_word}}{{b_after}}'
-  #     scope: invalid.illegal.js
+      #===== help prevent errors =====#
+    # - match: '\.[{{whitespace}}{{line_terminator}}]*{{ident}}{{b_after}}' # this doesn't extend through new lines
+    #   scope: text.js
+    # - match: '\.[{{whitespace}}{{line_terminator}}]*[^{{whitespace}}{{line_terminator}}]+' # this doesn't extend through new lines
+    #   scope: invalid.illegal.js
 
-  # conditional_expression:
-  #   - match: '\?' # these operators should demand an expression beforehand
-  #     push:
-  #       - include: expression # only one expression should be allowed here
-  #       - match: ':' # these operators should demand an expression afterwards
-  #         pop: true
+  instanceof_keyword:
+    - match: '{{b_before}}instanceof{{b_after}}'
+      scope: keyword.operator.js
+      set:
+        - match: '{{non_token}}'
+        - include: _class_name_shallow
 
-  # instanceof_keyword:
-  #   - match: '{{b_before}}instanceof{{b_after}}'
-  #     scope: keyword.operator.js
-  #     set:
-  #       - match: '{{non_token}}'
-  #       - include: _class_name_shallow
+  binary_operators:
+    - match: '>>>?=?|<<=?|&=|\^=|\|='
+      scope: bitwise-operator.js
+      set: expression
+    - match: '-=|\+=|===?|!==?|<=|>=|&&|\|\||\*=?|/=|%='
+      scope: keyword.operator.js
+      set: expression
+    - match: '\+\+|--'
+      scope: keyword.operator.js
+      set: secondary_expression
+    - match: '!|%|\*|/|-|\+|=|<|>|{{b_before}}in{{b_after}}'
+      scope: keyword.operator.js
+      set: expression
+    - match: '&|\^|~|\|'
+      scope: bitwise-operator.js
+      set: expression
+    - match: ','
+      set: expression
+
+  dot_reference:
+    - match: '\.'
+      set:
+        - match: '{{b_before}}{{ident}}{{b_after}}'
+          set: secondary_expression
+
+  square_bracket_reference:
+    - match: '\['
+      set: [secondary_expression, _need_closing_square_bracket, optional_expression]
+
+  conditional_expression:
+    - match: '\?'
+      set: [secondary_expression, _need_colon, optional_expression]
