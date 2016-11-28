@@ -445,7 +445,7 @@ contexts:
       set: secondary_expression
 
   unary_operators: # TODO: yield should behave like return/throw
-    - match: '!|--?|\+\+?|{{b_before}}(typeof|void|delete|yield|await){{b_after}}'
+    - match: '!|--?|\+\+?|\.\.\.|{{b_before}}(typeof|void|delete|yield|await){{b_after}}'
       scope: keyword.operator.js
       set: expression
     - match: '~'
@@ -467,6 +467,7 @@ contexts:
     - include: binary_operators
     - include: dot_reference
     - include: square_bracket_reference
+    - include: function_invocation
     - include: conditional_expression
     - match: '{{anything}}'
       pop: true
@@ -515,3 +516,7 @@ contexts:
   conditional_expression:
     - match: '\?'
       set: [secondary_expression, _need_colon, optional_expression]
+
+  function_invocation:
+    - match: '\('
+      set: [secondary_expression, _need_closing_parenthesis, optional_expression]
