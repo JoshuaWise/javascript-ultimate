@@ -172,7 +172,7 @@ contexts:
         - match: '\('
           set:
             # TODO
-            # - match: '{{b_before}}{{ident}}{{b_after}}(?!{{to_token}}{{ident}})' # only one ident should be allowed here
+            # - match: '{{b_before}}{{ident}}{{b_after}}(?!{{to_token}}{{ident}})' # only one ident should be allowed here (also allow destructuring)
             #   scope: variable.language.js
             - match: '\)'
               set:
