@@ -151,11 +151,9 @@ contexts:
       scope: keyword.control.js
       push:
         - match: '\('
-          set: [_switch_statement_brackets, optional_expression]
+          set: [_switch_statement_block, _need_closing_parenthesis, optional_expression]
 
-  _switch_statement_brackets:
-    - match: '\)'
-      set:
+  _switch_statement_block:
         - match: '\{'
           set:
           - match: '{{b_before}}case{{b_after}}'
@@ -193,20 +191,17 @@ contexts:
       scope: keyword.control.js
       set:
         - match: '\('
+          set: [_catch_statement_block, _need_closing_parenthesis, parameter_name]
+
+  _catch_statement_block:
+    - match: '\{'
+      set:
+        - match: '\}'
           set:
-            # TODO
-            # - match: '{{b_before}}{{ident}}{{b_after}}(?!{{to_token}}{{ident}})' # only one ident should be allowed here (also allow destructuring)
-            #   scope: variable.language.js
-            - match: '\)'
-              set:
-              - match: '\{'
-                set:
-                  - match: '\}'
-                    set:
-                      - include: _finally_statement
-                      - match: '{{to_token}}(?!finally($|[^{{ident_part}}])){{anything}}'
-                        pop: true
-                  - include: statement
+            - include: _finally_statement
+            - match: '{{to_token}}(?!finally($|[^{{ident_part}}])){{anything}}'
+              pop: true
+        - include: statement
 
   _finally_statement:
     - match: '{{b_before}}finally{{b_after}}'
@@ -267,6 +262,7 @@ contexts:
     # - include: object_literal
     # - include: function_expression
     # - include: class_expression
+    # - include: arrow_function_expression
     - include: constant_or_variable
     - include: new_keyword
     - include: unary_operators
@@ -515,6 +511,7 @@ contexts:
     - include: dot_reference
     - include: square_bracket_reference
     - include: function_invocation
+    - include: template_literal
     - include: conditional_expression
     - match: '{{anything}}'
       pop: true
@@ -572,3 +569,12 @@ contexts:
   function_invocation:
     - match: '\('
       set: [secondary_expression, _need_closing_parenthesis, optional_expression]
+
+  parameter_name: # TODO: subcontext of parameter_list
+    # - match: '\{'
+    #   set:
+    #     - include: _need_closing_curly_bracket
+    #     - match: '{{b_before}}{{ident}}{{b_after}}'
+    - match: '{{b_before}}{{ident}}{{b_after}}' # only one ident should be allowed here (also allow destructuring)
+      scope: variable.language.js
+      pop: true
