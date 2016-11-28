@@ -408,6 +408,7 @@ contexts:
     - match: '{{b_before}}new{{b_after}}'
       scope: keyword.operator.js
       set:
+        - match: '{{non_token}}'
         - match: '\.'
           scope: keyword.operator.js
           set:
@@ -423,17 +424,13 @@ contexts:
               scope: invalid.illegal.js
               set: secondary_expression
         - include: _class_name_shallow
-        - match: '{{to_token}}([^(.{{ident_start}}])'
-          captures:
-            1: invalid.illegal.js
-          set: secondary_expression
 
   _class_name_shallow:
-    - match: '\('
-      set: [_class_name_deep, _need_closing_parenthesis, optional_expression]
     - match: '{{b_before}}{{ident}}{{b_after}}'
       scope: support.class.js
       set: _class_name_deep
+    - match: '{{anything}}'
+      set: [_class_name_deep, expression]
 
   _class_name_deep:
     - match: '\.'
@@ -499,8 +496,5 @@ contexts:
   #   - match: '{{b_before}}instanceof{{b_after}}'
   #     scope: keyword.operator.js
   #     set:
+  #       - match: '{{non_token}}'
   #       - include: _class_name_shallow
-  #       - match: '{{to_token}}([^({{ident_start}}])'
-  #         captures:
-  #           1: invalid.illegal.js
-  #         set: secondary_expression
