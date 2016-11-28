@@ -466,6 +466,15 @@ contexts:
       set: secondary_expression
 
   identifier_reference:
+    - match: '{{b_before}}(Object|Function|Boolean|String|Number|Symbol|Error|EvalError|RangeError|ReferenceError|SyntaxError|TypeError|URIError|Date|RegExp|Array|Uint8Array|Uint8ClampedArray|Int8Array|Uint16Array|Int16Array|Uint32Array|Int32Array|Float32Array|Float64Array|Map|Set|WeakMap|WeakSet|ArrayBuffer|DataView|Promise|Proxy){{b_after}}'
+      scope: support.class.js
+      set: secondary_expression
+    - match: '{{b_before}}(console|Math|JSON|Reflect|Intl|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT){{b_after}}'
+      scope: support.constant.js
+      set: secondary_expression
+    - match: '{{b_before}}(eval|isFinite|isNaN|parseFloat|parseInt|decodeURI|decodeURIComponent|encodeURI|encodeURIComponent){{b_after}}'
+      scope: support.function.js
+      set: secondary_expression
     - match: '{{b_before}}{{ident}}{{b_after}}'
       set: secondary_expression
 
@@ -496,7 +505,7 @@ contexts:
     - match: '>>>?=?|<<=?|&=|\^=|\|='
       scope: bitwise-operator.js
       set: expression
-    - match: '-=|\+=|===?|!==?|<=|>=|&&|\|\||\*=?|/=|%='
+    - match: '\*\*|-=|\+=|===?|!==?|<=|>=|&&|\|\||\*=?|/=|%='
       scope: keyword.operator.js
       set: expression
     - match: '\+\+|--'
@@ -514,8 +523,11 @@ contexts:
   dot_reference:
     - match: '\.'
       set:
-        - match: '{{b_before}}prototype{{b_after}}'
-          scope: constant.language.js
+        - match: '{{b_before}}(prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|(split|replace|search|match)(?!{{to_token}}\()|species|toPrimitive|toStringTag|unscopables){{b_after}}'
+          scope: support.constant.js
+          set: secondary_expression
+        - match: '{{b_before}}(create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2?|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}'
+          scope: support.function.js
           set: secondary_expression
         - match: '{{b_before}}constructor{{b_after}}'
           scope: support.class.js
