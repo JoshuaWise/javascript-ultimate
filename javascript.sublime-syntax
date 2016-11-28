@@ -107,7 +107,7 @@ contexts:
       scope: keyword.control.js
       push:
         - match: '\('
-          set: [_for_statement_first_semicolon, optional_expression]
+          set: [_for_statement_first_semicolon, optional_expression] # TODO: support variable_statement, for in, and for of
 
   _for_statement_first_semicolon:
     - match: ';'
