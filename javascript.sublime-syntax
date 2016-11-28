@@ -384,8 +384,10 @@ contexts:
       scope: regexp-operator.js
 
   numeric_literal:
-    - match: '{{b_before}}((0|[1-9][0-9]*)(\.(?![0-9eE])|(\.[0-9]*)?{{exp}}{{b_after}})|\.[0-9]+{{exp}}{{b_after}})'
+    - match: '{{b_before}}((0|[1-9][0-9]*)(\.(?![0-9eE])([{{ident_part}}]*)|(\.[0-9]*)?{{exp}}{{b_after}})|\.[0-9]+{{exp}}{{b_after}})'
       scope: constant.numeric.decimal.js
+      captures:
+        4: invalid.illegal.js
       set: secondary_expression
     - match: '{{b_before}}0[xX]\h+{{b_after}}'
       scope: constant.numeric.hexadecimal.js
