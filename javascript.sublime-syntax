@@ -378,7 +378,7 @@ contexts:
     - match: '{{line_terminator_sequence}}'
       scope: invalid.illegal.js
       set: secondary_expression
-    - match: '/(([gimuy]*?(?''option''[gimuy])[gimuy]*?\k''option'')|[gimuy]*)({{ident_part}}|\\)?'
+    - match: '/(([gimuy]*?(?''option''[gimuy])[gimuy]*?\k''option'')|[gimuy]*)([{{ident_part}}]+|\\)?'
       scope: punctuation.definition.string.end.js
       captures:
         2: invalid.illegal.js
@@ -572,12 +572,12 @@ contexts:
     - match: '\('
       set: [secondary_expression, _need_closing_parenthesis, optional_expression]
 
-  _parameter_name:
-    - match: '{{b_before}}{{reserved_word}}{{b_after}}'
-      scope: invalid.illegal.js
-      pop: true
-    - match: '{{b_before}}{{ident}}{{b_after}}'
-      scope: variable.language.js
+  _initializer:
+    - match: '{{non_token}}'
+    - match: '='
+      scope: keyword.operator.js
+      set: optional_expression
+    - match: '{{anything}}'
       pop: true
 
   _object_destructuring_pattern:
@@ -586,39 +586,39 @@ contexts:
       pop: true
     - match: '{{b_before}}{{ident}}{{b_after}}(?={{to_token}}:)' # this doesn't extend through new lines
       scope: entity.other.js
-      set: [_object_destructuring_pattern_continue, parameter_binding, _need_colon]
+      set: [_object_destructuring_pattern_continue, parameter_binding_with_initializer, _need_colon]
     - match: '{{b_before}}{{reserved_word}}{{b_after}}'
       scope: invalid.illegal.js
-      set: _object_destructuring_pattern_continue
+      set: [_object_destructuring_pattern_continue, _initializer]
     - match: '{{b_before}}{{ident}}{{b_after}}'
       scope: variable.language.js
-      set: _object_destructuring_pattern_continue
+      set: [_object_destructuring_pattern_continue, _initializer]
     - match: '{{decimal_literal}}'
       scope: constant.numeric.decimal.js
       captures:
         4: invalid.illegal.js
-      set: [_object_destructuring_pattern_continue, parameter_binding, _need_colon]
+      set: [_object_destructuring_pattern_continue, parameter_binding_with_initializer, _need_colon]
     - match: '{{hexadecimal_literal}}'
       scope: constant.numeric.hexadecimal.js
-      set: [_object_destructuring_pattern_continue, parameter_binding, _need_colon]
+      set: [_object_destructuring_pattern_continue, parameter_binding_with_initializer, _need_colon]
     - match: '{{binary_literal}}'
       scope: constant.numeric.binary.js
-      set: [_object_destructuring_pattern_continue, parameter_binding, _need_colon]
+      set: [_object_destructuring_pattern_continue, parameter_binding_with_initializer, _need_colon]
     - match: '{{octal_literal}}'
       scope: constant.numeric.octal.js
-      set: [_object_destructuring_pattern_continue, parameter_binding, _need_colon]
+      set: [_object_destructuring_pattern_continue, parameter_binding_with_initializer, _need_colon]
     - match: ''''
       scope: punctuation.definition.string.begin.js
-      set: [_object_destructuring_pattern_continue, parameter_binding, _need_colon, _string_contents]
+      set: [_object_destructuring_pattern_continue, parameter_binding_with_initializer, _need_colon, _string_contents]
       with_prototype:
         - match: '""'
     - match: '"'
       scope: punctuation.definition.string.begin.js
-      set: [_object_destructuring_pattern_continue, parameter_binding, _need_colon, _string_contents]
+      set: [_object_destructuring_pattern_continue, parameter_binding_with_initializer, _need_colon, _string_contents]
       with_prototype:
         - match: ''''
     - match: '\['
-      set: [_object_destructuring_pattern_continue, parameter_binding, _need_colon, _need_closing_square_bracket, optional_expression]
+      set: [_object_destructuring_pattern_continue, parameter_binding_with_initializer, _need_colon, _need_closing_square_bracket, optional_expression]
     - match: '{{token}}'
       scope: invalid.illegal.js
 
@@ -630,11 +630,34 @@ contexts:
     - match: '{{token}}'
       scope: invalid.illegal.js
 
-  parameter_binding: # TODO: subcontext of parameter_list
+  # TODO: _array_destructuring_pattern
+  # TODO: subcontext of parameter_list
+  parameter_binding:
     - match: '{{non_token}}'
     - match: '\{'
       set: _object_destructuring_pattern
     # - match: '\['
-    - include: _parameter_name
+    #   set: _array_destructuring_pattern
+    - match: '{{b_before}}{{reserved_word}}{{b_after}}'
+      scope: invalid.illegal.js
+      pop: true
+    - match: '{{b_before}}{{ident}}{{b_after}}'
+      scope: variable.language.js
+      pop: true
+    - match: '{{anything}}'
+      pop: true
+
+  parameter_binding_with_initializer:
+    - match: '{{non_token}}'
+    - match: '\{'
+      set: [_initializer, _object_destructuring_pattern]
+    # - match: '\['
+    #   set: [_initializer, _array_destructuring_pattern]
+    - match: '{{b_before}}{{reserved_word}}{{b_after}}'
+      scope: invalid.illegal.js
+      set: _initializer
+    - match: '{{b_before}}{{ident}}{{b_after}}'
+      scope: variable.language.js
+      set: _initializer
     - match: '{{anything}}'
       pop: true
