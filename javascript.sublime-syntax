@@ -19,14 +19,17 @@ variables:
   line_terminator: '\x{000a}\x{000d}\x{2028}\x{2029}'
 
   # Low-level JavaScript categories
-  exp: '([eE][+-]?[0-9]+)?'
-  line_terminator_sequence: '(\x{000d}\x{000a}|[{{line_terminator}}])'
-  common_regexp_escape_sequences: '({{hex_escape_sequence}}|{{unicode_escape_sequence}}|c[a-zA-Z]|0(?![0-9])|[1-9][0-9]*)'
-  common_regexp_operators: (\^|\$|\\|\.|\*|\+|\?|\(|\)|\[|\]|\{|\}|\||\/)
-
-  # High-level JavaScript categories
   keyword: '(break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|function|if|import|in|instanceof|new|return|super|switch|this|throw|try|typeof|var|void|while|with|yield|let|static)'
   future_reserved_word: '(enum|await|implements|interface|package|private|protected|public)'
+  exp: '([eE][+-]?[0-9]+)?'
+  common_regexp_escape_sequences: '({{hex_escape_sequence}}|{{unicode_escape_sequence}}|c[a-zA-Z]|0(?![0-9])|[1-9][0-9]*)'
+  common_regexp_operators: '(\^|\$|\\|\.|\*|\+|\?|\(|\)|\[|\]|\{|\}|\||\/)'
+
+  # High-level JavaScript categories
+  decimal_literal: '{{b_before}}((0|[1-9][0-9]*)(\.(?![0-9eE])([{{ident_part}}]*)|(\.[0-9]*)?{{exp}}{{b_after}})|\.[0-9]+{{exp}}{{b_after}})'
+  hexadecimal_literal: '{{b_before}}0[xX]\h+{{b_after}}'
+  binary_literal: '{{b_before}}0[bB][01]+{{b_after}}'
+  octal_literal: '{{b_before}}0[oO][0-7]+{{b_after}}'
   reserved_word: ({{keyword}}|{{future_reserved_word}}|null|true|false)
   hex_escape_sequence: '(x\h{2})'
   unicode_escape_sequence: '(u\h{4}|u\{\h+\})'
@@ -35,6 +38,8 @@ variables:
   b_after: '(?![{{ident_part}}])' # word-break after
   to_token: '[{{whitespace}}{{line_terminator}}]*+' # skip to next token
   non_token: '[{{whitespace}}{{line_terminator}}]++'
+  token: '[^{{whitespace}}{{line_terminator}}]'
+  line_terminator_sequence: '(\x{000d}\x{000a}|[{{line_terminator}}])'
   end_of_statement: '(;|{{line_terminator_sequence}})'
   anything: (?=[\s\S])
 
@@ -51,7 +56,7 @@ contexts:
         - match: '\*/'
           scope: punctuation.definition.comment.js
           pop: true
-        - match: '^{{to_token}}\*{{to_token}}(@[^{{whitespace}}{{line_terminator}}]++)'
+        - match: '^{{to_token}}\*{{to_token}}(@{{token}}++)'
           captures:
             1: keyword.other.documentation.custom.js
     - match: '/\*'
@@ -106,7 +111,7 @@ contexts:
   _end_of_statement:
     - match: '{{end_of_statement}}'
       pop: true
-    - match: '[^{{whitespace}}]'
+    - match: '{{token}}'
       scope: invalid.illegal.js
 
   block_statement:
@@ -142,9 +147,10 @@ contexts:
       set: [_end_of_for_statement, optional_expression]
 
   _end_of_for_statement:
-    - match: '[^){{whitespace}}{{line_terminator}}]'
-      scope: invalid.illegal.js
+    - match: '{{non_token}}'
     - include: _need_closing_parenthesis
+    - match: '{{token}}'
+      scope: invalid.illegal.js
 
   switch_statement:
     - match: '{{b_before}}switch{{b_after}}'
@@ -167,10 +173,11 @@ contexts:
           - match: '{{b_before}}default{{b_after}}'
             scope: keyword.control.js
             push:
-              - match: '[^:{{whitespace}}{{line_terminator}}]'
-                scope: invalid.illegal.js
+              - match: '{{non_token}}'
               - match: ':'
                 pop: true
+              - match: '{{token}}'
+                scope: invalid.illegal.js
           - include: _need_closing_curly_bracket
           - include: statement
 
@@ -191,7 +198,7 @@ contexts:
       scope: keyword.control.js
       set:
         - match: '\('
-          set: [_catch_statement_block, _need_closing_parenthesis, parameter_name]
+          set: [_catch_statement_block, _need_closing_parenthesis, parameter_binding]
 
   _catch_statement_block:
     - match: '\{'
@@ -287,40 +294,32 @@ contexts:
         2: comment.directive.js
         3: punctuation.definition.string.end.js
       set: secondary_expression
-    - match: '"'
-      scope: punctuation.definition.string.begin.js
-      set:
-        - meta_include_prototype: false
-        - meta_scope: string.quoted.js
-        - include: _common_string_escape_sequences
-        - match: '{{line_terminator_sequence}}'
-          set:
-            - meta_include_prototype: false
-            - meta_scope: string.quoted.js
-            - include: _common_string_escape_sequences
-            - match: '"'
-              scope: invalid.illegal.js
-              set: secondary_expression
-        - match: '"'
-          scope: punctuation.definition.string.end.js
-          set: secondary_expression
     - match: ''''
       scope: punctuation.definition.string.begin.js
+      set: [secondary_expression, _string_contents]
+      with_prototype:
+        - match: '""'
+    - match: '"'
+      scope: punctuation.definition.string.begin.js
+      set: [secondary_expression, _string_contents]
+      with_prototype:
+        - match: ''''
+
+  _string_contents:
+    - meta_include_prototype: false
+    - meta_scope: string.quoted.js
+    - include: _common_string_escape_sequences
+    - match: '{{line_terminator_sequence}}'
       set:
         - meta_include_prototype: false
         - meta_scope: string.quoted.js
         - include: _common_string_escape_sequences
-        - match: '{{line_terminator_sequence}}'
-          set:
-            - meta_include_prototype: false
-            - meta_scope: string.quoted.js
-            - include: _common_string_escape_sequences
-            - match: ''''
-              scope: invalid.illegal.js
-              set: secondary_expression
-        - match: ''''
-          scope: punctuation.definition.string.end.js
-          set: secondary_expression
+        - match: '[''"]'
+          scope: punctuation.definition.string.end.js invalid.illegal.js
+          pop: true
+    - match: '[''"]'
+      scope: punctuation.definition.string.end.js
+      pop: true
 
   _common_string_escape_sequences:
     - match: '(\\){{line_terminator_sequence}}'
@@ -379,7 +378,7 @@ contexts:
     - match: '{{line_terminator_sequence}}'
       scope: invalid.illegal.js
       set: secondary_expression
-    - match: '/(([gimuy]*?(?''option''[gimuy])[gimuy]*?\k''option'')|[gimuy]*)({{ident}}|\\)?'
+    - match: '/(([gimuy]*?(?''option''[gimuy])[gimuy]*?\k''option'')|[gimuy]*)({{ident_part}}|\\)?'
       scope: punctuation.definition.string.end.js
       captures:
         2: invalid.illegal.js
@@ -405,18 +404,18 @@ contexts:
       scope: regexp-operator.js
 
   numeric_literal:
-    - match: '{{b_before}}((0|[1-9][0-9]*)(\.(?![0-9eE])([{{ident_part}}]*)|(\.[0-9]*)?{{exp}}{{b_after}})|\.[0-9]+{{exp}}{{b_after}})'
+    - match: '{{decimal_literal}}'
       scope: constant.numeric.decimal.js
       captures:
         4: invalid.illegal.js
       set: secondary_expression
-    - match: '{{b_before}}0[xX]\h+{{b_after}}'
+    - match: '{{hexadecimal_literal}}'
       scope: constant.numeric.hexadecimal.js
       set: secondary_expression
-    - match: '{{b_before}}0[bB][01]+{{b_after}}'
+    - match: '{{binary_literal}}'
       scope: constant.numeric.binary.js
       set: secondary_expression
-    - match: '{{b_before}}0[oO][0-7]+{{b_after}}'
+    - match: '{{octal_literal}}'
       scope: constant.numeric.octal.js
       set: secondary_expression
 
@@ -444,7 +443,7 @@ contexts:
             - match: '{{b_before}}{{ident}}{{b_after}}'
               scope: invalid.illegal.js
               set: secondary_expression
-            - match: '[^{{whitespace}}{{line_terminator}}]'
+            - match: '{{token}}++'
               scope: invalid.illegal.js
               set: secondary_expression
         - include: _class_name_shallow
@@ -452,6 +451,9 @@ contexts:
   _class_name_shallow:
     - match: '\('
       set: [_class_name_deep, _need_closing_parenthesis, optional_expression]
+    - match: '{{b_before}}{{reserved_word}}{{b_after}}'
+      scope: invalid.illegal.js
+      set: _class_name_deep
     - match: '{{b_before}}{{ident}}{{b_after}}'
       scope: support.class.js
       set: _class_name_deep
@@ -570,16 +572,69 @@ contexts:
     - match: '\('
       set: [secondary_expression, _need_closing_parenthesis, optional_expression]
 
-  parameter_name: # TODO: subcontext of parameter_list
-    # - match: '\{'
-    #   set:
-    #     - include: _need_closing_curly_bracket
-    #     - match: '{{b_before}}{{ident}}{{b_after}}'
-          # identifier
-          # numeric literal
-          # string literal
-          # [computed property name]
-    # - match: '\['
-    - match: '{{b_before}}{{ident}}{{b_after}}' # only one ident should be allowed here (also allow destructuring)
+  _parameter_name:
+    - match: '{{b_before}}{{reserved_word}}{{b_after}}'
+      scope: invalid.illegal.js
+      pop: true
+    - match: '{{b_before}}{{ident}}{{b_after}}'
       scope: variable.language.js
+      pop: true
+
+  _object_destructuring_pattern:
+    - match: '{{non_token}}'
+    - match: '\}'
+      pop: true
+    - match: '{{b_before}}{{ident}}{{b_after}}(?={{to_token}}:)' # this doesn't extend through new lines
+      scope: entity.other.js
+      set: [_object_destructuring_pattern_continue, parameter_binding, _need_colon]
+    - match: '{{b_before}}{{reserved_word}}{{b_after}}'
+      scope: invalid.illegal.js
+      set: _object_destructuring_pattern_continue
+    - match: '{{b_before}}{{ident}}{{b_after}}'
+      scope: variable.language.js
+      set: _object_destructuring_pattern_continue
+    - match: '{{decimal_literal}}'
+      scope: constant.numeric.decimal.js
+      captures:
+        4: invalid.illegal.js
+      set: [_object_destructuring_pattern_continue, parameter_binding, _need_colon]
+    - match: '{{hexadecimal_literal}}'
+      scope: constant.numeric.hexadecimal.js
+      set: [_object_destructuring_pattern_continue, parameter_binding, _need_colon]
+    - match: '{{binary_literal}}'
+      scope: constant.numeric.binary.js
+      set: [_object_destructuring_pattern_continue, parameter_binding, _need_colon]
+    - match: '{{octal_literal}}'
+      scope: constant.numeric.octal.js
+      set: [_object_destructuring_pattern_continue, parameter_binding, _need_colon]
+    - match: ''''
+      scope: punctuation.definition.string.begin.js
+      set: [_object_destructuring_pattern_continue, parameter_binding, _need_colon, _string_contents]
+      with_prototype:
+        - match: '""'
+    - match: '"'
+      scope: punctuation.definition.string.begin.js
+      set: [_object_destructuring_pattern_continue, parameter_binding, _need_colon, _string_contents]
+      with_prototype:
+        - match: ''''
+    - match: '\['
+      set: [_object_destructuring_pattern_continue, parameter_binding, _need_colon, _need_closing_square_bracket, optional_expression]
+    - match: '{{token}}'
+      scope: invalid.illegal.js
+
+  _object_destructuring_pattern_continue:
+    - match: ','
+      set: _object_destructuring_pattern
+    - match: '\}'
+      pop: true
+    - match: '{{token}}'
+      scope: invalid.illegal.js
+
+  parameter_binding: # TODO: subcontext of parameter_list
+    - match: '{{non_token}}'
+    - match: '\{'
+      set: _object_destructuring_pattern
+    # - match: '\['
+    - include: _parameter_name
+    - match: '{{anything}}'
       pop: true
