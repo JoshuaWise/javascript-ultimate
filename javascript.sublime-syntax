@@ -205,8 +205,9 @@ contexts:
       set:
         - match: '\}'
           set:
+            - match: '{{non_token}}'
             - include: _finally_statement
-            - match: '{{to_token}}(?!finally($|[^{{ident_part}}])){{anything}}'
+            - match: '{{anything}}'
               pop: true
         - include: statement
 
