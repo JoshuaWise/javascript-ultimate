@@ -2,50 +2,46 @@
 ---
 name: JavaScript Test
 file_extensions: [js, htc]
-first_line_match: '^#!/usr/bin/env node([{{whitespace}}].*)?(?={{line_terminator_sequence}}|$)'
+first_line_match: '^#!/usr/bin/env node(?:{{space}}[^{{line_terminator_chars}}]*+)?+(?={{line_terminator}}|$)'
 scope: source.js
 
 variables:
-  # Very low-level character categories
+  # Low-level character categories
   unicode_other_id_start: '\x{2118}\x{212E}\x{309B}\x{309C}'
   unicode_other_id_continue: '\x{1369}\x{00B7}\x{0387}\x{19DA}'
   unicode_id_start: '\p{L}\p{Nl}{{unicode_other_id_start}}'
   unicode_id_continue: '{{unicode_id_start}}\p{Mn}\p{Mc}\p{Nd}\p{Pc}{{unicode_other_id_continue}}'
-  ident_start: '{{unicode_id_start}}_$'
-  ident_part: '{{unicode_id_continue}}\x{200C}\x{200D}_$'
-
-  # Low-level character categories
-  whitespace: '\x{0020}\x{0009}\x{000B}\x{000C}\x{00A0}\x{FEFF}\p{Zs}'
-  line_terminator: '\x{000a}\x{000d}\x{2028}\x{2029}'
+  ident_start: '{{unicode_id_start}}_$\\'
+  ident_part: '{{unicode_id_continue}}\x{200C}\x{200D}_$\\'
+  space_chars: '\x{0020}\x{0009}\x{000B}\x{000C}\x{00A0}\x{FEFF}\p{Zs}'
+  line_terminator_chars: '\x{000a}\x{000d}\x{2028}\x{2029}'
 
   # Low-level JavaScript categories
-  keyword: '(break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|function|if|import|in|instanceof|new|return|super|switch|this|throw|try|typeof|var|void|while|with|yield|let|static)'
-  future_reserved_word: '(enum|await|implements|interface|package|private|protected|public)'
-  exp: '([eE][+-]?[0-9]+)?'
-  common_regexp_escape_sequences: '({{hex_escape_sequence}}|{{unicode_escape_sequence}}|c[a-zA-Z]|0(?![0-9])|[1-9][0-9]*)'
-  common_regexp_operators: '(\^|\$|\\|\.|\*|\+|\?|\(|\)|\[|\]|\{|\}|\||\/)'
+  operator: '[`~!@#%^&*-=+(){}\[\]\\|;:''"<>?,./]'
+  keyword: '(?:break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|function|if|import|in|instanceof|new|return|super|switch|this|throw|try|typeof|var|void|while|with|yield|let|static)'
+  future_reserved_word: '(?:enum|await|implements|interface|package|private|protected|public)'
+  hex_escape_sequence: '(?:x\h{2})'
+  unicode_escape_sequence: '(?:u\h{4}|u\{\h++\})'
+  common_regexp_escape_sequences: '(?:{{hex_escape_sequence}}|{{unicode_escape_sequence}}|c[a-zA-Z]|0(?![0-9])|[1-9][0-9]*+)'
+  common_regexp_operators: '(?:\^|\$|\\|\.|\*|\+|\?|\(|\)|\[|\]|\{|\}|\||\/)'
 
-  # High-level JavaScript categories
-  decimal_literal: '{{b_before}}((0|[1-9][0-9]*)(\.(?![0-9eE])([{{ident_part}}]*)|(\.[0-9]*)?{{exp}}{{b_after}})|\.[0-9]+{{exp}}{{b_after}})'
-  hexadecimal_literal: '{{b_before}}0[xX]\h+{{b_after}}'
-  binary_literal: '{{b_before}}0[bB][01]+{{b_after}}'
-  octal_literal: '{{b_before}}0[oO][0-7]+{{b_after}}'
-  reserved_word: ({{keyword}}|{{future_reserved_word}}|null|true|false)
-  hex_escape_sequence: '(x\h{2})'
-  unicode_escape_sequence: '(u\h{4}|u\{\h+\})'
-  ident: '([{{ident_start}}][{{ident_part}}]*)'
+  # Articulatory JavaScript categories
+  space: '[{{space_chars}}]'
+  line_terminator: '(?:\x{000d}\x{000a}|[{{line_terminator_chars}}])'
+  non_token: '[{{space_chars}}{{line_terminator_chars}}]++'
+  to_token: '[{{space_chars}}{{line_terminator_chars}}]*+' # skip to next token
+  token: '[^{{space_chars}}{{line_terminator_chars}}]'
   b_before: '(?<![{{ident_part}}])' # word-break before
   b_after: '(?![{{ident_part}}])' # word-break after
-  to_token: '[{{whitespace}}{{line_terminator}}]*+' # skip to next token
-  non_token: '[{{whitespace}}{{line_terminator}}]++'
-  token: '[^{{whitespace}}{{line_terminator}}]'
-  line_terminator_sequence: '(\x{000d}\x{000a}|[{{line_terminator}}])'
-  end_of_statement: '(;|{{line_terminator_sequence}})'
-  anything: (?=[\s\S])
+
+  # High-level JavaScript categories
+  statement_terminator: '(?:;|{{line_terminator}})'
+  ident: '(?:{{b_before}}[{{ident_start}}][{{ident_part}}]*+{{b_after}})'
+  reserved_word: (?:{{b_before}}(?:{{keyword}}|{{future_reserved_word}}|null|true|false){{b_after}})
 
 contexts:
   prototype:
-    - match: '(//)[^{{line_terminator}}]*+{{line_terminator_sequence}}?'
+    - match: '(//)[^{{line_terminator_chars}}]*+{{line_terminator}}?+'
       scope: comment.line.double-slash.js
       captures:
         1: punctuation.definition.comment.js
@@ -68,9 +64,56 @@ contexts:
           pop: true
 
   main:
-    - match: '^#!/usr/bin/env node([{{whitespace}}].*)?(?={{line_terminator_sequence}}|$)'
+    - match: '^#!/usr/bin/env node(?:{{space}}[^{{line_terminator_chars}}]*+)?+(?={{line_terminator}}|$)'
       scope: comment.line.shebang.js
-    - include: statement
+    - match: ''
+      set:
+      - match: '{{non_token}}'
+      - match: ''
+        push: statement
+
+
+
+  expression_until_parenthesis: [{match: '{{non_token}}'}, {match: '\)', pop: true},
+  {match: '', set: [_continue_expression_until_parenthesis, primary_expression]}]
+  _continue_expression_until_parenthesis: [{match: '{{non_token}}'}, {match: '\)', pop: true}, {match: '', push: secondary_expression}]
+
+  expression_until_square_bracket: [{match: '{{non_token}}'}, {match: '\]', pop: true},
+  {match: '', set: [_continue_expression_until_square_bracket, primary_expression]}]
+  _continue_expression_until_square_bracket: [{match: '{{non_token}}'}, {match: '\]', pop: true}, {match: '', push: secondary_expression}]
+
+  expression_until_end_of_template_interpolation: [{match: '{{non_token}}'}, {match: '\}', scope: variable.language.js, pop: true},
+  {match: '', set: [_continue_expression_until_end_of_template_interpolation, primary_expression]}]
+  _continue_expression_until_end_of_template_interpolation: [{match: '{{non_token}}'}, {match: '\}', scope: variable.language.js, pop: true}, {match: '', push: secondary_expression}]
+
+  expression_until_semicolon: [{match: '{{non_token}}'}, {match: ';', pop: true},
+  {match: '', set: [_continue_expression_until_semicolon, primary_expression]}]
+  _continue_expression_until_semicolon: [{match: '{{non_token}}'}, {match: ';', pop: true}, {match: '', push: secondary_expression}]
+
+  expression_until_colon: [{match: '{{non_token}}'}, {match: ':', pop: true},
+  {match: '', set: [_continue_expression_until_colon, primary_expression]}]
+  _continue_expression_until_colon: [{match: '{{non_token}}'}, {match: ':', pop: true}, {match: '', push: secondary_expression}]
+
+  required_expression_until_colon: [{match: '{{non_token}}'}, {match: ':', scope: invalid.illegal.js, pop: true},
+  {match: '', set: [_continue_required_expression_until_colon, primary_expression]}]
+  _continue_required_expression_until_colon: [{match: '{{non_token}}'}, {match: ':', pop: true}, {match: '', push: secondary_expression}]
+
+  parameter_binding_until_parenthesis: [{match: '{{non_token}}'}, {match: '\)', pop: true},
+  {match: '', set: [_continue_parameter_binding_until_parenthesis, parameter_binding]}]
+  _continue_parameter_binding_until_parenthesis: [{match: '{{non_token}}'}, {match: '\)', pop: true}, {include: otherwise_invalid}]
+
+  expression_until_end_of_statement: [{match: '{{non_token}}'}, {match: '{{statement_terminator}}', pop: true},
+  {match: '', set: [_continue_expression_until_end_of_statement, primary_expression]}]
+  _continue_expression_until_end_of_statement: [{match: '{{non_token}}'}, {match: '{{statement_terminator}}', pop: true}, {match: '', push: secondary_expression}]
+
+  end_of_statement: [{match: '{{statement_terminator}}', pop: true}, {include: otherwise_invalid}]
+  otherwise_invalid: [{match: '{{token}}', scope: invalid.illegal.js}]
+
+  need_opening_parenthesis: [{match: '\(', pop: true}]
+  need_opening_square_bracket: [{match: '\[', pop: true}]
+  need_opening_curly_bracket: [{match: '\{', pop: true}]
+
+
 
   statement:
     - match: '{{non_token}}'
@@ -80,7 +123,8 @@ contexts:
     # - include: export_statement
     # - include: variable_statement
     # - include: declaration
-    - include: simple_control_statement
+    - include: if_statement
+    - include: with_or_while_statement
     - include: do_statement
     - include: for_statement
     - include: switch_statement
@@ -89,176 +133,168 @@ contexts:
     - include: termination_statement
     - include: debugger_statement
     - include: labelled_statement
-    - match: '{{anything}}'
-      push: expression
+    - match: ''
+      set: expression_until_end_of_statement
 
-  _need_closing_parenthesis:
-    - match: '\)'
-      pop: true
 
-  _need_closing_square_bracket:
-    - match: '\]'
-      pop: true
-
-  _need_closing_curly_bracket:
-    - match: '\}'
-      pop: true
-
-  _need_colon:
-    - match: ':'
-      pop: true
-
-  _end_of_statement:
-    - match: '{{end_of_statement}}'
-      pop: true
-    - match: '{{token}}'
-      scope: invalid.illegal.js
 
   block_statement:
     - match: '\{'
-      push:
-        - include: _need_closing_curly_bracket
-        - include: statement
+      set:
+        - match: '{{non_token}}'
+        - match: '\}'
+          pop: true
+        - match: ''
+          push: statement
 
-  simple_control_statement:
-    - match: '{{b_before}}(if|while|with){{b_after}}'
+  if_statement:
+    - match: '{{b_before}}if{{b_after}}'
       scope: keyword.control.js
-      push:
-        - match: '\('
-          set: [_need_closing_parenthesis, optional_expression]
+      set: [_optional_else_statement, statement, parenthesized_expression]
+
+  _optional_else_statement:
+    - match: '{{non_token}}'
+    - match: '{{b_before}}else{{b_after}}'
+      scope: keyword.control.js
+      set: statement
+    - match: ''
+      pop: true
+
+  with_or_while_statement:
+    - match: '{{b_before}}(?:while|with){{b_after}}'
+      scope: keyword.control.js
+      set: [statement, parenthesized_expression]
 
   do_statement:
     - match: '{{b_before}}do{{b_after}}'
       scope: keyword.control.js
+      set: [_do_while, statement]
+
+  _do_while:
+    - match: '{{b_before}}while{{b_after}}'
+      set: parenthesized_expression
 
   for_statement:
     - match: '{{b_before}}for{{b_after}}'
       scope: keyword.control.js
-      push:
-        - match: '\('
-          set: [_for_statement_first_semicolon, optional_expression] # TODO: support variable_statement, for in, and for of
+      set: [_for_statement_first_section, need_opening_parenthesis]
 
-  _for_statement_first_semicolon:
-    - match: ';'
-      set: [_for_statement_second_semicolon, optional_expression]
-
-  _for_statement_second_semicolon:
-    - match: ';'
-      set: [_end_of_for_statement, optional_expression]
-
-  _end_of_for_statement:
+  _for_statement_first_section:
     - match: '{{non_token}}'
-    - include: _need_closing_parenthesis
-    - match: '{{token}}'
-      scope: invalid.illegal.js
+    - match: '{{b_before}}(?:var|let|const){{b_after}}'
+      scope: storage.type.js
+      set: [_for_statement_interpret_binding, variable_binding]
+    - match: ';'
+      set: [statement, expression_until_parenthesis, expression_until_semicolon]
+    - match: ''
+      set: [_for_statement_interpret_expression, primary_expression]
+
+  _for_statement_interpret_expression:
+    - match: '{{non_token}}'
+    - match: ';'
+      set: [statement, expression_until_parenthesis, expression_until_semicolon]
+    - match: '{{b_before}}(?:of|in){{b_after}}'
+      set: [statement, expression_until_parenthesis]
+    - match: ''
+      push: secondary_expression
+
+  _for_statement_interpret_binding:
+    - match: ';'
+      set: [statement, expression_until_parenthesis, expression_until_semicolon]
+    - match: ','
+      set: [_for_statement_variable_binding_continuation, variable_binding]
+    - match: '{{b_before}}(?:of|in){{b_after}}'
+      set: [statement, expression_until_parenthesis]
+    - match: '{{b_before}}(?:o|i){{b_after}}'
+    - include: otherwise_invalid
+
+  _for_statement_variable_binding_continuation:
+    - match: ','
+      push: variable_binding
+    - match: ';'
+      set: [statement, expression_until_parenthesis, expression_until_semicolon]
+    - include: otherwise_invalid
 
   switch_statement:
     - match: '{{b_before}}switch{{b_after}}'
       scope: keyword.control.js
-      push:
-        - match: '\('
-          set: [_switch_statement_block, _need_closing_parenthesis, optional_expression]
+      set: [_switch_statement_block, need_opening_curly_bracket, parenthesized_expression]
 
   _switch_statement_block:
-        - match: '\{'
-          set:
-          - match: '{{b_before}}case{{b_after}}'
-            scope: keyword.control.js
-            push:
-              - match: ':'
-                scope: invalid.illegal.js
-                pop: true
-              - match: '{{to_token}}(?=[^:])'
-                set: [_need_colon, optional_expression]
-          - match: '{{b_before}}default{{b_after}}'
-            scope: keyword.control.js
-            push:
-              - match: '{{non_token}}'
-              - match: ':'
-                pop: true
-              - match: '{{token}}'
-                scope: invalid.illegal.js
-          - include: _need_closing_curly_bracket
-          - include: statement
+    - match: '{{non_token}}'
+    - match: '\}'
+      pop: true
+    - match: '{{b_before}}case{{b_after}}'
+      scope: keyword.control.js
+      push: required_expression_until_colon
+    - match: '{{b_before}}default{{b_after}}'
+      scope: keyword.control.js
+      push:
+        - match: ':'
+          pop: true
+        - include: otherwise_invalid
+    - match: ''
+      push: statement
 
   try_statement:
     - match: '{{b_before}}try{{b_after}}'
       scope: keyword.control.js
-      push:
-        - match: '\{'
-          set:
-            - match: '\}'
-              set:
-                - include: _catch_statement
-                - include: _finally_statement
-            - include: statement
+      set: [_catch_or_finally_statement, block_statement]
 
-  _catch_statement:
+  _catch_or_finally_statement:
+    - include: _finally_statement
     - match: '{{b_before}}catch{{b_after}}'
       scope: keyword.control.js
-      set:
-        - match: '\('
-          set: [_catch_statement_block, _need_closing_parenthesis, parameter_binding]
+      set: [_optional_finally_statement, block_statement, parameter_binding_until_parenthesis, need_opening_parenthesis]
 
-  _catch_statement_block:
-    - match: '\{'
-      set:
-        - match: '\}'
-          set:
-            - match: '{{non_token}}'
-            - include: _finally_statement
-            - match: '{{anything}}'
-              pop: true
-        - include: statement
+  _optional_finally_statement:
+    - match: '{{non_token}}'
+    - include: _finally_statement
+    - match: ''
+      pop: true
 
   _finally_statement:
     - match: '{{b_before}}finally{{b_after}}'
       scope: keyword.control.js
-      set:
-        - match: '\{'
-          set:
-            - include: _need_closing_curly_bracket
-            - include: statement
+      set: block_statement
 
   goto_statement:
-    - match: '{{b_before}}(break|continue){{b_after}}'
+    - match: '{{b_before}}(?:break|continue){{b_after}}'
       scope: keyword.control.js
-      push:
-        - match: '{{b_before}}{{reserved_word}}{{b_after}}'
+      set:
+        - match: '{{reserved_word}}'
           scope: invalid.illegal.js
-          set: _end_of_statement
-        - match: '{{b_before}}{{ident}}{{b_after}}'
+          set: end_of_statement
+        - match: '{{ident}}'
           scope: entity.name.section.js
-          set: _end_of_statement
-        - include: _end_of_statement
+          set: end_of_statement
+        - include: end_of_statement
 
-  termination_statement: # TODO: these need more work
-    - match: '{{b_before}}(return|throw){{b_after}}'
+  termination_statement:
+    - match: '{{b_before}}(?:return|throw){{b_after}}'
       scope: keyword.control.js
-      push: [_end_of_statement, optional_expression]
+      set: expression_until_end_of_statement
 
   debugger_statement:
     - match: '{{b_before}}debugger{{b_after}}'
       scope: keyword.control.js
-      push: _end_of_statement
+      set: end_of_statement
 
   labelled_statement: # this doesn't extend through new lines
-    - match: '(?={{b_before}}{{reserved_word}}{{to_token}}:)'
-      push:
-        - match: '({{reserved_word}}){{to_token}}:'
-          captures:
-            1: invalid.illegal.js
-          pop: true
-    - match: '(?={{b_before}}{{ident}}{{to_token}}:)'
-      push:
-        - match: '({{ident}}){{to_token}}:'
-          captures:
-            1: entity.name.section.js
-          pop: true
+    - match: '({{reserved_word}}){{to_token}}:'
+      captures:
+        1: invalid.illegal.js
+      pop: true
+    - match: '({{ident}}){{to_token}}:'
+      captures:
+        1: entity.name.section.js
+      pop: true
     - match: ':'
       scope: invalid.illegal.js
 
-  expression:
+
+
+  primary_expression:
     - match: '{{non_token}}'
     - include: parenthesized_expression
     - include: string_literal
@@ -274,18 +310,15 @@ contexts:
     - include: constant_or_variable
     - include: new_keyword
     - include: unary_operators
-    - include: illegal_word
+    - include: reserved_word_reference
     - include: identifier_reference
-    - include: invalid_identifier
+    - include: invalid_identifier_reference
 
-  optional_expression:
-    - include: expression
-    - match: '{{anything}}'
-      pop: true
+
 
   parenthesized_expression:
     - match: '\('
-      set: [secondary_expression, _need_closing_parenthesis, optional_expression]
+      set: expression_until_parenthesis
 
   string_literal:
     - match: '(''|")(use strict)(\1)'
@@ -294,27 +327,27 @@ contexts:
         1: punctuation.definition.string.begin.js
         2: comment.directive.js
         3: punctuation.definition.string.end.js
-      set: secondary_expression
+      pop: true
     - match: ''''
       scope: punctuation.definition.string.begin.js
-      set: [secondary_expression, _string_contents]
+      set: _string_contents
       with_prototype:
-        - match: '""'
+        - match: '"'
     - match: '"'
       scope: punctuation.definition.string.begin.js
-      set: [secondary_expression, _string_contents]
+      set: _string_contents
       with_prototype:
         - match: ''''
 
   _string_contents:
     - meta_include_prototype: false
     - meta_scope: string.quoted.js
-    - include: _common_string_escape_sequences
-    - match: '{{line_terminator_sequence}}'
+    - include: _string_escape_sequences
+    - match: '{{line_terminator}}'
       set:
         - meta_include_prototype: false
         - meta_scope: string.quoted.js
-        - include: _common_string_escape_sequences
+        - include: _string_escape_sequences
         - match: '[''"]'
           scope: punctuation.definition.string.end.js invalid.illegal.js
           pop: true
@@ -322,38 +355,31 @@ contexts:
       scope: punctuation.definition.string.end.js
       pop: true
 
-  _common_string_escape_sequences:
-    - match: '(\\){{line_terminator_sequence}}'
+  _string_escape_sequences:
+    - match: '(\\){{line_terminator}}'
       scope: constant.character.escape.js
       captures:
         1: linecontinuation.js
-    - match: '\\(0(?![0-9])|[bfnrtv''"\\]|{{hex_escape_sequence}}|{{unicode_escape_sequence}})'
+    - match: '\\(?:0(?![0-9])|[bfnrtv''"\\]|{{hex_escape_sequence}}|{{unicode_escape_sequence}})'
       scope: constant.character.escape.js
-    - match: '\\(0[0-9]+|[1-9][0-9]*)?'
+    - match: '\\(?:0[0-9]++|[1-9][0-9]*+)?+'
       scope: invalid.illegal.js
 
   template_literal:
     - match: '`'
       scope: punctuation.definition.string.begin.js
-      set: _template_literal_contents
-
-  _template_literal_contents:
-    - meta_include_prototype: false
-    - meta_scope: string.quoted.template.js
-    - match: '\\\$'
-      scope: constant.character.escape.js
-    - include: _common_string_escape_sequences
-    - match: '\$\{'
-      scope: variable.language.js
-      set: [_template_literal_close_interpolation, optional_expression]
-    - match: '`'
-      scope: punctuation.definition.string.end.js
-      set: secondary_expression
-
-  _template_literal_close_interpolation:
-    - match: '\}'
-      scope: variable.language.js
-      set: _template_literal_contents
+      set:
+        - meta_include_prototype: false
+        - meta_scope: string.quoted.template.js
+        - match: '\\\$'
+          scope: constant.character.escape.js
+        - include: _string_escape_sequences
+        - match: '\$\{'
+          scope: variable.language.js
+          push: expression_until_end_of_template_interpolation
+        - match: '`'
+          scope: punctuation.definition.string.end.js
+          pop: true
 
   regular_expression_literal:
     - match: '/'
@@ -363,41 +389,41 @@ contexts:
   _regular_expression_literal_contents:
     - meta_include_prototype: false
     - meta_content_scope: string.regexp.js
-    - match: '\\([dDsSwWfnrtvbB]|{{common_regexp_escape_sequences}})'
+    - match: '\\(?:[dDsSwWfnrtvbB]|{{common_regexp_escape_sequences}})'
       scope: constant.character.escape.js regexp-operator.js
     - match: '\\{{common_regexp_operators}}'
       scope: constant.character.escape.js
-    - match: '\^|\$|\||\?|\*|\+|\.|\{[0-9]+(,[0-9]*)?\}|\((\?\!|\?=|\?:)?|\)'
+    - match: '\^|\$|\||\?|\*|\+|\.|\{[0-9]++(?:,[0-9]*+)?+\}|\((?:\?\!|\?=|\?:)?+|\)'
       scope: regexp-operator.js
-    - match: '\\(0[0-9]+)?'
+    - match: '\\(?:0[0-9]++)?+'
       scope: invalid.illegal.js
-    - match: '(\[\^?)-?'
+    - match: '(\[\^?+)-?+'
       scope: string.regexp.characterclass.js
       captures:
         1: punctuation.definition.string.begin.js
       set: _regular_expression_literal_class
-    - match: '{{line_terminator_sequence}}'
+    - match: '{{line_terminator}}'
       scope: invalid.illegal.js
-      set: secondary_expression
-    - match: '/(([gimuy]*?(?''option''[gimuy])[gimuy]*?\k''option'')|[gimuy]*)([{{ident_part}}]+|\\)?'
+      pop: true
+    - match: '/(?:([gimuy]*?(?''option''[gimuy])[gimuy]*?\k''option'')|[gimuy]*)([{{ident_part}}]*+)'
       scope: punctuation.definition.string.end.js
       captures:
-        2: invalid.illegal.js
-        4: invalid.illegal.js
-      set: secondary_expression
+        1: invalid.illegal.js
+        3: invalid.illegal.js
+      pop: true
 
   _regular_expression_literal_class:
     - meta_include_prototype: false
     - meta_content_scope: string.regexp.js string.regexp.characterclass.js
-    - match: '\\([bfnrtv]|{{common_regexp_escape_sequences}})'
+    - match: '\\(?:[bfnrtv]|{{common_regexp_escape_sequences}})'
       scope: constant.character.escape.js regexp-operator.js
-    - match: '\\(-|{{common_regexp_operators}})'
+    - match: '\\(?:-|{{common_regexp_operators}})'
       scope: constant.character.escape.js
-    - match: '\\(0[0-9]+|[wWdDsSB]|c[0-9_])?' # "\c[0-9_]" actually does work in the tested implementations, but it's not in the spec
+    - match: '\\(?:0[0-9]++|[wWdDsSB]|c[0-9_])?+' # "\c[0-9_]" actually does work in the tested implementations, but it's not in the spec
       scope: invalid.illegal.js
-    - match: '(?={{line_terminator_sequence}})'
-      set: secondary_expression
-    - match: '-?(\])'
+    - match: '(?={{line_terminator}})'
+      pop: true
+    - match: '-?+(\])'
       captures:
         1: punctuation.definition.string.end.js
       set: _regular_expression_literal_contents
@@ -405,28 +431,31 @@ contexts:
       scope: regexp-operator.js
 
   numeric_literal:
-    - match: '{{decimal_literal}}'
+    - match: '{{b_before}}(?:(?:0|[1-9][0-9]*+)(?:\.[0-9]++)?+(?:[eE][+-]?+[0-9]++)?+|\.[0-9]++(?:[eE][+-]?+[0-9]++)?+){{b_after}}'
+      scope: constant.numeric.decimal.js
+      pop: true
+    - match: '{{b_before}}(?:0|[1-9][0-9]*+)\.(?:[eE][+-]?+[0-9]++{{b_after}}|([{{ident_part}}]*+))'
       scope: constant.numeric.decimal.js
       captures:
-        4: invalid.illegal.js
-      set: secondary_expression
-    - match: '{{hexadecimal_literal}}'
+        1: invalid.illegal.js
+      pop: true
+    - match: '{{b_before}}0[xX]\h++{{b_after}}'
       scope: constant.numeric.hexadecimal.js
-      set: secondary_expression
-    - match: '{{binary_literal}}'
+      pop: true
+    - match: '{{b_before}}0[bB][01]++{{b_after}}'
       scope: constant.numeric.binary.js
-      set: secondary_expression
-    - match: '{{octal_literal}}'
+      pop: true
+    - match: '{{b_before}}0[oO][0-7]++{{b_after}}'
       scope: constant.numeric.octal.js
-      set: secondary_expression
+      pop: true
 
   constant_or_variable:
-    - match: '{{b_before}}(true|false|null|undefined|Infinity|NaN){{b_after}}'
+    - match: '{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}'
       scope: constant.language.js
-      set: secondary_expression
-    - match: '{{b_before}}(this|arguments|super){{b_after}}'
+      pop: true
+    - match: '{{b_before}}(?:this|arguments|super){{b_after}}'
       scope: variable.language.js
-      set: secondary_expression
+      pop: true
 
   new_keyword:
     - match: '{{b_before}}new{{b_after}}'
@@ -438,74 +467,87 @@ contexts:
           set:
             - match: '{{b_before}}target{{b_after}}'
               scope: support.class.js
-              set: secondary_expression
-            - match: '{{b_before}}(t|ta|tar|targ|targe){{b_after}}'
-              set: secondary_expression
-            - match: '{{b_before}}{{ident}}{{b_after}}'
+              pop: true
+            - match: '{{b_before}}(?:t|ta|tar|targ|targe){{b_after}}'
+              pop: true
+            - match: '{{ident}}'
               scope: invalid.illegal.js
-              set: secondary_expression
+              pop: true
             - match: '{{token}}++'
               scope: invalid.illegal.js
-              set: secondary_expression
+              pop: true
         - include: _class_name_shallow
 
   _class_name_shallow:
+    - match: '{{non_token}}'
     - match: '\('
-      set: [_class_name_deep, _need_closing_parenthesis, optional_expression]
-    - match: '{{b_before}}{{reserved_word}}{{b_after}}'
+      set: [_class_name_deep, expression_until_parenthesis]
+    - match: '{{reserved_word}}'
       scope: invalid.illegal.js
       set: _class_name_deep
-    - match: '{{b_before}}{{ident}}{{b_after}}'
+    - match: '{{ident}}'
       scope: support.class.js
       set: _class_name_deep
-    - match: '{{anything}}'
-      set: expression
+    - match: ''
+      set: primary_expression
 
   _class_name_deep:
+    - match: '{{non_token}}'
     - match: '\.'
       scope: support.class.js
-      set:
-        - match: '{{b_before}}{{ident}}{{b_after}}'
+      push:
+        - match: '{{ident}}'
           scope: support.class.js
-          set: _class_name_deep
-        - match: '{{b_before}}[{{ident_part}}]+{{b_after}}'
+          pop: true
+        - match: '{{token}}'
           scope: invalid.illegal.js
-          set: _class_name_deep
+          pop: true
     - match: '\['
-      set: [_class_name_deep, _need_closing_square_bracket, optional_expression]
-    - match: '(?=[^\[.])'
-      set: secondary_expression
+      push: expression_until_square_bracket
+    - match: ''
+      pop: true
 
-  unary_operators: # TODO: yield should behave like return/throw
-    - match: '!|--?|\+\+?|\.\.\.|{{b_before}}(typeof|void|delete|yield{{to_token}}\*|await){{b_after}}'
+  # It's okay not to pop here because unary_operators are only used via the
+  # primary_expression context.
+  unary_operators:
+    - match: '{{b_before}}yield(?:{{to_token}}\*|{{b_after}})'
       scope: keyword.operator.js
-      set: expression
+      set:
+        - match: '{{non_token}}'
+        - match: '{{line_terminator}}'
+          pop: true
+        - include: primary_expression
+    - match: '!|--?+|\+\+?+|\.\.\.|{{b_before}}(?:typeof|void|delete|await){{b_after}}'
+      scope: keyword.operator.js
+      set: primary_expression
     - match: '~'
       scope: bitwise-operator.js
-      set: expression
+      set: primary_expression
 
-  illegal_word:
-    - match: '{{b_before}}{{reserved_word}}{{b_after}}'
+  reserved_word_reference:
+    - match: '{{reserved_word}}'
       scope: invalid.illegal.js
-      set: secondary_expression
+      pop: true
 
   identifier_reference:
-    - match: '{{b_before}}(Object|Function|Boolean|String|Number|Symbol|Error|EvalError|RangeError|ReferenceError|SyntaxError|TypeError|URIError|Date|RegExp|Array|Uint8Array|Uint8ClampedArray|Int8Array|Uint16Array|Int16Array|Uint32Array|Int32Array|Float32Array|Float64Array|Map|Set|WeakMap|WeakSet|ArrayBuffer|DataView|Promise|Proxy){{b_after}}'
+    - match: '{{b_before}}(?:Object|Function|Boolean|String|Number|Symbol|Error|EvalError|RangeError|ReferenceError|SyntaxError|TypeError|URIError|Date|RegExp|Array|Uint8Array|Uint8ClampedArray|Int8Array|Uint16Array|Int16Array|Uint32Array|Int32Array|Float32Array|Float64Array|Map|Set|WeakMap|WeakSet|ArrayBuffer|DataView|Promise|Proxy){{b_after}}'
       scope: support.class.js
-      set: secondary_expression
-    - match: '{{b_before}}(console|Math|JSON|Reflect|Intl|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT){{b_after}}'
+      pop: true
+    - match: '{{b_before}}(?:console|Math|JSON|Reflect|Intl|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT){{b_after}}'
       scope: support.constant.js
-      set: secondary_expression
-    - match: '{{b_before}}(eval|isFinite|isNaN|parseFloat|parseInt|decodeURI|decodeURIComponent|encodeURI|encodeURIComponent){{b_after}}'
+      pop: true
+    - match: '{{b_before}}(?:eval|isFinite|isNaN|parseFloat|parseInt|decodeURI|decodeURIComponent|encodeURI|encodeURIComponent){{b_after}}'
       scope: support.function.js
-      set: secondary_expression
-    - match: '{{b_before}}{{ident}}{{b_after}}'
-      set: secondary_expression
+      pop: true
+    - match: '{{ident}}'
+      pop: true
 
-  invalid_identifier:
-    - match: '{{b_before}}[{{ident_part}}]+{{b_after}}'
+  invalid_identifier_reference:
+    - match: '{{b_before}}[{{ident_part}}]++{{b_after}}'
       scope: invalid.illegal.js
-      set: secondary_expression
+      pop: true
+
+
 
   secondary_expression:
     - match: '{{non_token}}'
@@ -516,149 +558,66 @@ contexts:
     - include: function_invocation
     - include: template_literal
     - include: conditional_expression
-    - match: '{{anything}}'
-      pop: true
+    - include: otherwise_invalid
+
+
 
   instanceof_keyword:
     - match: '{{b_before}}instanceof{{b_after}}'
       scope: keyword.operator.js
-      set:
-        - match: '{{non_token}}'
-        - include: _class_name_shallow
+      set: _class_name_shallow
 
   binary_operators:
-    - match: '>>>?=?|<<=?|&=|\^=|\|='
+    - match: '>>>?+=?+|<<=?+|&=|\^=|\|='
       scope: bitwise-operator.js
-      set: expression
-    - match: '\*\*|-=|\+=|===?|!==?|<=|>=|&&|\|\||\*=?|/=|%='
+      set: primary_expression
+    - match: '\*\*|-=|\+=|===?+|!==?+|<=|>=|&&|\|\||\*=?+|/=|%='
       scope: keyword.operator.js
-      set: expression
+      set: primary_expression
     - match: '\+\+|--'
       scope: keyword.operator.js
-      set: secondary_expression
+      pop: true
     - match: '!|%|\*|/|-|\+|=|<|>|{{b_before}}in{{b_after}}'
       scope: keyword.operator.js
-      set: expression
+      set: primary_expression
     - match: '&|\^|~|\|'
       scope: bitwise-operator.js
-      set: expression
+      set: primary_expression
     - match: ','
-      set: expression
+      set: primary_expression
 
   dot_reference:
     - match: '\.'
       set:
-        - match: '{{b_before}}(prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|(split|replace|search|match)(?!{{to_token}}\()|species|toPrimitive|toStringTag|unscopables){{b_after}}'
+        - match: '{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|(?:split|replace|search|match)(?!{{to_token}}\()|species|toPrimitive|toStringTag|unscopables){{b_after}}'
           scope: support.constant.js
-          set: secondary_expression
-        - match: '{{b_before}}(create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2?|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}'
+          pop: true
+        - match: '{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}'
           scope: support.function.js
-          set: secondary_expression
+          pop: true
         - match: '{{b_before}}constructor{{b_after}}'
           scope: support.class.js
-          set: secondary_expression
-        - match: '{{b_before}}{{ident}}{{b_after}}'
-          set: secondary_expression
-        - include: invalid_identifier
+          pop: true
+        - match: '{{ident}}'
+          pop: true
+        - include: invalid_identifier_reference
 
   square_bracket_reference:
     - match: '\['
-      set: [secondary_expression, _need_closing_square_bracket, optional_expression]
+      set: expression_until_square_bracket
 
   conditional_expression:
     - match: '\?'
-      set: [secondary_expression, _need_colon, optional_expression]
+      set: expression_until_colon
 
   function_invocation:
     - match: '\('
-      set: [secondary_expression, _need_closing_parenthesis, optional_expression]
+      set: expression_until_parenthesis
 
-  _initializer:
-    - match: '{{non_token}}'
-    - match: '='
-      scope: keyword.operator.js
-      set: optional_expression
-    - match: '{{anything}}'
-      pop: true
 
-  _object_destructuring_pattern:
-    - match: '{{non_token}}'
-    - match: '\}'
-      pop: true
-    - match: '{{b_before}}{{ident}}{{b_after}}(?={{to_token}}:)' # this doesn't extend through new lines
-      scope: entity.other.js
-      set: [_object_destructuring_pattern_continue, parameter_binding_with_initializer, _need_colon]
-    - match: '{{b_before}}{{reserved_word}}{{b_after}}'
-      scope: invalid.illegal.js
-      set: [_object_destructuring_pattern_continue, _initializer]
-    - match: '{{b_before}}{{ident}}{{b_after}}'
-      scope: variable.language.js
-      set: [_object_destructuring_pattern_continue, _initializer]
-    - match: '{{decimal_literal}}'
-      scope: constant.numeric.decimal.js
-      captures:
-        4: invalid.illegal.js
-      set: [_object_destructuring_pattern_continue, parameter_binding_with_initializer, _need_colon]
-    - match: '{{hexadecimal_literal}}'
-      scope: constant.numeric.hexadecimal.js
-      set: [_object_destructuring_pattern_continue, parameter_binding_with_initializer, _need_colon]
-    - match: '{{binary_literal}}'
-      scope: constant.numeric.binary.js
-      set: [_object_destructuring_pattern_continue, parameter_binding_with_initializer, _need_colon]
-    - match: '{{octal_literal}}'
-      scope: constant.numeric.octal.js
-      set: [_object_destructuring_pattern_continue, parameter_binding_with_initializer, _need_colon]
-    - match: ''''
-      scope: punctuation.definition.string.begin.js
-      set: [_object_destructuring_pattern_continue, parameter_binding_with_initializer, _need_colon, _string_contents]
-      with_prototype:
-        - match: '""'
-    - match: '"'
-      scope: punctuation.definition.string.begin.js
-      set: [_object_destructuring_pattern_continue, parameter_binding_with_initializer, _need_colon, _string_contents]
-      with_prototype:
-        - match: ''''
-    - match: '\['
-      set: [_object_destructuring_pattern_continue, parameter_binding_with_initializer, _need_colon, _need_closing_square_bracket, optional_expression]
-    - match: '{{token}}'
-      scope: invalid.illegal.js
 
-  _object_destructuring_pattern_continue:
-    - match: ','
-      set: _object_destructuring_pattern
-    - match: '\}'
-      pop: true
-    - match: '{{token}}'
-      scope: invalid.illegal.js
-
-  # TODO: _array_destructuring_pattern
-  # TODO: subcontext of parameter_list
   parameter_binding:
-    - match: '{{non_token}}'
-    - match: '\{'
-      set: _object_destructuring_pattern
-    # - match: '\['
-    #   set: _array_destructuring_pattern
-    - match: '{{b_before}}{{reserved_word}}{{b_after}}'
-      scope: invalid.illegal.js
-      pop: true
-    - match: '{{b_before}}{{ident}}{{b_after}}'
-      scope: variable.language.js
-      pop: true
-    - match: '{{anything}}'
-      pop: true
 
-  parameter_binding_with_initializer:
-    - match: '{{non_token}}'
-    - match: '\{'
-      set: [_initializer, _object_destructuring_pattern]
-    # - match: '\['
-    #   set: [_initializer, _array_destructuring_pattern]
-    - match: '{{b_before}}{{reserved_word}}{{b_after}}'
-      scope: invalid.illegal.js
-      set: _initializer
-    - match: '{{b_before}}{{ident}}{{b_after}}'
-      scope: variable.language.js
-      set: _initializer
-    - match: '{{anything}}'
-      pop: true
+  variable_binding:
+
+
