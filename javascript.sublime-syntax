@@ -94,10 +94,6 @@ contexts:
   {match: '', set: [_continue_expression_until_colon, primary_expression]}]
   _continue_expression_until_colon: [{match: '{{non_token}}'}, {match: ':', pop: true}, {match: '', push: secondary_expression}]
 
-  required_expression_until_colon: [{match: '{{non_token}}'}, {match: ':', scope: invalid.illegal.js, pop: true},
-  {match: '', set: [_continue_required_expression_until_colon, primary_expression]}]
-  _continue_required_expression_until_colon: [{match: '{{non_token}}'}, {match: ':', pop: true}, {match: '', push: secondary_expression}]
-
   parameter_binding_until_parenthesis: [{match: '{{non_token}}'}, {match: '\)', pop: true},
   {match: '', set: [_continue_parameter_binding_until_parenthesis, parameter_binding]}]
   _continue_parameter_binding_until_parenthesis: [{match: '{{non_token}}'}, {match: '\)', pop: true}, {include: otherwise_invalid}]
@@ -110,7 +106,6 @@ contexts:
   otherwise_invalid: [{match: '{{token}}', scope: invalid.illegal.js}]
 
   need_opening_parenthesis: [{match: '\(', pop: true}]
-  need_opening_square_bracket: [{match: '\[', pop: true}]
   need_opening_curly_bracket: [{match: '\{', pop: true}]
 
 
@@ -226,7 +221,13 @@ contexts:
       pop: true
     - match: '{{b_before}}case{{b_after}}'
       scope: keyword.control.js
-      push: required_expression_until_colon
+      push:
+        - match: '{{non_token}}'
+        - match: ':'
+          scope: invalid.illegal.js
+          pop: true
+        - match: ''
+          set: expression_until_colon
     - match: '{{b_before}}default{{b_after}}'
       scope: keyword.control.js
       push:
