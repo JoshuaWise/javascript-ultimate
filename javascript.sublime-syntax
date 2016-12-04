@@ -33,6 +33,7 @@ variables:
   token: '[^{{space_chars}}{{line_terminator_chars}}]'
   b_before: '(?<![{{ident_part}}])' # word-break before
   b_after: '(?![{{ident_part}}])' # word-break after
+  otherwise: '(?=[\s\S])'
 
   # High-level JavaScript categories
   statement_terminator: '(?:;|{{line_terminator}})'
@@ -66,41 +67,49 @@ contexts:
   main:
     - match: '^#!/usr/bin/env node(?:{{space}}[^{{line_terminator_chars}}]*+)?+(?={{line_terminator}}|$)'
       scope: comment.line.shebang.js
-    - match: ''
+    - match: '{{otherwise}}'
       set:
       - match: '{{non_token}}'
-      - match: ''
+      - match: '{{otherwise}}'
         push: statement
 
 
 
   expression_until_parenthesis: [{match: '{{non_token}}'}, {match: '\)', pop: true},
-  {match: '', set: [_continue_expression_until_parenthesis, primary_expression]}]
-  _continue_expression_until_parenthesis: [{match: '{{non_token}}'}, {match: '\)', pop: true}, {match: '', push: secondary_expression}]
+  {match: '{{otherwise}}', set: [_continue_expression_until_parenthesis, primary_expression]}]
+  _continue_expression_until_parenthesis: [{match: '{{non_token}}'}, {match: '\)', pop: true}, {match: '{{otherwise}}', push: secondary_expression}]
 
   expression_until_square_bracket: [{match: '{{non_token}}'}, {match: '\]', pop: true},
-  {match: '', set: [_continue_expression_until_square_bracket, primary_expression]}]
-  _continue_expression_until_square_bracket: [{match: '{{non_token}}'}, {match: '\]', pop: true}, {match: '', push: secondary_expression}]
+  {match: '{{otherwise}}', set: [_continue_expression_until_square_bracket, primary_expression]}]
+  _continue_expression_until_square_bracket: [{match: '{{non_token}}'}, {match: '\]', pop: true}, {match: '{{otherwise}}', push: secondary_expression}]
 
-  expression_until_end_of_template_interpolation: [{match: '{{non_token}}'}, {match: '\}', scope: variable.language.js, pop: true},
-  {match: '', set: [_continue_expression_until_end_of_template_interpolation, primary_expression]}]
-  _continue_expression_until_end_of_template_interpolation: [{match: '{{non_token}}'}, {match: '\}', scope: variable.language.js, pop: true}, {match: '', push: secondary_expression}]
+  expression_until_end_of_template_interpolation: [{match: '{{non_token}}'}, {match: '\}', scope: variable.language.js, set: _template_literal_contents},
+  {match: '{{otherwise}}', set: [_continue_expression_until_end_of_template_interpolation, primary_expression]}]
+  _continue_expression_until_end_of_template_interpolation: [{match: '{{non_token}}'}, {match: '\}', scope: variable.language.js, set: _template_literal_contents}, {match: '{{otherwise}}', push: secondary_expression}]
 
   expression_until_semicolon: [{match: '{{non_token}}'}, {match: ';', pop: true},
-  {match: '', set: [_continue_expression_until_semicolon, primary_expression]}]
-  _continue_expression_until_semicolon: [{match: '{{non_token}}'}, {match: ';', pop: true}, {match: '', push: secondary_expression}]
+  {match: '{{otherwise}}', set: [_continue_expression_until_semicolon, primary_expression]}]
+  _continue_expression_until_semicolon: [{match: '{{non_token}}'}, {match: ';', pop: true}, {match: '{{otherwise}}', push: secondary_expression}]
 
   expression_until_colon: [{match: '{{non_token}}'}, {match: ':', pop: true},
-  {match: '', set: [_continue_expression_until_colon, primary_expression]}]
-  _continue_expression_until_colon: [{match: '{{non_token}}'}, {match: ':', pop: true}, {match: '', push: secondary_expression}]
+  {match: '{{otherwise}}', set: [_continue_expression_until_colon, primary_expression]}]
+  _continue_expression_until_colon: [{match: '{{non_token}}'}, {match: ':', pop: true}, {match: '{{otherwise}}', push: secondary_expression}]
+
+  expression_until_comma_or_curly_bracket: [{match: '{{non_token}}'}, {match: '[,}]', pop: true},
+  {match: '{{otherwise}}', set: [_continue_expression_until_comma_or_curly_bracket, primary_expression]}]
+  _continue_expression_until_comma_or_curly_bracket: [{match: '{{non_token}}'}, {match: '[,}]', pop: true}, {match: '{{otherwise}}', push: secondary_expression}]
+
+  expression_until_end_of_statement: [{match: '{{space}}++'}, {match: '{{statement_terminator}}', pop: true},
+  {match: '{{otherwise}}', set: [_continue_expression_until_end_of_statement, primary_expression]}]
+  _continue_expression_until_end_of_statement: [{match: '{{space}}++'}, {match: '{{statement_terminator}}', pop: true}, {match: '{{otherwise}}', push: secondary_expression}]
 
   parameter_binding_until_parenthesis: [{match: '{{non_token}}'}, {match: '\)', pop: true},
-  {match: '', set: [_continue_parameter_binding_until_parenthesis, parameter_binding]}]
+  {match: '{{otherwise}}', set: [_continue_parameter_binding_until_parenthesis, parameter_binding]}]
   _continue_parameter_binding_until_parenthesis: [{match: '{{non_token}}'}, {match: '\)', pop: true}, {include: otherwise_invalid}]
 
-  expression_until_end_of_statement: [{match: '{{non_token}}'}, {match: '{{statement_terminator}}', pop: true},
-  {match: '', set: [_continue_expression_until_end_of_statement, primary_expression]}]
-  _continue_expression_until_end_of_statement: [{match: '{{non_token}}'}, {match: '{{statement_terminator}}', pop: true}, {match: '', push: secondary_expression}]
+  parameter_binding_until_comma_or_curly_bracket_or_initializer: [{match: '{{non_token}}'}, {match: '[,}]', pop: true},
+  {match: '{{otherwise}}', set: [_continue_parameter_binding_until_comma_or_curly_bracket_or_initializer, parameter_binding]}]
+  _continue_parameter_binding_until_comma_or_curly_bracket_or_initializer: [{match: '{{non_token}}'}, {match: '=', scope: keyword.operator.js, pop: true}, {match: '[,}]', pop: true}, {include: otherwise_invalid}]
 
   end_of_statement: [{match: '{{statement_terminator}}', pop: true}, {include: otherwise_invalid}]
   otherwise_invalid: [{match: '{{token}}', scope: invalid.illegal.js}]
@@ -128,7 +137,7 @@ contexts:
     - include: termination_statement
     - include: debugger_statement
     - include: labelled_statement
-    - match: ''
+    - match: '{{otherwise}}'
       set: expression_until_end_of_statement
 
 
@@ -139,7 +148,7 @@ contexts:
         - match: '{{non_token}}'
         - match: '\}'
           pop: true
-        - match: ''
+        - match: '{{otherwise}}'
           push: statement
 
   if_statement:
@@ -152,7 +161,7 @@ contexts:
     - match: '{{b_before}}else{{b_after}}'
       scope: keyword.control.js
       set: statement
-    - match: ''
+    - match: '{{otherwise}}'
       pop: true
 
   with_or_while_statement:
@@ -181,7 +190,7 @@ contexts:
       set: [_for_statement_interpret_binding, variable_binding]
     - match: ';'
       set: [statement, expression_until_parenthesis, expression_until_semicolon]
-    - match: ''
+    - match: '{{otherwise}}'
       set: [_for_statement_interpret_expression, primary_expression]
 
   _for_statement_interpret_expression:
@@ -190,7 +199,7 @@ contexts:
       set: [statement, expression_until_parenthesis, expression_until_semicolon]
     - match: '{{b_before}}(?:of|in){{b_after}}'
       set: [statement, expression_until_parenthesis]
-    - match: ''
+    - match: '{{otherwise}}'
       push: secondary_expression
 
   _for_statement_interpret_binding:
@@ -226,7 +235,7 @@ contexts:
         - match: ':'
           scope: invalid.illegal.js
           pop: true
-        - match: ''
+        - match: '{{otherwise}}'
           set: expression_until_colon
     - match: '{{b_before}}default{{b_after}}'
       scope: keyword.control.js
@@ -234,7 +243,7 @@ contexts:
         - match: ':'
           pop: true
         - include: otherwise_invalid
-    - match: ''
+    - match: '{{otherwise}}'
       push: statement
 
   try_statement:
@@ -251,7 +260,7 @@ contexts:
   _optional_finally_statement:
     - match: '{{non_token}}'
     - include: _finally_statement
-    - match: ''
+    - match: '{{otherwise}}'
       pop: true
 
   _finally_statement:
@@ -329,7 +338,7 @@ contexts:
         2: comment.directive.js
         3: punctuation.definition.string.end.js
       pop: true
-    - match: ''''
+    - match: '{{otherwise}}'''
       scope: punctuation.definition.string.begin.js
       set: _string_contents
       with_prototype:
@@ -338,7 +347,7 @@ contexts:
       scope: punctuation.definition.string.begin.js
       set: _string_contents
       with_prototype:
-        - match: ''''
+        - match: '{{otherwise}}'''
 
   _string_contents:
     - meta_include_prototype: false
@@ -369,18 +378,20 @@ contexts:
   template_literal:
     - match: '`'
       scope: punctuation.definition.string.begin.js
-      set:
-        - meta_include_prototype: false
-        - meta_scope: string.quoted.template.js
-        - match: '\\\$'
-          scope: constant.character.escape.js
-        - include: _string_escape_sequences
-        - match: '\$\{'
-          scope: variable.language.js
-          push: expression_until_end_of_template_interpolation
-        - match: '`'
-          scope: punctuation.definition.string.end.js
-          pop: true
+      set: _template_literal_contents
+
+  _template_literal_contents:
+    - meta_include_prototype: false
+    - meta_scope: string.quoted.template.js
+    - match: '\\\$'
+      scope: constant.character.escape.js
+    - include: _string_escape_sequences
+    - match: '\$\{'
+      scope: variable.language.js
+      set: expression_until_end_of_template_interpolation
+    - match: '`'
+      scope: punctuation.definition.string.end.js
+      pop: true
 
   regular_expression_literal:
     - match: '/'
@@ -407,7 +418,7 @@ contexts:
       scope: invalid.illegal.js
       pop: true
     - match: '/(?:([gimuy]*?(?''option''[gimuy])[gimuy]*?\k''option'')|[gimuy]*)([{{ident_part}}]*+)'
-      scope: punctuation.definition.string.end.js
+      scope: string.regexp.js punctuation.definition.string.end.js
       captures:
         1: invalid.illegal.js
         3: invalid.illegal.js
@@ -432,11 +443,8 @@ contexts:
       scope: regexp-operator.js
 
   numeric_literal:
-    - match: '{{b_before}}(?:(?:0|[1-9][0-9]*+)(?:\.[0-9]++)?+(?:[eE][+-]?+[0-9]++)?+|\.[0-9]++(?:[eE][+-]?+[0-9]++)?+){{b_after}}'
-      scope: constant.numeric.decimal.js
-      pop: true
-    - match: '{{b_before}}(?:0|[1-9][0-9]*+)\.(?:[eE][+-]?+[0-9]++{{b_after}}|([{{ident_part}}]*+))'
-      scope: constant.numeric.decimal.js
+    - match: '{{b_before}}0([xXbBoO]){{b_after}}'
+      scope: constant.numeric.js
       captures:
         1: invalid.illegal.js
       pop: true
@@ -448,6 +456,11 @@ contexts:
       pop: true
     - match: '{{b_before}}0[oO][0-7]++{{b_after}}'
       scope: constant.numeric.octal.js
+      pop: true
+    - match: '{{b_before}}(?:(?:0|[1-9][0-9]*+)(?:\.[0-9]++(?:[eE][+-]?+[0-9]++)?+{{b_after}}|\.[eE][+-]?+[0-9]++{{b_after}}|\.([{{ident_part}}]*+)|{{b_after}})|\.[0-9]++(?:[eE][+-]?+[0-9]++)?+{{b_after}})'
+      scope: constant.numeric.decimal.js
+      captures:
+        1: invalid.illegal.js
       pop: true
 
   constant_or_variable:
@@ -474,7 +487,7 @@ contexts:
             - match: '{{ident}}'
               scope: invalid.illegal.js
               pop: true
-            - match: '{{token}}++'
+            - match: '{{token}}'
               scope: invalid.illegal.js
               pop: true
         - include: _class_name_shallow
@@ -489,7 +502,7 @@ contexts:
     - match: '{{ident}}'
       scope: support.class.js
       set: _class_name_deep
-    - match: ''
+    - match: '{{otherwise}}'
       set: primary_expression
 
   _class_name_deep:
@@ -505,7 +518,7 @@ contexts:
           pop: true
     - match: '\['
       push: expression_until_square_bracket
-    - match: ''
+    - match: '{{otherwise}}'
       pop: true
 
   # It's okay not to pop here because unary_operators are only used via the
@@ -514,8 +527,8 @@ contexts:
     - match: '{{b_before}}yield(?:{{to_token}}\*|{{b_after}})'
       scope: keyword.operator.js
       set:
-        - match: '{{non_token}}'
-        - match: '{{line_terminator}}'
+        - match: '{{space}}++'
+        - match: '(?={{line_terminator}})'
           pop: true
         - include: primary_expression
     - match: '!|--?+|\+\+?+|\.\.\.|{{b_before}}(?:typeof|void|delete|await){{b_after}}'
@@ -559,7 +572,9 @@ contexts:
     - include: function_invocation
     - include: template_literal
     - include: conditional_expression
-    - include: otherwise_invalid
+    - match: '{{token}}'
+      scope: invalid.illegal.js
+      pop: true
 
 
 
@@ -611,14 +626,59 @@ contexts:
     - match: '\?'
       set: expression_until_colon
 
-  function_invocation:
+  function_invocation: # TODO: this should allow a trailing comma
     - match: '\('
       set: expression_until_parenthesis
 
 
 
+  property_name:
+    - match: '{{ident}}(?={{to_token}}:)' # this doesn't extend through new lines
+      scope: entity.other.js
+      pop: true
+    - include: numeric_literal
+    - include: string_literal
+    - include: square_bracket_reference
+
+  _object_destructuring_pattern:
+    - include: property_name
+    - match: '{{reserved_word}}'
+      scope: invalid.illegal.js
+      set: _continue_parameter_binding_until_comma_or_curly_bracket_or_initializer
+    - match: '{{ident}}'
+      scope: variable.language.js
+      set: _continue_parameter_binding_until_comma_or_curly_bracket_or_initializer
+    - include: otherwise_invalid
+
+  _object_destructuring_value:
+    - match: '(?<=[,=}])'
+      pop: true
+    - match: '{{otherwise}}'
+      set:
+        - match: ':'
+          set: parameter_binding_until_comma_or_curly_bracket_or_initializer
+
+  _object_destructuring_continue:
+    - match: '(?<==)'
+      set: expression_until_comma_or_curly_bracket
+    - match: '(?<=,)'
+      push: [_object_destructuring_value, _object_destructuring_pattern]
+    - match: '(?<=\})'
+      pop: true
+
   parameter_binding:
+    - match: '\{'
+      set: [_object_destructuring_continue, _object_destructuring_value, _object_destructuring_pattern]
+    # - match: '\['
+    #   set: _array_destructuring_pattern
+    - match: '{{reserved_word}}'
+      scope: invalid.illegal.js
+      pop: true
+    - match: '{{ident}}'
+      scope: variable.language.js
+      pop: true
+    - include: otherwise_invalid
 
   variable_binding:
-
+    - include: otherwise_invalid
 
