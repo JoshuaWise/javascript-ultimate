@@ -681,8 +681,12 @@ contexts:
       pop: true
     - match: '{{otherwise}}'
       set:
+        - match: '[,=}]'
+          scope: invalid.illegal.js
+          pop: true
         - match: ':'
           set: parameter_binding_until_comma_or_curly_bracket_or_initializer
+        - include: otherwise_invalid
 
   _object_destructuring_continue:
     - match: '(?<==)'
