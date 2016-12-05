@@ -522,6 +522,9 @@ contexts:
     - match: '{{otherwise}}'
       pop: true
 
+  # Known bug:
+  # A dot_reference or square_bracket_reference chained from this can have a
+  # postfix operator after it, which should be illegal.
   prefix_operators:
     - match: '(?<!-)--|(?<!\+)\+\+'
       scope: keyword.operator.js
