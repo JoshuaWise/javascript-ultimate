@@ -99,6 +99,10 @@ contexts:
   {match: '{{otherwise}}', set: [_continue_expression_until_comma_or_curly_bracket, primary_expression]}]
   _continue_expression_until_comma_or_curly_bracket: [{match: '{{non_token}}'}, {match: '[,}]', pop: true}, {match: '{{otherwise}}', push: secondary_expression}]
 
+  expression_until_comma_or_square_bracket: [{match: '{{non_token}}'}, {match: '[,\]]', pop: true},
+  {match: '{{otherwise}}', set: [_continue_expression_until_comma_or_square_bracket, primary_expression]}]
+  _continue_expression_until_comma_or_square_bracket: [{match: '{{non_token}}'}, {match: '[,\]]', pop: true}, {match: '{{otherwise}}', push: secondary_expression}]
+
   expression_until_end_of_statement: [{match: '{{space}}++'}, {match: '{{statement_terminator}}', pop: true},
   {match: '{{otherwise}}', set: [_continue_expression_until_end_of_statement, primary_expression]}]
   _continue_expression_until_end_of_statement: [{match: '{{space}}++'}, {match: '{{statement_terminator}}', pop: true}, {match: '{{otherwise}}', push: secondary_expression}]
@@ -110,6 +114,10 @@ contexts:
   parameter_binding_until_comma_or_curly_bracket_or_initializer: [{match: '{{non_token}}'}, {match: '[,}]', pop: true},
   {match: '{{otherwise}}', set: [_continue_parameter_binding_until_comma_or_curly_bracket_or_initializer, parameter_binding]}]
   _continue_parameter_binding_until_comma_or_curly_bracket_or_initializer: [{match: '{{non_token}}'}, {match: '=', scope: keyword.operator.js, pop: true}, {match: '[,}]', pop: true}, {include: otherwise_invalid}]
+
+  parameter_binding_until_comma_or_square_bracket_or_initializer: [{match: '{{non_token}}'}, {match: '[,\]]', pop: true},
+  {match: '{{otherwise}}', set: [_continue_parameter_binding_until_comma_or_square_bracket_or_initializer, parameter_binding]}]
+  _continue_parameter_binding_until_comma_or_square_bracket_or_initializer: [{match: '{{non_token}}'}, {match: '=', scope: keyword.operator.js, pop: true}, {match: '[,\]]', pop: true}, {include: otherwise_invalid}]
 
   end_of_statement: [{match: '{{statement_terminator}}', pop: true}, {include: otherwise_invalid}]
   otherwise_invalid: [{match: '{{token}}', scope: invalid.illegal.js}]
@@ -696,11 +704,28 @@ contexts:
     - match: '(?<=\})'
       pop: true
 
-  parameter_binding:
-    - match: '\{'
-      set: [_object_destructuring_continue, _object_destructuring_value, _object_destructuring_pattern]
-    # - match: '\['
-    #   set: _array_destructuring_pattern
+  _array_destructuring_pattern:
+    - match: '{{non_token}}'
+    - match: '\.\.\.'
+      scope: keyword.operator.js
+      set: [_array_destructuring_end, _parameter_binding_identifier]
+    - include: parameter_binding_until_comma_or_square_bracket_or_initializer
+
+  _array_destructuring_continue:
+    - match: '(?<==)'
+      push: expression_until_comma_or_square_bracket
+    - match: '(?<=,)'
+      push: _array_destructuring_pattern
+    - match: '(?<=\])'
+      pop: true
+    - include: otherwise_invalid
+
+  _array_destructuring_end:
+    - match: '\]'
+      pop: true
+    - include: otherwise_invalid
+
+  _parameter_binding_identifier:
     - match: '{{reserved_word}}'
       scope: invalid.illegal.js
       pop: true
@@ -708,6 +733,13 @@ contexts:
       scope: variable.language.js
       pop: true
     - include: otherwise_invalid
+
+  parameter_binding:
+    - match: '\{'
+      set: [_object_destructuring_continue, _object_destructuring_value, _object_destructuring_pattern]
+    - match: '\['
+      set: [_array_destructuring_continue, _array_destructuring_pattern]
+    - include: _parameter_binding_identifier
 
   variable_binding:
     - include: otherwise_invalid
