@@ -154,7 +154,7 @@ contexts:
   if_statement:
     - match: '{{b_before}}if{{b_after}}'
       scope: keyword.control.js
-      set: [_optional_else_statement, statement, parenthesized_expression]
+      set: [_optional_else_statement, statement, expression_until_parenthesis, need_opening_parenthesis]
 
   _optional_else_statement:
     - match: '{{non_token}}'
@@ -167,7 +167,7 @@ contexts:
   with_or_while_statement:
     - match: '{{b_before}}(?:while|with){{b_after}}'
       scope: keyword.control.js
-      set: [statement, parenthesized_expression]
+      set: [statement, expression_until_parenthesis, need_opening_parenthesis]
 
   do_statement:
     - match: '{{b_before}}do{{b_after}}'
@@ -176,7 +176,7 @@ contexts:
 
   _do_while:
     - match: '{{b_before}}while{{b_after}}'
-      set: parenthesized_expression
+      set: [expression_until_parenthesis, need_opening_parenthesis]
 
   for_statement:
     - match: '{{b_before}}for{{b_after}}'
@@ -222,7 +222,7 @@ contexts:
   switch_statement:
     - match: '{{b_before}}switch{{b_after}}'
       scope: keyword.control.js
-      set: [_switch_statement_block, need_opening_curly_bracket, parenthesized_expression]
+      set: [_switch_statement_block, need_opening_curly_bracket, expression_until_parenthesis, need_opening_parenthesis]
 
   _switch_statement_block:
     - match: '{{non_token}}'
@@ -304,7 +304,7 @@ contexts:
 
 
 
-  primary_expression:
+  primary_expression: # TODO: support spread/rest operator in certain contexts
     - match: '{{non_token}}'
     - include: parenthesized_expression
     - include: string_literal
@@ -319,16 +319,24 @@ contexts:
     # - include: arrow_function_expression
     - include: constant_or_variable
     - include: new_keyword
+    - include: prefix_operators
     - include: unary_operators
     - include: reserved_word_reference
     - include: identifier_reference
-    - include: otherwise_invalid # Could be invalid_identifier_reference
+    - include: otherwise_invalid
 
 
+
+  _optional_postfix_operator:
+    - match: '--|\+\+'
+      scope: keyword.operator.js
+      pop: true
+    - match: '{{otherwise}}'
+      pop: true
 
   parenthesized_expression:
     - match: '\('
-      set: expression_until_parenthesis
+      set: [_optional_postfix_operator, expression_until_parenthesis]
 
   string_literal:
     - match: '(''|")(use strict)(\1)'
@@ -521,8 +529,20 @@ contexts:
     - match: '{{otherwise}}'
       pop: true
 
-  # It's okay not to pop here because unary_operators are only used via the
-  # primary_expression context.
+  prefix_operators:
+    - match: '(?<!-)--|(?<!\+)\+\+'
+      scope: keyword.operator.js
+      set:
+        - match: '\('
+          set: expression_until_parenthesis
+        - include: reserved_word_reference
+        - match: '{{b_before}}(?:undefined|Infinity|NaN){{b_after}}'
+          scope: invalid.illegal.js
+          pop: true
+        - match: '{{ident}}'
+          pop: true
+        - include: otherwise_invalid
+
   unary_operators:
     - match: '{{b_before}}yield(?:{{to_token}}\*|{{b_after}})'
       scope: keyword.operator.js
@@ -531,7 +551,7 @@ contexts:
         - match: '(?={{line_terminator}})'
           pop: true
         - include: primary_expression
-    - match: '!|--?+|\+\+?+|\.\.\.|{{b_before}}(?:typeof|void|delete|await){{b_after}}'
+    - match: '!|(?<!\+)\+(?!\+)|(?<!-)-(?!-)|{{b_before}}(?:typeof|void|delete|await){{b_after}}'
       scope: keyword.operator.js
       set: primary_expression
     - match: '~'
@@ -554,12 +574,7 @@ contexts:
       scope: support.function.js
       pop: true
     - match: '{{ident}}'
-      pop: true
-
-  # invalid_identifier_reference:
-  #   - match: '{{b_before}}[{{ident_part}}]++{{b_after}}'
-  #     scope: invalid.illegal.js
-  #     pop: true
+      set: _optional_postfix_operator
 
 
 
@@ -590,9 +605,6 @@ contexts:
     - match: '\*\*|-=|\+=|===?+|!==?+|<=|>=|&&|\|\||\*=?+|/=|%='
       scope: keyword.operator.js
       set: primary_expression
-    - match: '\+\+|--'
-      scope: keyword.operator.js
-      pop: true
     - match: '!|%|\*|/|-|\+|=|<|>|{{b_before}}in{{b_after}}'
       scope: keyword.operator.js
       set: primary_expression
@@ -616,7 +628,7 @@ contexts:
           pop: true
         - match: '{{ident}}'
           pop: true
-        - include: otherwise_invalid # Could be invalid_identifier_reference
+        - include: otherwise_invalid
 
   square_bracket_reference:
     - match: '\['
