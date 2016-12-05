@@ -123,9 +123,6 @@ contexts:
   {match: '{{otherwise}}', set: [_continue_parameter_binding_for_statement, _parameter_binding]}]
   _continue_parameter_binding_for_statement: [{match: '{{non_token}}'}, {match: '(?==)', scope: keyword.operator.js, pop: true}, {match: '(?=[,;)]|{{b_before}}(?:of|in){{b_after}})', pop: true}, {include: otherwise_invalid}]
 
-  # parameter_binding_unless_empty: [{match: '{{space}}*+{{line_terminator}}', pop: true},
-  # {match: '{{otherwise}}', set: _parameter_binding}]
-
   end_of_statement: [{match: '{{statement_terminator}}', pop: true}, {include: otherwise_invalid}]
   otherwise_invalid: [{match: '{{token}}', scope: invalid.illegal.js}]
 
@@ -168,37 +165,41 @@ contexts:
         - match: '{{otherwise}}'
           push: statement
 
-  # variable_statement:
-  #   - match: '{{b_before}}(?:var|let|const){{b_after}}'
-  #     scope: storage.type.js
-  #     set: [_variable_statement_continue, _variable_initializer, parameter_binding_unless_empty]
+  variable_statement:
+    - match: '{{b_before}}(?:var|let|const){{b_after}}'
+      scope: storage.type.js
+      set: _variable_binding_unless_empty
 
-  # _variable_initializer:
-  #   - match: '(?<=[}\]])'
-  #     set:
-  #       - match: '='
-  #         scope: keyword.operator.js
-  #         set: [_variable_initializer_continue, primary_expression]
-  #       - include: otherwise_invalid
-  #   - match: '{{otherwise}}'
-  #     pop: true
+  _variable_binding_unless_empty:
+    - match: '{{space}}*+{{line_terminator}}'
+      pop: true
+    - match: '{{otherwise}}'
+      set: [_variable_statement_continue, _variable_initializer, _parameter_binding]
 
-  # _variable_statement_continue:
-  #   - match: '='
-  #     scope: keyword.operator.js
-  #     push: [_variable_initializer_continue, primary_expression]
-  #   - match: '(?<=;)'
-  #     pop: true
-  #   - match: ','
-  #     push: [_variable_initializer, parameter_binding_unless_empty]
-  #   - include: end_of_statement
+  _variable_initializer:
+    - match: '(?<=[}\]])'
+      set:
+        - match: '='
+          scope: keyword.operator.js
+          set: [_variable_initializer_continue, primary_expression]
+        - include: otherwise_invalid
+    - match: '{{otherwise}}'
+      pop: true
 
-  # _variable_initializer_continue:
-  #   - match: '{{otherwise}}'
-  #     set: secondary_expressions_until_end_of_statement
-  #     with_prototype:
-  #       - match: '(?=,)'
-  #         pop: true
+  _variable_statement_continue:
+    - match: '='
+      scope: keyword.operator.js
+      push: [_variable_initializer_continue, primary_expression]
+    - match: ','
+      set: _variable_binding_unless_empty
+    - include: end_of_statement
+
+  _variable_initializer_continue:
+    - match: '{{otherwise}}'
+      set: secondary_expressions_until_end_of_statement
+      with_prototype:
+        - match: '(?=,)'
+          pop: true
 
   if_statement:
     - match: '{{b_before}}if{{b_after}}'
