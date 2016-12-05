@@ -87,9 +87,9 @@ contexts:
   {match: '{{otherwise}}', set: [_continue_expression_until_end_of_template_interpolation, primary_expression]}]
   _continue_expression_until_end_of_template_interpolation: [{match: '{{non_token}}'}, {match: '\}', scope: variable.language.js, set: _template_literal_contents}, {match: '{{otherwise}}', push: secondary_expression}]
 
-  expression_until_semicolon: [{match: '{{non_token}}'}, {match: ';', pop: true},
-  {match: '{{otherwise}}', set: [_continue_expression_until_semicolon, primary_expression]}]
-  _continue_expression_until_semicolon: [{match: '{{non_token}}'}, {match: ';', pop: true}, {match: '{{otherwise}}', push: secondary_expression}]
+  expression_until_for_statement_third_section: [{match: '{{non_token}}'}, {match: ';|(?=\))', pop: true},
+  {match: '{{otherwise}}', set: [_continue_expression_until_for_statement_third_section, primary_expression]}]
+  _continue_expression_until_for_statement_third_section: [{match: '{{non_token}}'}, {match: ';|(?=\))', pop: true}, {match: '{{otherwise}}', push: secondary_expression}]
 
   expression_until_colon: [{match: '{{non_token}}'}, {match: ':', pop: true},
   {match: '{{otherwise}}', set: [_continue_expression_until_colon, primary_expression]}]
@@ -103,21 +103,29 @@ contexts:
   {match: '{{otherwise}}', set: [_continue_expression_until_comma_or_square_bracket, primary_expression]}]
   _continue_expression_until_comma_or_square_bracket: [{match: '{{non_token}}'}, {match: '[,\]]', pop: true}, {match: '{{otherwise}}', push: secondary_expression}]
 
+  expression_until_for_binding: [{match: '{{non_token}}'}, {match: '(?=[,;)])', pop: true}, {match: '(?={{b_before}}(?:of|in){{b_after}})', scope: invalid.illegal.js},
+  {match: '{{otherwise}}', set: [_continue_expression_until_for_binding, primary_expression]}]
+  _continue_expression_until_for_binding: [{match: '{{non_token}}'}, {match: '(?=[,;)])', pop: true}, {match: '{{b_before}}(?:of|in){{b_after}}', scope: invalid.illegal.js}, {match: '{{otherwise}}', push: secondary_expression}]
+
   expression_until_end_of_statement: [{match: '{{space}}++'}, {match: '{{statement_terminator}}', pop: true},
   {match: '{{otherwise}}', set: [_continue_expression_until_end_of_statement, primary_expression]}]
   _continue_expression_until_end_of_statement: [{match: '{{space}}++'}, {match: '{{statement_terminator}}', pop: true}, {match: '{{otherwise}}', push: secondary_expression}]
 
   parameter_binding_until_parenthesis: [{match: '{{non_token}}'}, {match: '\)', pop: true},
-  {match: '{{otherwise}}', set: [_continue_parameter_binding_until_parenthesis, parameter_binding]}]
+  {match: '{{otherwise}}', set: [_continue_parameter_binding_until_parenthesis, _parameter_binding]}]
   _continue_parameter_binding_until_parenthesis: [{match: '{{non_token}}'}, {match: '\)', pop: true}, {include: otherwise_invalid}]
 
   parameter_binding_until_comma_or_curly_bracket_or_initializer: [{match: '{{non_token}}'}, {match: '[,}]', pop: true},
-  {match: '{{otherwise}}', set: [_continue_parameter_binding_until_comma_or_curly_bracket_or_initializer, parameter_binding]}]
+  {match: '{{otherwise}}', set: [_continue_parameter_binding_until_comma_or_curly_bracket_or_initializer, _parameter_binding]}]
   _continue_parameter_binding_until_comma_or_curly_bracket_or_initializer: [{match: '{{non_token}}'}, {match: '=', scope: keyword.operator.js, pop: true}, {match: '[,}]', pop: true}, {include: otherwise_invalid}]
 
   parameter_binding_until_comma_or_square_bracket_or_initializer: [{match: '{{non_token}}'}, {match: '[,\]]', pop: true},
-  {match: '{{otherwise}}', set: [_continue_parameter_binding_until_comma_or_square_bracket_or_initializer, parameter_binding]}]
+  {match: '{{otherwise}}', set: [_continue_parameter_binding_until_comma_or_square_bracket_or_initializer, _parameter_binding]}]
   _continue_parameter_binding_until_comma_or_square_bracket_or_initializer: [{match: '{{non_token}}'}, {match: '=', scope: keyword.operator.js, pop: true}, {match: '[,\]]', pop: true}, {include: otherwise_invalid}]
+
+  parameter_binding_for_statement: [{match: '{{non_token}}'}, {match: '(?=[,;)]|{{b_before}}(?:of|in){{b_after}})', pop: true},
+  {match: '{{otherwise}}', set: [_continue_parameter_binding_for_statement, _parameter_binding]}]
+  _continue_parameter_binding_for_statement: [{match: '{{non_token}}'}, {match: '(?==)', scope: keyword.operator.js, pop: true}, {match: '(?=[,;)]|{{b_before}}(?:of|in){{b_after}})', pop: true}, {include: otherwise_invalid}]
 
   end_of_statement: [{match: '{{statement_terminator}}', pop: true}, {include: otherwise_invalid}]
   otherwise_invalid: [{match: '{{token}}', scope: invalid.illegal.js}]
@@ -159,6 +167,41 @@ contexts:
         - match: '{{otherwise}}'
           push: statement
 
+  # variable_statement:
+  #   - match: '{{b_before}}(?:var|let|const){{b_after}}'
+  #     scope: storage.type.js
+  #     set: _variable_binding_list
+
+  # _variable_binding:
+  #   match: '{{otherwise}}'
+  #   set: [_variable_initializer, _parameter_binding]
+
+  # _variable_binding_list:
+  #   match: '{{otherwise}}'
+  #   set: [_variable_binding_continue, _variable_initializer, _parameter_binding]
+
+  # _variable_initializer:
+  #   - match: '(?<![}\]])'
+  #     set:
+  #       - match: '='
+  #         scope: keyword.operator.js
+  #         set: expression
+  #       - include: otherwise_invalid
+  #   - match: '{{otherwise}}'
+  #     set:
+  #       - match: '{{non_token}}'
+  #       - match: '='
+  #         scope: keyword.operator.js
+  #         set: expression
+  #       - match: '{{otherwise}}'
+  #         pop: true
+
+  # _variable_binding_continue:
+  #   - match: '(?<=,)'
+  #     push: [_variable_initializer, _parameter_binding]
+  #   - match: '(?<=;)'
+  #     pop: true
+
   if_statement:
     - match: '{{b_before}}if{{b_after}}'
       scope: keyword.control.js
@@ -193,38 +236,53 @@ contexts:
 
   _for_statement_first_section:
     - match: '{{non_token}}'
+    - match: '\)'
+      set: statement
     - match: '{{b_before}}(?:var|let|const){{b_after}}'
       scope: storage.type.js
-      set: [_for_statement_interpret_binding, variable_binding]
+      set: [_for_statement_interpret_binding, parameter_binding_for_statement]
     - match: ';'
-      set: [statement, expression_until_parenthesis, expression_until_semicolon]
+      set: [statement, expression_until_parenthesis, expression_until_for_statement_third_section]
     - match: '{{otherwise}}'
       set: [_for_statement_interpret_expression, primary_expression]
 
   _for_statement_interpret_expression:
     - match: '{{non_token}}'
+    - match: '\)'
+      set: statement
     - match: ';'
-      set: [statement, expression_until_parenthesis, expression_until_semicolon]
+      set: [statement, expression_until_parenthesis, expression_until_for_statement_third_section]
     - match: '{{b_before}}(?:of|in){{b_after}}'
+      scope: keyword.operator.js
       set: [statement, expression_until_parenthesis]
     - match: '{{otherwise}}'
       push: secondary_expression
 
   _for_statement_interpret_binding:
-    - match: ';'
-      set: [statement, expression_until_parenthesis, expression_until_semicolon]
+    - match: '\)'
+      set: statement
+    - match: '='
+      scope: keyword.operator.js
+      set: [_for_statement_variable_binding_continuation, expression_until_for_binding]
     - match: ','
-      set: [_for_statement_variable_binding_continuation, variable_binding]
+      set: [_for_statement_variable_binding_continuation, parameter_binding_for_statement]
+    - match: ';'
+      set: [statement, expression_until_parenthesis, expression_until_for_statement_third_section]
     - match: '{{b_before}}(?:of|in){{b_after}}'
+      scope: keyword.operator.js
       set: [statement, expression_until_parenthesis]
-    - match: '{{b_before}}(?:o|i){{b_after}}'
     - include: otherwise_invalid
 
   _for_statement_variable_binding_continuation:
+    - match: '\)'
+      set: statement
+    - match: '='
+      scope: keyword.operator.js
+      push: expression_until_for_binding
     - match: ','
-      push: variable_binding
+      push: parameter_binding_for_statement
     - match: ';'
-      set: [statement, expression_until_parenthesis, expression_until_semicolon]
+      set: [statement, expression_until_parenthesis, expression_until_for_statement_third_section]
     - include: otherwise_invalid
 
   switch_statement:
@@ -657,13 +715,13 @@ contexts:
     - match: '\?'
       set: expression_until_colon
 
-  function_invocation: # TODO: this should allow a trailing comma
+  function_invocation: # TODO: this should allow a trailing comma, as well as the spread operator
     - match: '\('
       set: expression_until_parenthesis
 
 
 
-  property_name:
+  _property_name:
     - match: '{{ident}}(?={{to_token}}:)' # this doesn't extend through new lines
       scope: entity.other.js
       pop: true
@@ -675,7 +733,7 @@ contexts:
   _object_destructuring_pattern:
     - match: '\}'
       pop: true
-    - include: property_name
+    - include: _property_name
     - match: '{{reserved_word}}'
       scope: invalid.illegal.js
       set: _continue_parameter_binding_until_comma_or_curly_bracket_or_initializer
@@ -734,13 +792,10 @@ contexts:
       pop: true
     - include: otherwise_invalid
 
-  parameter_binding:
+  _parameter_binding:
     - match: '\{'
       set: [_object_destructuring_continue, _object_destructuring_value, _object_destructuring_pattern]
     - match: '\['
       set: [_array_destructuring_continue, _array_destructuring_pattern]
     - include: _parameter_binding_identifier
-
-  variable_binding:
-    - include: otherwise_invalid
 
