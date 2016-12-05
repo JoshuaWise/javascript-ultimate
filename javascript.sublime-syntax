@@ -107,10 +107,6 @@ contexts:
   {match: '{{otherwise}}', set: [_continue_expression_until_for_binding, primary_expression]}]
   _continue_expression_until_for_binding: [{match: '{{non_token}}'}, {match: '(?=[,;)])', pop: true}, {match: '{{b_before}}(?:of|in){{b_after}}', scope: invalid.illegal.js}, {match: '{{otherwise}}', push: secondary_expression}]
 
-  expression_until_end_of_statement: [{match: '{{space}}++'}, {match: '{{statement_terminator}}', pop: true},
-  {match: '{{otherwise}}', set: [_continue_expression_until_end_of_statement, primary_expression]}]
-  _continue_expression_until_end_of_statement: [{match: '{{space}}++'}, {match: '{{statement_terminator}}', pop: true}, {match: '{{otherwise}}', push: secondary_expression}]
-
   parameter_binding_until_parenthesis: [{match: '{{non_token}}'}, {match: '\)', pop: true},
   {match: '{{otherwise}}', set: [_continue_parameter_binding_until_parenthesis, _parameter_binding]}]
   _continue_parameter_binding_until_parenthesis: [{match: '{{non_token}}'}, {match: '\)', pop: true}, {include: otherwise_invalid}]
@@ -127,6 +123,9 @@ contexts:
   {match: '{{otherwise}}', set: [_continue_parameter_binding_for_statement, _parameter_binding]}]
   _continue_parameter_binding_for_statement: [{match: '{{non_token}}'}, {match: '(?==)', scope: keyword.operator.js, pop: true}, {match: '(?=[,;)]|{{b_before}}(?:of|in){{b_after}})', pop: true}, {include: otherwise_invalid}]
 
+  # parameter_binding_unless_empty: [{match: '{{space}}*+{{line_terminator}}', pop: true},
+  # {match: '{{otherwise}}', set: _parameter_binding}]
+
   end_of_statement: [{match: '{{statement_terminator}}', pop: true}, {include: otherwise_invalid}]
   otherwise_invalid: [{match: '{{token}}', scope: invalid.illegal.js}]
 
@@ -141,7 +140,7 @@ contexts:
     # TODO:
     # - include: import_statement
     # - include: export_statement
-    # - include: variable_statement
+    - include: variable_statement
     # - include: declaration
     - include: if_statement
     - include: with_or_while_statement
@@ -153,8 +152,10 @@ contexts:
     - include: termination_statement
     - include: debugger_statement
     - include: labelled_statement
+    - match: ';'
+      pop: true
     - match: '{{otherwise}}'
-      set: expression_until_end_of_statement
+      set: [secondary_expressions_until_end_of_statement, primary_expression]
 
 
 
@@ -170,37 +171,34 @@ contexts:
   # variable_statement:
   #   - match: '{{b_before}}(?:var|let|const){{b_after}}'
   #     scope: storage.type.js
-  #     set: _variable_binding_list
-
-  # _variable_binding:
-  #   match: '{{otherwise}}'
-  #   set: [_variable_initializer, _parameter_binding]
-
-  # _variable_binding_list:
-  #   match: '{{otherwise}}'
-  #   set: [_variable_binding_continue, _variable_initializer, _parameter_binding]
+  #     set: [_variable_statement_continue, _variable_initializer, parameter_binding_unless_empty]
 
   # _variable_initializer:
-  #   - match: '(?<![}\]])'
+  #   - match: '(?<=[}\]])'
   #     set:
   #       - match: '='
   #         scope: keyword.operator.js
-  #         set: expression
+  #         set: [_variable_initializer_continue, primary_expression]
   #       - include: otherwise_invalid
   #   - match: '{{otherwise}}'
-  #     set:
-  #       - match: '{{non_token}}'
-  #       - match: '='
-  #         scope: keyword.operator.js
-  #         set: expression
-  #       - match: '{{otherwise}}'
-  #         pop: true
+  #     pop: true
 
-  # _variable_binding_continue:
-  #   - match: '(?<=,)'
-  #     push: [_variable_initializer, _parameter_binding]
+  # _variable_statement_continue:
+  #   - match: '='
+  #     scope: keyword.operator.js
+  #     push: [_variable_initializer_continue, primary_expression]
   #   - match: '(?<=;)'
   #     pop: true
+  #   - match: ','
+  #     push: [_variable_initializer, parameter_binding_unless_empty]
+  #   - include: end_of_statement
+
+  # _variable_initializer_continue:
+  #   - match: '{{otherwise}}'
+  #     set: secondary_expressions_until_end_of_statement
+  #     with_prototype:
+  #       - match: '(?=,)'
+  #         pop: true
 
   if_statement:
     - match: '{{b_before}}if{{b_after}}'
@@ -349,7 +347,11 @@ contexts:
   termination_statement:
     - match: '{{b_before}}(?:return|throw){{b_after}}'
       scope: keyword.control.js
-      set: expression_until_end_of_statement
+      set:
+        - match: '{{space}}*+{{statement_terminator}}'
+          pop: true
+        - match: '{{otherwise}}'
+          set: [secondary_expressions_until_end_of_statement, primary_expression]
 
   debugger_statement:
     - match: '{{b_before}}debugger{{b_after}}'
@@ -667,6 +669,23 @@ contexts:
     - match: '{{token}}'
       scope: invalid.illegal.js
       pop: true
+
+
+
+  secondary_expressions_until_end_of_statement:
+    - match: '{{line_terminator}}'
+      set:
+        - include: _secondary_expressions_same_line
+        - match: '(?={{token}})'
+          pop: true
+    - include: _secondary_expressions_same_line
+    - include: otherwise_invalid
+
+  _secondary_expressions_same_line:
+    - match: ';'
+      pop: true
+    - match: '(?=>>>?+=?+|<<=?+|&=|\^=|\|=|\*\*|-=|\+=|===?+|!==?+|<=|>=|&&|\|\||\*=?+|/=|%=|!|%|\*|/|-|\+|=|<|>|{{b_before}}(?:in|instanceof){{b_after}})|&|\^|~|\||,|\.|\[|\(|\?'
+      set: [secondary_expressions_until_end_of_statement, secondary_expression]
 
 
 
