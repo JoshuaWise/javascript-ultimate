@@ -685,7 +685,7 @@ contexts:
   _secondary_expressions_same_line:
     - match: ';'
       pop: true
-    - match: '(?=>>>?+=?+|<<=?+|&=|\^=|\|=|\*\*|-=|\+=|===?+|!==?+|<=|>=|&&|\|\||\*=?+|/=|%=|!|%|\*|/|-|\+|=|<|>|{{b_before}}(?:in|instanceof){{b_after}})|&|\^|~|\||,|\.|\[|\(|\?'
+    - match: '(?=>>>?+=?+|<<=?+|&=|\^=|\|=|\*\*|-=|\+=|===?+|!==?+|<=|>=|&&|\|\||\*=?+|/=|%=|!|%|\*|/|-|\+|=|<|>|{{b_before}}(?:in|instanceof){{b_after}}|&|\^|~|\||,|\.|\[|\(|\?)'
       set: [secondary_expressions_until_end_of_statement, secondary_expression]
 
 
