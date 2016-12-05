@@ -665,6 +665,8 @@ contexts:
     - include: string_literal
 
   _object_destructuring_pattern:
+    - match: '\}'
+      pop: true
     - include: property_name
     - match: '{{reserved_word}}'
       scope: invalid.illegal.js
@@ -684,7 +686,7 @@ contexts:
 
   _object_destructuring_continue:
     - match: '(?<==)'
-      set: expression_until_comma_or_curly_bracket
+      push: expression_until_comma_or_curly_bracket
     - match: '(?<=,)'
       push: [_object_destructuring_value, _object_destructuring_pattern]
     - match: '(?<=\})'
