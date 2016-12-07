@@ -24,6 +24,7 @@ variables:
   unicode_escape_sequence: '(?:u\h{4}|u\{\h++\})'
   common_regexp_escape_sequences: '(?:{{hex_escape_sequence}}|{{unicode_escape_sequence}}|c[a-zA-Z]|0(?![0-9])|[1-9][0-9]*+)'
   common_regexp_operators: '(?:\^|\$|\\|\.|\*|\+|\?|\(|\)|\[|\]|\{|\}|\||\/)'
+  secondary_expression_ahead: '(?=>>>?+=?+|<<=?+|&=|\^=|\|=|\*\*|-=|\+=|===?+|!==?+|<=|>=|&&|\|\||\*=?+|/=|%=|!|%|\*|/|-|\+|=|<|>|{{b_before}}(?:in|instanceof){{b_after}}|&|\^|~|\||,|\.|\[|\(|\?)'
 
   # Articulatory JavaScript categories
   space: '[{{space_chars}}]'
@@ -123,6 +124,12 @@ contexts:
   {match: '{{otherwise}}', set: [_continue_parameter_binding_for_statement, _parameter_binding]}]
   _continue_parameter_binding_for_statement: [{match: '{{non_token}}'}, {match: '(?==)', scope: keyword.operator.js, pop: true}, {match: '(?=[,;)]|{{b_before}}(?:of|in){{b_after}})', pop: true}, {include: otherwise_invalid}]
 
+  secondary_expressions_until_end_of_statement: [{match: '{{line_terminator}}', set: [{include: _continue_secondary_expressions_until_end_of_statement}, {match: '(?={{token}})', pop: true}]}, {include: _continue_secondary_expressions_until_end_of_statement}, {include: otherwise_invalid}]
+  _continue_secondary_expressions_until_end_of_statement: [{match: ';', pop: true}, {match: '{{secondary_expression_ahead}}', set: [secondary_expressions_until_end_of_statement, secondary_expression]}]
+
+  secondary_expressions_until_variable_binding: [{match: '{{line_terminator}}', set: [{include: _continue_secondary_expressions_until_variable_binding}, {match: '(?={{token}})', pop: true}]}, {include: _continue_secondary_expressions_until_variable_binding}, {include: otherwise_invalid}]
+  _continue_secondary_expressions_until_variable_binding: [{match: ';', pop: true}, {match: ',', set: _variable_binding}, {match: '{{secondary_expression_ahead}}', set: [secondary_expressions_until_variable_binding, secondary_expression]}]
+
   end_of_statement: [{match: '{{statement_terminator}}', pop: true}, {include: otherwise_invalid}]
   otherwise_invalid: [{match: '{{token}}', scope: invalid.illegal.js}]
 
@@ -168,38 +175,48 @@ contexts:
   variable_statement:
     - match: '{{b_before}}(?:var|let|const){{b_after}}'
       scope: storage.type.js
-      set: _variable_binding_unless_empty
+      set: _variable_binding
 
-  _variable_binding_unless_empty:
-    - match: '{{space}}*+{{line_terminator}}'
-      pop: true
-    - match: '{{otherwise}}'
-      set: [_variable_statement_continue, _variable_initializer, _parameter_binding]
+  _variable_binding:
+    - match: '{{line_terminator}}'
+      set:
+        - include: _continue_variable_binding
+        - match: '(?={{token}})'
+          pop: true
+    - include: _continue_variable_binding
+    - include: otherwise_invalid
+
+  _continue_variable_binding:
+    - match: '(?!{{reserved_word}})(?=\{|\[|{{ident}})'
+      set: [_variable_initializer, _parameter_binding]
 
   _variable_initializer:
     - match: '(?<=[}\]])'
       set:
         - match: '='
           scope: keyword.operator.js
-          set: [_variable_initializer_continue, primary_expression]
+          set: [secondary_expressions_until_variable_binding, primary_expression]
         - include: otherwise_invalid
     - match: '{{otherwise}}'
-      pop: true
+      set: _variable_statement_continue
 
   _variable_statement_continue:
+    - match: '{{line_terminator}}'
+      set:
+        - include: _continue_variable_statement_continue
+        - match: '(?={{token}})'
+          pop: true
+    - include: _continue_variable_statement_continue
+    - include: otherwise_invalid
+
+  _continue_variable_statement_continue:
+    - match: ';'
+      pop: true
     - match: '='
       scope: keyword.operator.js
-      push: [_variable_initializer_continue, primary_expression]
+      set: [secondary_expressions_until_variable_binding, primary_expression]
     - match: ','
-      set: _variable_binding_unless_empty
-    - include: end_of_statement
-
-  _variable_initializer_continue:
-    - match: '{{otherwise}}'
-      set: secondary_expressions_until_end_of_statement
-      with_prototype:
-        - match: '(?=,)'
-          pop: true
+      set: _variable_binding
 
   if_statement:
     - match: '{{b_before}}if{{b_after}}'
@@ -658,6 +675,7 @@ contexts:
 
 
 
+  # Any time this is changed in any way, update the {{secondary_expression_ahead}} variable.
   secondary_expression:
     - match: '{{non_token}}'
     - include: instanceof_keyword
@@ -670,23 +688,6 @@ contexts:
     - match: '{{token}}'
       scope: invalid.illegal.js
       pop: true
-
-
-
-  secondary_expressions_until_end_of_statement:
-    - match: '{{line_terminator}}'
-      set:
-        - include: _secondary_expressions_same_line
-        - match: '(?={{token}})'
-          pop: true
-    - include: _secondary_expressions_same_line
-    - include: otherwise_invalid
-
-  _secondary_expressions_same_line:
-    - match: ';'
-      pop: true
-    - match: '(?=>>>?+=?+|<<=?+|&=|\^=|\|=|\*\*|-=|\+=|===?+|!==?+|<=|>=|&&|\|\||\*=?+|/=|%=|!|%|\*|/|-|\+|=|<|>|{{b_before}}(?:in|instanceof){{b_after}}|&|\^|~|\||,|\.|\[|\(|\?)'
-      set: [secondary_expressions_until_end_of_statement, secondary_expression]
 
 
 
