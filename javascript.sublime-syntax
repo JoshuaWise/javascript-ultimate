@@ -424,7 +424,7 @@ contexts:
         2: comment.directive.js
         3: punctuation.definition.string.end.js
       pop: true
-    - match: '{{otherwise}}'''
+    - match: ''''
       scope: punctuation.definition.string.begin.js
       set: _string_contents
       with_prototype:
@@ -433,7 +433,7 @@ contexts:
       scope: punctuation.definition.string.begin.js
       set: _string_contents
       with_prototype:
-        - match: '{{otherwise}}'''
+        - match: ''''
 
   _string_contents:
     - meta_include_prototype: false
