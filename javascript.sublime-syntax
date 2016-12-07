@@ -17,7 +17,6 @@ variables:
   line_terminator_chars: '\x{000a}\x{000d}\x{2028}\x{2029}'
 
   # Low-level JavaScript categories
-  operator: '[`~!@#%^&*-=+(){}\[\]\\|;:''"<>?,./]'
   keyword: '(?:break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|function|if|import|in|instanceof|new|return|super|switch|this|throw|try|typeof|var|void|while|with|yield|let|static)'
   future_reserved_word: '(?:enum|await|implements|interface|package|private|protected|public)'
   hex_escape_sequence: '(?:x\h{2})'
