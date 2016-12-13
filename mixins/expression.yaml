@@ -1,0 +1,211 @@
+# TODO: support spread/rest operator in certain contexts
+
+%%name%%:
+  - match: '{{otherwise}}'
+    set: [_secondary__%%name%%, _primary__%%name%%]
+
+_primary__%%name%%:
+  - match: '{{space}}++'
+  - match: '(?=%%exitMatch%%)'
+    pop: true
+  %%override%%
+  - include: parenthesized_expression
+  - include: string_literal
+  - include: template_literal
+  - include: regular_expression_literal
+  - include: numeric_literal
+  # TODO:
+  # - include: array_literal
+  # - include: object_literal
+  # - include: function_expression
+  # - include: class_expression
+  # - include: _arrow_function_expression
+  - include: constant_or_variable
+  - include: _new_keyword__%%name%%
+  - include: _prefix_operators__%%name%%
+  - include: _unary_operators__%%name%%
+  - include: reserved_word_reference
+  - include: identifier_reference
+  - include: otherwise_invalid
+
+_new_keyword__%%name%%:
+  - match: '{{b_before}}new{{b_after}}'
+    scope: keyword.operator.js
+    set:
+      - match: '{{space}}++'
+      - match: '(?=%%exitMatch%%)'
+        pop: true
+      - match: '\.'
+        scope: keyword.operator.js
+        set:
+          - match: '{{space}}++'
+          - match: '(?=%%exitMatch%%)'
+            pop: true
+          - match: '{{b_before}}target{{b_after}}'
+            scope: support.class.js
+            pop: true
+          - match: '{{b_before}}(?:t|ta|tar|targ|targe){{b_after}}'
+            pop: true
+          - match: '{{ident}}'
+            scope: invalid.illegal.js
+            pop: true
+          - include: otherwise_invalid
+      - include: _class_name_shallow__%%name%%
+
+_class_name_shallow__%%name%%:
+  - match: '\('
+    set: [_class_name_deep__%%name%%, expression_until_parenthesis]
+  - match: '{{reserved_word}}'
+    scope: invalid.illegal.js
+    set: _class_name_deep__%%name%%
+  - match: '{{ident}}'
+    scope: support.class.js
+    set: _class_name_deep__%%name%%
+  - match: '{{otherwise}}'
+    set: _primary__%%name%%
+
+_class_name_deep__%%name%%:
+  - match: '{{space}}++'
+  - match: '(?=%%exitMatch%%)'
+    pop: true
+  - match: '\.'
+    scope: support.class.js
+    push:
+      - match: '{{space}}++'
+      - match: '(?=%%exitMatch%%)'
+        pop: true
+      - match: '{{ident}}'
+        scope: support.class.js
+        pop: true
+      - include: otherwise_invalid
+  - match: '\['
+    push: expression_until_square_bracket
+  - match: '{{otherwise}}'
+    pop: true
+
+# Known bug:
+# A dot_reference or square_bracket_reference chained from this can have a
+# postfix operator after it, which should be illegal.
+_prefix_operators__%%name%%:
+  - match: '(?<!-)--|(?<!\+)\+\+'
+    scope: keyword.operator.js
+    set:
+      - match: '{{space}}++'
+      - match: '(?=%%exitMatch%%)'
+        pop: true
+      - include: reserved_word_reference
+      - match: '{{b_before}}(?:undefined|Infinity|NaN){{b_after}}'
+        scope: invalid.illegal.js
+        pop: true
+      - match: '({{ident}}){{to_token}}\.{{to_token}}(prototype){{b_after}}'
+        captures:
+          1: support.class.js
+          2: support.constant.js
+        pop: true
+      - match: '{{ident}}'
+        pop: true
+      - include: otherwise_invalid
+
+_unary_operators__%%name%%:
+  - match: '{{b_before}}yield(?:{{to_token}}\*|{{b_after}})'
+    scope: keyword.operator.js
+    set:
+      - match: '{{space}}++'
+      - match: '(?=%%exitMatch%%)'
+        pop: true
+      - match: '(?={{line_terminator}})'
+        pop: true
+      - include: _primary__%%name%%
+  - match: '!|(?<!\+)\+(?!\+)|(?<!-)-(?!-)|{{b_before}}(?:typeof|void|delete|await){{b_after}}'
+    scope: keyword.operator.js
+    set: _primary__%%name%%
+  - match: '~'
+    scope: bitwise-operator.js
+    set: _primary__%%name%%
+
+
+
+
+
+
+
+
+
+
+
+
+_secondary__%%name%%:
+  - match: '{{space}}++'
+  - match: '%%exitMatch%%'
+    %%exitType%%: %%exitTo%%
+    %%exitExtra%%
+  %%override%%
+  - include: _instanceof_keyword__%%name%%
+  - include: _binary_operators__%%name%%
+  - include: _dot_reference__%%name%%
+  - include: _square_bracket_reference__%%name%%
+  - include: _function_invocation__%%name%%
+  - include: _template_literal__%%name%%
+  - include: _conditional_expression__%%name%%
+  - include: otherwise_invalid
+
+_instanceof_keyword__%%name%%:
+  - match: '{{b_before}}instanceof{{b_after}}'
+    scope: keyword.operator.js
+    push:
+      - match: '{{space}}++'
+      - match: '(?=%%exitMatch%%)'
+        pop: true
+      - include: _class_name_shallow__%%name%%
+
+_binary_operators__%%name%%:
+  - match: '>>>?+=?+|<<=?+|&=|\^=|\|='
+    scope: bitwise-operator.js
+    push: _primary__%%name%%
+  - match: '\*\*|-=|\+=|===?+|!==?+|<=|>=|&&|\|\||\*=?+|/=|%='
+    scope: keyword.operator.js
+    push: _primary__%%name%%
+  - match: '%|\*|/|-|\+|=|<|>|{{b_before}}in{{b_after}}'
+    scope: keyword.operator.js
+    push: _primary__%%name%%
+  - match: '&|\^|~|\|'
+    scope: bitwise-operator.js
+    push: _primary__%%name%%
+  - match: ','
+    push: _primary__%%name%%
+
+_dot_reference__%%name%%:
+  - match: '\.'
+    set:
+      - match: '{{space}}++'
+      - match: '%%exitMatch%%'
+        %%exitType%%: %%exitTo%%
+        %%exitExtra%%
+      - match: '{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}'
+        scope: support.constant.js
+        push: [_primary__%%name%%, _optional_postfix_operator]
+      - match: '{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}'
+        scope: support.function.js
+        push: [_primary__%%name%%, _optional_postfix_operator]
+      - match: '{{b_before}}constructor{{b_after}}'
+        scope: support.class.js
+        push: [_primary__%%name%%, _optional_postfix_operator]
+      - match: '{{ident}}'
+        push: [_primary__%%name%%, _optional_postfix_operator]
+      - include: otherwise_invalid
+
+_square_bracket_reference__%%name%%:
+  - match: '\['
+    push: [_optional_postfix_operator, expression_until_square_bracket]
+
+_function_invocation__%%name%%: # TODO: this should allow a trailing comma, as well as the spread operator
+  - match: '\('
+    push: expression_until_parenthesis
+
+_template_literal__%%name%%:
+  - match: '(?=`)'
+    push: template_literal
+
+_conditional_expression__%%name%%:
+  - match: '\?'
+    push: [_primary__%%name%%, expression_until_colon]

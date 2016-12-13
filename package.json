@@ -1,0 +1,29 @@
+{
+  "name": "javascript-ultimate",
+  "version": "0.1.0",
+  "description": "A superior JavaScript syntax for Sublime Text.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoshuaWise/javascript-ultimate.git"
+  },
+  "keywords": [
+    "javascript",
+    "syntax",
+    "sublime",
+    "es5",
+    "es6"
+  ],
+  "author": "Joshua Wise <joshuathomaswise@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JoshuaWise/javascript-ultimate/issues"
+  },
+  "homepage": "https://github.com/JoshuaWise/javascript-ultimate#readme",
+  "dependencies": {
+    "glob": "^7.1.1",
+    "js-yaml": "^3.7.0"
+  }
+}
