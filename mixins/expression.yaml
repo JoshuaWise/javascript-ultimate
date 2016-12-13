@@ -1,5 +1,3 @@
-# TODO: support spread/rest operator in certain contexts
-
 %%name%%:
   %%~beforeAnything%%
   - match: '{{otherwise}}'
@@ -12,11 +10,11 @@ _primary_parts__%%name%%:
   - include: regular_expression_literal
   - include: numeric_literal
   # TODO:
-  # - include: array_literal
+  # - include: array_literal # TODO: support spread operator
   # - include: object_literal
-  # - include: function_expression
+  # - include: function_expression # TODO: support rest operator
   # - include: class_expression
-  # - include: _arrow_function_expression
+  # - include: _arrow_function_expression # TODO: support rest operator
   - include: constant_or_variable
   - include: _new_keyword__%%name%%
   - include: _prefix_operators__%%name%%
