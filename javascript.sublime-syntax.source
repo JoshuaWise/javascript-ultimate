@@ -135,6 +135,14 @@ contexts:
       {match: ',', set: _variable_binding}
     ]
   }
+  
+  expression_until_parameter_binding: {
+    mixin: expression,
+    exitMatch: '(?=\))',
+    exitType: pop,
+    exitTo: 'true',
+    overrideSecondary: {match: '(?=,)', pop: true}
+  }
 
   expression_until_parenthesis_with_spread: {
     mixin: expression,
@@ -166,6 +174,10 @@ contexts:
   {match: '{{otherwise}}', set: [_continue_parameter_binding_until_parenthesis, _parameter_binding]}]
   _continue_parameter_binding_until_parenthesis: [{match: '{{non_token}}'}, {match: '\)', pop: true}, {include: otherwise_invalid}]
 
+  parameter_binding_until_parenthesis_or_initializer_no_comma: [{match: '{{non_token}}'}, {match: '\)', pop: true},
+  {match: '{{otherwise}}', set: [_continue_parameter_binding_until_parenthesis_or_initializer_no_comma, _parameter_binding]}]
+  _continue_parameter_binding_until_parenthesis_or_initializer_no_comma: [{match: '{{non_token}}'}, {match: '\)', pop: true}, {match: '=', scope: keyword.operator.js, set: expression_until_parenthesis_no_comma}, {include: otherwise_invalid}]
+
   parameter_binding_until_comma_or_curly_bracket_or_initializer: [{match: '{{non_token}}'}, {match: '[,}]', pop: true},
   {match: '{{otherwise}}', set: [_continue_parameter_binding_until_comma_or_curly_bracket_or_initializer, _parameter_binding]}]
   _continue_parameter_binding_until_comma_or_curly_bracket_or_initializer: [{match: '{{non_token}}'}, {match: '=', scope: keyword.operator.js, pop: true}, {match: '[,}]', pop: true}, {include: otherwise_invalid}]
@@ -173,6 +185,10 @@ contexts:
   parameter_binding_until_comma_or_square_bracket_or_initializer: [{match: '{{non_token}}'}, {match: '[,\]]', pop: true},
   {match: '{{otherwise}}', set: [_continue_parameter_binding_until_comma_or_square_bracket_or_initializer, _parameter_binding]}]
   _continue_parameter_binding_until_comma_or_square_bracket_or_initializer: [{match: '{{non_token}}'}, {match: '=', scope: keyword.operator.js, pop: true}, {match: '[,\]]', pop: true}, {include: otherwise_invalid}]
+
+  parameter_binding_list: [{match: '{{non_token}}'}, {match: '\)', pop: true}, {match: '\.\.\.', scope: keyword.operator.js, set: parameter_binding_until_parenthesis_or_initializer_no_comma},
+  {match: '{{otherwise}}', set: [_continue_parameter_binding_list, _parameter_binding]}]
+  _continue_parameter_binding_list: [{match: '{{non_token}}'}, {match: '\)', pop: true}, {match: ',', set: parameter_binding_list}, {match: '=', scope: keyword.operator.js, push: expression_until_parameter_binding}, {include: otherwise_invalid}]
 
   parameter_binding_for_statement: [{match: '{{non_token}}'}, {match: '(?=[,;)]|{{b_before}}(?:of|in){{b_after}})', pop: true},
   {match: '{{otherwise}}', set: [_continue_parameter_binding_for_statement, _parameter_binding]}]
@@ -621,7 +637,19 @@ contexts:
     - match: '{{otherwise}}'
       pop: true
 
+  function_declaration:
+    - match: '{{b_before}}function{{b_after}}'
+      scope: storage.type.js
+      set: [block_statement, parameter_binding_list, _function_declaration_name]
 
+  _function_declaration_name:
+    - match: '({{reserved_word}}){{to_token}}\('
+      captures: {1: invalid.illegal.js}
+      pop: true
+    - match: '({{ident}}){{to_token}}\('
+      captures: {1: entity.name.function.js}
+      pop: true
+    - include: otherwise_invalid
 
 
 

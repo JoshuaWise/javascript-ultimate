@@ -12,7 +12,7 @@ _primary_parts__%%name%%:
   # TODO:
   # - include: array_literal # TODO: support spread operator
   # - include: object_literal
-  # - include: function_expression # TODO: support rest operator
+  - include: _function_expression__%%name%%
   # - include: class_expression
   # - include: _arrow_function_expression # TODO: support rest operator
   - include: constant_or_variable
@@ -128,7 +128,23 @@ _unary_operators__%%name%%:
     scope: bitwise-operator.js
     set: _primary__%%name%%
 
+_function_expression__%%name%%:
+  - match: '{{b_before}}function{{b_after}}'
+    scope: storage.type.js
+    set: [block_statement, parameter_binding_list, _function_expression_name__%%name%%]
 
+_function_expression_name__%%name%%:
+  - match: '{{space}}++'
+  - match: '(?=%%exitMatch%%)'
+    pop: true
+  - match: '({{reserved_word}}){{to_token}}\('
+    captures: {1: invalid.illegal.js}
+    pop: true
+  - match: '({{ident}}){{to_token}}\('
+    captures: {1: entity.name.function.js}
+    pop: true
+  - match: '\('
+    pop: true
 
 
 

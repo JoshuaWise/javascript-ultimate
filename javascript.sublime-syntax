@@ -125,6 +125,39 @@
                 "include": "otherwise_invalid"
             }
         ],
+        "parameter_binding_until_parenthesis_or_initializer_no_comma": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "\\)",
+                "pop": true
+            },
+            {
+                "match": "{{otherwise}}",
+                "set": [
+                    "_continue_parameter_binding_until_parenthesis_or_initializer_no_comma",
+                    "_parameter_binding"
+                ]
+            }
+        ],
+        "_continue_parameter_binding_until_parenthesis_or_initializer_no_comma": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "\\)",
+                "pop": true
+            },
+            {
+                "match": "=",
+                "scope": "keyword.operator.js",
+                "set": "expression_until_parenthesis_no_comma"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
         "parameter_binding_until_comma_or_curly_bracket_or_initializer": [
             {
                 "match": "{{non_token}}"
@@ -186,6 +219,48 @@
             {
                 "match": "[,\\]]",
                 "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "parameter_binding_list": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "\\)",
+                "pop": true
+            },
+            {
+                "match": "\\.\\.\\.",
+                "scope": "keyword.operator.js",
+                "set": "parameter_binding_until_parenthesis_or_initializer_no_comma"
+            },
+            {
+                "match": "{{otherwise}}",
+                "set": [
+                    "_continue_parameter_binding_list",
+                    "_parameter_binding"
+                ]
+            }
+        ],
+        "_continue_parameter_binding_list": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "\\)",
+                "pop": true
+            },
+            {
+                "match": ",",
+                "set": "parameter_binding_list"
+            },
+            {
+                "match": "=",
+                "scope": "keyword.operator.js",
+                "push": "expression_until_parameter_binding"
             },
             {
                 "include": "otherwise_invalid"
@@ -1025,6 +1100,36 @@
                 "pop": true
             }
         ],
+        "function_declaration": [
+            {
+                "match": "{{b_before}}function{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "block_statement",
+                    "parameter_binding_list",
+                    "_function_declaration_name"
+                ]
+            }
+        ],
+        "_function_declaration_name": [
+            {
+                "match": "({{reserved_word}}){{to_token}}\\(",
+                "captures": {
+                    "1": "invalid.illegal.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "({{ident}}){{to_token}}\\(",
+                "captures": {
+                    "1": "entity.name.function.js"
+                },
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
         "_property_name": [
             {
                 "match": "{{ident}}(?={{to_token}}:)",
@@ -1205,6 +1310,9 @@
             },
             {
                 "include": "numeric_literal"
+            },
+            {
+                "include": "_function_expression__expression_until_parenthesis"
             },
             {
                 "include": "constant_or_variable"
@@ -1425,6 +1533,44 @@
                 "set": "_primary__expression_until_parenthesis"
             }
         ],
+        "_function_expression__expression_until_parenthesis": [
+            {
+                "match": "{{b_before}}function{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "block_statement",
+                    "parameter_binding_list",
+                    "_function_expression_name__expression_until_parenthesis"
+                ]
+            }
+        ],
+        "_function_expression_name__expression_until_parenthesis": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "match": "({{reserved_word}}){{to_token}}\\(",
+                "captures": {
+                    "1": "invalid.illegal.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "({{ident}}){{to_token}}\\(",
+                "captures": {
+                    "1": "entity.name.function.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "pop": true
+            }
+        ],
         "_secondary_parts__expression_until_parenthesis": [
             {
                 "include": "_instanceof_keyword__expression_until_parenthesis"
@@ -1624,6 +1770,9 @@
             },
             {
                 "include": "numeric_literal"
+            },
+            {
+                "include": "_function_expression__expression_until_square_bracket"
             },
             {
                 "include": "constant_or_variable"
@@ -1844,6 +1993,44 @@
                 "set": "_primary__expression_until_square_bracket"
             }
         ],
+        "_function_expression__expression_until_square_bracket": [
+            {
+                "match": "{{b_before}}function{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "block_statement",
+                    "parameter_binding_list",
+                    "_function_expression_name__expression_until_square_bracket"
+                ]
+            }
+        ],
+        "_function_expression_name__expression_until_square_bracket": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=\\])",
+                "pop": true
+            },
+            {
+                "match": "({{reserved_word}}){{to_token}}\\(",
+                "captures": {
+                    "1": "invalid.illegal.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "({{ident}}){{to_token}}\\(",
+                "captures": {
+                    "1": "entity.name.function.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "pop": true
+            }
+        ],
         "_secondary_parts__expression_until_square_bracket": [
             {
                 "include": "_instanceof_keyword__expression_until_square_bracket"
@@ -2043,6 +2230,9 @@
             },
             {
                 "include": "numeric_literal"
+            },
+            {
+                "include": "_function_expression__expression_until_colon"
             },
             {
                 "include": "constant_or_variable"
@@ -2263,6 +2453,44 @@
                 "set": "_primary__expression_until_colon"
             }
         ],
+        "_function_expression__expression_until_colon": [
+            {
+                "match": "{{b_before}}function{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "block_statement",
+                    "parameter_binding_list",
+                    "_function_expression_name__expression_until_colon"
+                ]
+            }
+        ],
+        "_function_expression_name__expression_until_colon": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=:)",
+                "pop": true
+            },
+            {
+                "match": "({{reserved_word}}){{to_token}}\\(",
+                "captures": {
+                    "1": "invalid.illegal.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "({{ident}}){{to_token}}\\(",
+                "captures": {
+                    "1": "entity.name.function.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "pop": true
+            }
+        ],
         "_secondary_parts__expression_until_colon": [
             {
                 "include": "_instanceof_keyword__expression_until_colon"
@@ -2462,6 +2690,9 @@
             },
             {
                 "include": "numeric_literal"
+            },
+            {
+                "include": "_function_expression__expression_until_end_of_template_interpolation"
             },
             {
                 "include": "constant_or_variable"
@@ -2682,6 +2913,44 @@
                 "set": "_primary__expression_until_end_of_template_interpolation"
             }
         ],
+        "_function_expression__expression_until_end_of_template_interpolation": [
+            {
+                "match": "{{b_before}}function{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "block_statement",
+                    "parameter_binding_list",
+                    "_function_expression_name__expression_until_end_of_template_interpolation"
+                ]
+            }
+        ],
+        "_function_expression_name__expression_until_end_of_template_interpolation": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=\\})",
+                "pop": true
+            },
+            {
+                "match": "({{reserved_word}}){{to_token}}\\(",
+                "captures": {
+                    "1": "invalid.illegal.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "({{ident}}){{to_token}}\\(",
+                "captures": {
+                    "1": "entity.name.function.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "pop": true
+            }
+        ],
         "_secondary_parts__expression_until_end_of_template_interpolation": [
             {
                 "include": "_instanceof_keyword__expression_until_end_of_template_interpolation"
@@ -2883,6 +3152,9 @@
             },
             {
                 "include": "numeric_literal"
+            },
+            {
+                "include": "_function_expression__expression_until_comma_or_curly_bracket"
             },
             {
                 "include": "constant_or_variable"
@@ -3103,6 +3375,44 @@
                 "set": "_primary__expression_until_comma_or_curly_bracket"
             }
         ],
+        "_function_expression__expression_until_comma_or_curly_bracket": [
+            {
+                "match": "{{b_before}}function{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "block_statement",
+                    "parameter_binding_list",
+                    "_function_expression_name__expression_until_comma_or_curly_bracket"
+                ]
+            }
+        ],
+        "_function_expression_name__expression_until_comma_or_curly_bracket": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=[,}])",
+                "pop": true
+            },
+            {
+                "match": "({{reserved_word}}){{to_token}}\\(",
+                "captures": {
+                    "1": "invalid.illegal.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "({{ident}}){{to_token}}\\(",
+                "captures": {
+                    "1": "entity.name.function.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "pop": true
+            }
+        ],
         "_secondary_parts__expression_until_comma_or_curly_bracket": [
             {
                 "include": "_instanceof_keyword__expression_until_comma_or_curly_bracket"
@@ -3302,6 +3612,9 @@
             },
             {
                 "include": "numeric_literal"
+            },
+            {
+                "include": "_function_expression__expression_until_comma_or_square_bracket"
             },
             {
                 "include": "constant_or_variable"
@@ -3522,6 +3835,44 @@
                 "set": "_primary__expression_until_comma_or_square_bracket"
             }
         ],
+        "_function_expression__expression_until_comma_or_square_bracket": [
+            {
+                "match": "{{b_before}}function{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "block_statement",
+                    "parameter_binding_list",
+                    "_function_expression_name__expression_until_comma_or_square_bracket"
+                ]
+            }
+        ],
+        "_function_expression_name__expression_until_comma_or_square_bracket": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=[,\\]])",
+                "pop": true
+            },
+            {
+                "match": "({{reserved_word}}){{to_token}}\\(",
+                "captures": {
+                    "1": "invalid.illegal.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "({{ident}}){{to_token}}\\(",
+                "captures": {
+                    "1": "entity.name.function.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "pop": true
+            }
+        ],
         "_secondary_parts__expression_until_comma_or_square_bracket": [
             {
                 "include": "_instanceof_keyword__expression_until_comma_or_square_bracket"
@@ -3721,6 +4072,9 @@
             },
             {
                 "include": "numeric_literal"
+            },
+            {
+                "include": "_function_expression__expression_until_for_statement_third_section"
             },
             {
                 "include": "constant_or_variable"
@@ -3941,6 +4295,44 @@
                 "set": "_primary__expression_until_for_statement_third_section"
             }
         ],
+        "_function_expression__expression_until_for_statement_third_section": [
+            {
+                "match": "{{b_before}}function{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "block_statement",
+                    "parameter_binding_list",
+                    "_function_expression_name__expression_until_for_statement_third_section"
+                ]
+            }
+        ],
+        "_function_expression_name__expression_until_for_statement_third_section": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=;|(?=\\)))",
+                "pop": true
+            },
+            {
+                "match": "({{reserved_word}}){{to_token}}\\(",
+                "captures": {
+                    "1": "invalid.illegal.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "({{ident}}){{to_token}}\\(",
+                "captures": {
+                    "1": "entity.name.function.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "pop": true
+            }
+        ],
         "_secondary_parts__expression_until_for_statement_third_section": [
             {
                 "include": "_instanceof_keyword__expression_until_for_statement_third_section"
@@ -4140,6 +4532,9 @@
             },
             {
                 "include": "numeric_literal"
+            },
+            {
+                "include": "_function_expression__expression_until_for_binding"
             },
             {
                 "include": "constant_or_variable"
@@ -4364,6 +4759,44 @@
                 "set": "_primary__expression_until_for_binding"
             }
         ],
+        "_function_expression__expression_until_for_binding": [
+            {
+                "match": "{{b_before}}function{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "block_statement",
+                    "parameter_binding_list",
+                    "_function_expression_name__expression_until_for_binding"
+                ]
+            }
+        ],
+        "_function_expression_name__expression_until_for_binding": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=(?=[,;)]))",
+                "pop": true
+            },
+            {
+                "match": "({{reserved_word}}){{to_token}}\\(",
+                "captures": {
+                    "1": "invalid.illegal.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "({{ident}}){{to_token}}\\(",
+                "captures": {
+                    "1": "entity.name.function.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "pop": true
+            }
+        ],
         "_secondary_parts__expression_until_for_binding": [
             {
                 "include": "_instanceof_keyword__expression_until_for_binding"
@@ -4567,6 +5000,9 @@
             },
             {
                 "include": "numeric_literal"
+            },
+            {
+                "include": "_function_expression___for_statement_first_expression"
             },
             {
                 "include": "constant_or_variable"
@@ -4787,6 +5223,44 @@
                 "set": "_primary___for_statement_first_expression"
             }
         ],
+        "_function_expression___for_statement_first_expression": [
+            {
+                "match": "{{b_before}}function{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "block_statement",
+                    "parameter_binding_list",
+                    "_function_expression_name___for_statement_first_expression"
+                ]
+            }
+        ],
+        "_function_expression_name___for_statement_first_expression": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=(?=[;)]|{{b_before}}(?:of|in){{b_after}}))",
+                "pop": true
+            },
+            {
+                "match": "({{reserved_word}}){{to_token}}\\(",
+                "captures": {
+                    "1": "invalid.illegal.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "({{ident}}){{to_token}}\\(",
+                "captures": {
+                    "1": "entity.name.function.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "pop": true
+            }
+        ],
         "_secondary_parts___for_statement_first_expression": [
             {
                 "include": "_instanceof_keyword___for_statement_first_expression"
@@ -4990,6 +5464,9 @@
             },
             {
                 "include": "numeric_literal"
+            },
+            {
+                "include": "_function_expression__expression_until_end_of_statement"
             },
             {
                 "include": "constant_or_variable"
@@ -5208,6 +5685,44 @@
                 "match": "~",
                 "scope": "bitwise-operator.js",
                 "set": "_primary__expression_until_end_of_statement"
+            }
+        ],
+        "_function_expression__expression_until_end_of_statement": [
+            {
+                "match": "{{b_before}}function{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "block_statement",
+                    "parameter_binding_list",
+                    "_function_expression_name__expression_until_end_of_statement"
+                ]
+            }
+        ],
+        "_function_expression_name__expression_until_end_of_statement": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=;)",
+                "pop": true
+            },
+            {
+                "match": "({{reserved_word}}){{to_token}}\\(",
+                "captures": {
+                    "1": "invalid.illegal.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "({{ident}}){{to_token}}\\(",
+                "captures": {
+                    "1": "entity.name.function.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "pop": true
             }
         ],
         "_secondary_parts__expression_until_end_of_statement": [
@@ -5434,6 +5949,9 @@
                 "include": "numeric_literal"
             },
             {
+                "include": "_function_expression__expression_until_end_of_statement_or_block"
+            },
+            {
                 "include": "constant_or_variable"
             },
             {
@@ -5650,6 +6168,44 @@
                 "match": "~",
                 "scope": "bitwise-operator.js",
                 "set": "_primary__expression_until_end_of_statement_or_block"
+            }
+        ],
+        "_function_expression__expression_until_end_of_statement_or_block": [
+            {
+                "match": "{{b_before}}function{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "block_statement",
+                    "parameter_binding_list",
+                    "_function_expression_name__expression_until_end_of_statement_or_block"
+                ]
+            }
+        ],
+        "_function_expression_name__expression_until_end_of_statement_or_block": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=;|(?=\\}))",
+                "pop": true
+            },
+            {
+                "match": "({{reserved_word}}){{to_token}}\\(",
+                "captures": {
+                    "1": "invalid.illegal.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "({{ident}}){{to_token}}\\(",
+                "captures": {
+                    "1": "entity.name.function.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "pop": true
             }
         ],
         "_secondary_parts__expression_until_end_of_statement_or_block": [
@@ -5872,6 +6428,9 @@
                 "include": "numeric_literal"
             },
             {
+                "include": "_function_expression__expression_until_variable_binding"
+            },
+            {
                 "include": "constant_or_variable"
             },
             {
@@ -6090,6 +6649,44 @@
                 "set": "_primary__expression_until_variable_binding"
             }
         ],
+        "_function_expression__expression_until_variable_binding": [
+            {
+                "match": "{{b_before}}function{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "block_statement",
+                    "parameter_binding_list",
+                    "_function_expression_name__expression_until_variable_binding"
+                ]
+            }
+        ],
+        "_function_expression_name__expression_until_variable_binding": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=;)",
+                "pop": true
+            },
+            {
+                "match": "({{reserved_word}}){{to_token}}\\(",
+                "captures": {
+                    "1": "invalid.illegal.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "({{ident}}){{to_token}}\\(",
+                "captures": {
+                    "1": "entity.name.function.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "pop": true
+            }
+        ],
         "_secondary_parts__expression_until_variable_binding": [
             {
                 "include": "_instanceof_keyword__expression_until_variable_binding"
@@ -6292,6 +6889,470 @@
                 ]
             }
         ],
+        "expression_until_parameter_binding": [
+            {
+                "match": "{{otherwise}}",
+                "set": [
+                    "_secondary__expression_until_parameter_binding",
+                    "_primary__expression_until_parameter_binding"
+                ]
+            }
+        ],
+        "_primary_parts__expression_until_parameter_binding": [
+            {
+                "include": "parenthesized_expression"
+            },
+            {
+                "include": "string_literal"
+            },
+            {
+                "include": "template_literal"
+            },
+            {
+                "include": "regular_expression_literal"
+            },
+            {
+                "include": "numeric_literal"
+            },
+            {
+                "include": "_function_expression__expression_until_parameter_binding"
+            },
+            {
+                "include": "constant_or_variable"
+            },
+            {
+                "include": "_new_keyword__expression_until_parameter_binding"
+            },
+            {
+                "include": "_prefix_operators__expression_until_parameter_binding"
+            },
+            {
+                "include": "_unary_operators__expression_until_parameter_binding"
+            },
+            {
+                "include": "reserved_word_reference"
+            },
+            {
+                "include": "identifier_reference"
+            }
+        ],
+        "_primary__expression_until_parameter_binding": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=(?=\\)))",
+                "pop": true
+            },
+            {
+                "include": "_primary_parts__expression_until_parameter_binding"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_new_keyword__expression_until_parameter_binding": [
+            {
+                "match": "{{b_before}}new{{b_after}}",
+                "scope": "keyword.operator.js",
+                "set": [
+                    {
+                        "match": "{{space}}++"
+                    },
+                    {
+                        "match": "(?=(?=\\)))",
+                        "pop": true
+                    },
+                    {
+                        "match": "\\.",
+                        "scope": "keyword.operator.js",
+                        "set": [
+                            {
+                                "match": "{{space}}++"
+                            },
+                            {
+                                "match": "(?=(?=\\)))",
+                                "pop": true
+                            },
+                            {
+                                "match": "{{b_before}}target{{b_after}}",
+                                "scope": "support.class.js",
+                                "pop": true
+                            },
+                            {
+                                "match": "{{b_before}}(?:t|ta|tar|targ|targe){{b_after}}",
+                                "pop": true
+                            },
+                            {
+                                "match": "{{ident}}",
+                                "scope": "invalid.illegal.js",
+                                "pop": true
+                            },
+                            {
+                                "include": "otherwise_invalid"
+                            }
+                        ]
+                    },
+                    {
+                        "include": "_class_name_shallow__expression_until_parameter_binding"
+                    }
+                ]
+            }
+        ],
+        "_class_name_shallow__expression_until_parameter_binding": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=(?=\\)))",
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "set": [
+                    "_class_name_deep__expression_until_parameter_binding",
+                    "expression_until_parenthesis"
+                ]
+            },
+            {
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "set": "_class_name_deep__expression_until_parameter_binding"
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "support.class.js",
+                "set": "_class_name_deep__expression_until_parameter_binding"
+            },
+            {
+                "include": "_primary__expression_until_parameter_binding"
+            }
+        ],
+        "_class_name_deep__expression_until_parameter_binding": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=(?=\\)))",
+                "pop": true
+            },
+            {
+                "match": "\\.",
+                "scope": "support.class.js",
+                "push": [
+                    {
+                        "match": "{{space}}++"
+                    },
+                    {
+                        "match": "(?=(?=\\)))",
+                        "pop": true
+                    },
+                    {
+                        "match": "{{ident}}",
+                        "scope": "support.class.js",
+                        "pop": true
+                    },
+                    {
+                        "include": "otherwise_invalid"
+                    }
+                ]
+            },
+            {
+                "match": "\\[",
+                "push": "expression_until_square_bracket"
+            },
+            {
+                "match": "{{otherwise}}",
+                "pop": true
+            }
+        ],
+        "_prefix_operators__expression_until_parameter_binding": [
+            {
+                "match": "(?<!-)--|(?<!\\+)\\+\\+",
+                "scope": "keyword.operator.js",
+                "set": [
+                    {
+                        "match": "{{space}}++"
+                    },
+                    {
+                        "match": "(?=(?=\\)))",
+                        "pop": true
+                    },
+                    {
+                        "include": "reserved_word_reference"
+                    },
+                    {
+                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "scope": "invalid.illegal.js",
+                        "pop": true
+                    },
+                    {
+                        "match": "({{ident}}){{to_token}}\\.{{to_token}}(prototype){{b_after}}",
+                        "captures": {
+                            "1": "support.class.js",
+                            "2": "support.constant.js"
+                        },
+                        "pop": true
+                    },
+                    {
+                        "match": "{{ident}}",
+                        "pop": true
+                    },
+                    {
+                        "include": "otherwise_invalid"
+                    }
+                ]
+            }
+        ],
+        "_unary_operators__expression_until_parameter_binding": [
+            {
+                "match": "{{b_before}}yield(?:{{to_token}}\\*|{{b_after}})",
+                "scope": "keyword.operator.js",
+                "set": [
+                    {
+                        "match": "{{space}}++"
+                    },
+                    {
+                        "match": "(?=(?=\\)))",
+                        "pop": true
+                    },
+                    {
+                        "match": "(?={{line_terminator}})",
+                        "pop": true
+                    },
+                    {
+                        "include": "_primary__expression_until_parameter_binding"
+                    }
+                ]
+            },
+            {
+                "match": "!|(?<!\\+)\\+(?!\\+)|(?<!-)-(?!-)|{{b_before}}(?:typeof|void|delete|await){{b_after}}",
+                "scope": "keyword.operator.js",
+                "set": "_primary__expression_until_parameter_binding"
+            },
+            {
+                "match": "~",
+                "scope": "bitwise-operator.js",
+                "set": "_primary__expression_until_parameter_binding"
+            }
+        ],
+        "_function_expression__expression_until_parameter_binding": [
+            {
+                "match": "{{b_before}}function{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "block_statement",
+                    "parameter_binding_list",
+                    "_function_expression_name__expression_until_parameter_binding"
+                ]
+            }
+        ],
+        "_function_expression_name__expression_until_parameter_binding": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=(?=\\)))",
+                "pop": true
+            },
+            {
+                "match": "({{reserved_word}}){{to_token}}\\(",
+                "captures": {
+                    "1": "invalid.illegal.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "({{ident}}){{to_token}}\\(",
+                "captures": {
+                    "1": "entity.name.function.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "pop": true
+            }
+        ],
+        "_secondary_parts__expression_until_parameter_binding": [
+            {
+                "include": "_instanceof_keyword__expression_until_parameter_binding"
+            },
+            {
+                "include": "_binary_operators__expression_until_parameter_binding"
+            },
+            {
+                "include": "_dot_reference__expression_until_parameter_binding"
+            },
+            {
+                "include": "_square_bracket_reference__expression_until_parameter_binding"
+            },
+            {
+                "include": "_function_invocation__expression_until_parameter_binding"
+            },
+            {
+                "include": "_template_literal__expression_until_parameter_binding"
+            },
+            {
+                "include": "_conditional_expression__expression_until_parameter_binding"
+            }
+        ],
+        "_secondary__expression_until_parameter_binding": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "match": "(?=,)",
+                "pop": true
+            },
+            {
+                "include": "_secondary_parts__expression_until_parameter_binding"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_instanceof_keyword__expression_until_parameter_binding": [
+            {
+                "match": "{{b_before}}instanceof{{b_after}}",
+                "scope": "keyword.operator.js",
+                "set": [
+                    "_secondary__expression_until_parameter_binding",
+                    "_class_name_shallow__expression_until_parameter_binding"
+                ]
+            }
+        ],
+        "_binary_operators__expression_until_parameter_binding": [
+            {
+                "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
+                "scope": "bitwise-operator.js",
+                "set": [
+                    "_secondary__expression_until_parameter_binding",
+                    "_primary__expression_until_parameter_binding"
+                ]
+            },
+            {
+                "match": "\\*\\*|-=|\\+=|===?+|!==?+|<=|>=|&&|\\|\\||\\*=?+|/=|%=",
+                "scope": "keyword.operator.js",
+                "set": [
+                    "_secondary__expression_until_parameter_binding",
+                    "_primary__expression_until_parameter_binding"
+                ]
+            },
+            {
+                "match": "%|\\*|/|-|\\+|=|<|>|{{b_before}}in{{b_after}}",
+                "scope": "keyword.operator.js",
+                "set": [
+                    "_secondary__expression_until_parameter_binding",
+                    "_primary__expression_until_parameter_binding"
+                ]
+            },
+            {
+                "match": "&|\\^|~|\\|",
+                "scope": "bitwise-operator.js",
+                "set": [
+                    "_secondary__expression_until_parameter_binding",
+                    "_primary__expression_until_parameter_binding"
+                ]
+            },
+            {
+                "match": ",",
+                "set": [
+                    "_secondary__expression_until_parameter_binding",
+                    "_primary__expression_until_parameter_binding"
+                ]
+            }
+        ],
+        "_dot_reference__expression_until_parameter_binding": [
+            {
+                "match": "\\.",
+                "set": [
+                    {
+                        "match": "{{space}}++"
+                    },
+                    {
+                        "match": "(?=\\))",
+                        "pop": true
+                    },
+                    {
+                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                        "scope": "support.constant.js",
+                        "set": [
+                            "_secondary__expression_until_parameter_binding",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                        "scope": "support.function.js",
+                        "set": [
+                            "_secondary__expression_until_parameter_binding",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{b_before}}constructor{{b_after}}",
+                        "scope": "support.class.js",
+                        "set": [
+                            "_secondary__expression_until_parameter_binding",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{ident}}",
+                        "set": [
+                            "_secondary__expression_until_parameter_binding",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "include": "otherwise_invalid"
+                    }
+                ]
+            }
+        ],
+        "_square_bracket_reference__expression_until_parameter_binding": [
+            {
+                "match": "\\[",
+                "set": [
+                    "_secondary__expression_until_parameter_binding",
+                    "_optional_postfix_operator",
+                    "expression_until_square_bracket"
+                ]
+            }
+        ],
+        "_function_invocation__expression_until_parameter_binding": [
+            {
+                "match": "\\(",
+                "set": [
+                    "_secondary__expression_until_parameter_binding",
+                    "expression_until_parenthesis_with_spread"
+                ]
+            }
+        ],
+        "_template_literal__expression_until_parameter_binding": [
+            {
+                "match": "(?=`)",
+                "set": [
+                    "_secondary__expression_until_parameter_binding",
+                    "template_literal"
+                ]
+            }
+        ],
+        "_conditional_expression__expression_until_parameter_binding": [
+            {
+                "match": "\\?",
+                "set": [
+                    "_secondary__expression_until_parameter_binding",
+                    "_primary__expression_until_parameter_binding",
+                    "expression_until_colon"
+                ]
+            }
+        ],
         "expression_until_parenthesis_with_spread": [
             {
                 "match": "{{otherwise}}",
@@ -6316,6 +7377,9 @@
             },
             {
                 "include": "numeric_literal"
+            },
+            {
+                "include": "_function_expression__expression_until_parenthesis_with_spread"
             },
             {
                 "include": "constant_or_variable"
@@ -6541,6 +7605,44 @@
                 "set": "_primary__expression_until_parenthesis_with_spread"
             }
         ],
+        "_function_expression__expression_until_parenthesis_with_spread": [
+            {
+                "match": "{{b_before}}function{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "block_statement",
+                    "parameter_binding_list",
+                    "_function_expression_name__expression_until_parenthesis_with_spread"
+                ]
+            }
+        ],
+        "_function_expression_name__expression_until_parenthesis_with_spread": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "match": "({{reserved_word}}){{to_token}}\\(",
+                "captures": {
+                    "1": "invalid.illegal.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "({{ident}}){{to_token}}\\(",
+                "captures": {
+                    "1": "entity.name.function.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "pop": true
+            }
+        ],
         "_secondary_parts__expression_until_parenthesis_with_spread": [
             {
                 "include": "_instanceof_keyword__expression_until_parenthesis_with_spread"
@@ -6744,6 +7846,9 @@
             },
             {
                 "include": "numeric_literal"
+            },
+            {
+                "include": "_function_expression__expression_until_parenthesis_no_comma"
             },
             {
                 "include": "constant_or_variable"
@@ -6964,6 +8069,44 @@
                 "set": "_primary__expression_until_parenthesis_no_comma"
             }
         ],
+        "_function_expression__expression_until_parenthesis_no_comma": [
+            {
+                "match": "{{b_before}}function{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "block_statement",
+                    "parameter_binding_list",
+                    "_function_expression_name__expression_until_parenthesis_no_comma"
+                ]
+            }
+        ],
+        "_function_expression_name__expression_until_parenthesis_no_comma": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "match": "({{reserved_word}}){{to_token}}\\(",
+                "captures": {
+                    "1": "invalid.illegal.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "({{ident}}){{to_token}}\\(",
+                "captures": {
+                    "1": "entity.name.function.js"
+                },
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "pop": true
+            }
+        ],
         "_secondary_parts__expression_until_parenthesis_no_comma": [
             {
                 "include": "_instanceof_keyword__expression_until_parenthesis_no_comma"
@@ -7154,6 +8297,9 @@
                 "include": "variable_statement"
             },
             {
+                "include": "function_declaration"
+            },
+            {
                 "include": "if_statement"
             },
             {
@@ -7201,6 +8347,9 @@
             },
             {
                 "include": "variable_statement"
+            },
+            {
+                "include": "function_declaration"
             },
             {
                 "include": "if_statement"
