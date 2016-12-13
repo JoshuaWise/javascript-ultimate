@@ -1314,8 +1314,7 @@
                 "set": "_class_name_deep__expression_until_parenthesis"
             },
             {
-                "match": "{{otherwise}}",
-                "set": "_primary__expression_until_parenthesis"
+                "include": "_primary__expression_until_parenthesis"
             }
         ],
         "_class_name_deep__expression_until_parenthesis": [
@@ -1734,8 +1733,7 @@
                 "set": "_class_name_deep__expression_until_square_bracket"
             },
             {
-                "match": "{{otherwise}}",
-                "set": "_primary__expression_until_square_bracket"
+                "include": "_primary__expression_until_square_bracket"
             }
         ],
         "_class_name_deep__expression_until_square_bracket": [
@@ -2154,8 +2152,7 @@
                 "set": "_class_name_deep__expression_until_colon"
             },
             {
-                "match": "{{otherwise}}",
-                "set": "_primary__expression_until_colon"
+                "include": "_primary__expression_until_colon"
             }
         ],
         "_class_name_deep__expression_until_colon": [
@@ -2574,8 +2571,7 @@
                 "set": "_class_name_deep__expression_until_end_of_template_interpolation"
             },
             {
-                "match": "{{otherwise}}",
-                "set": "_primary__expression_until_end_of_template_interpolation"
+                "include": "_primary__expression_until_end_of_template_interpolation"
             }
         ],
         "_class_name_deep__expression_until_end_of_template_interpolation": [
@@ -2996,8 +2992,7 @@
                 "set": "_class_name_deep__expression_until_comma_or_curly_bracket"
             },
             {
-                "match": "{{otherwise}}",
-                "set": "_primary__expression_until_comma_or_curly_bracket"
+                "include": "_primary__expression_until_comma_or_curly_bracket"
             }
         ],
         "_class_name_deep__expression_until_comma_or_curly_bracket": [
@@ -3416,8 +3411,7 @@
                 "set": "_class_name_deep__expression_until_comma_or_square_bracket"
             },
             {
-                "match": "{{otherwise}}",
-                "set": "_primary__expression_until_comma_or_square_bracket"
+                "include": "_primary__expression_until_comma_or_square_bracket"
             }
         ],
         "_class_name_deep__expression_until_comma_or_square_bracket": [
@@ -3836,8 +3830,7 @@
                 "set": "_class_name_deep__expression_until_for_statement_third_section"
             },
             {
-                "match": "{{otherwise}}",
-                "set": "_primary__expression_until_for_statement_third_section"
+                "include": "_primary__expression_until_for_statement_third_section"
             }
         ],
         "_class_name_deep__expression_until_for_statement_third_section": [
@@ -4260,8 +4253,7 @@
                 "set": "_class_name_deep__expression_until_for_binding"
             },
             {
-                "match": "{{otherwise}}",
-                "set": "_primary__expression_until_for_binding"
+                "include": "_primary__expression_until_for_binding"
             }
         ],
         "_class_name_deep__expression_until_for_binding": [
@@ -4684,8 +4676,7 @@
                 "set": "_class_name_deep___for_statement_first_expression"
             },
             {
-                "match": "{{otherwise}}",
-                "set": "_primary___for_statement_first_expression"
+                "include": "_primary___for_statement_first_expression"
             }
         ],
         "_class_name_deep___for_statement_first_expression": [
@@ -5108,8 +5099,7 @@
                 "set": "_class_name_deep__expression_until_end_of_statement"
             },
             {
-                "match": "{{otherwise}}",
-                "set": "_primary__expression_until_end_of_statement"
+                "include": "_primary__expression_until_end_of_statement"
             }
         ],
         "_class_name_deep__expression_until_end_of_statement": [
@@ -5255,7 +5245,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{non_token}}"
                     },
                     {
                         "match": ";",
@@ -5265,7 +5255,7 @@
                         "include": "_secondary_parts__expression_until_end_of_statement"
                     },
                     {
-                        "match": "(?={{token}})",
+                        "match": "{{otherwise}}",
                         "pop": true
                     }
                 ]
@@ -5551,8 +5541,7 @@
                 "set": "_class_name_deep__expression_until_end_of_statement_or_block"
             },
             {
-                "match": "{{otherwise}}",
-                "set": "_primary__expression_until_end_of_statement_or_block"
+                "include": "_primary__expression_until_end_of_statement_or_block"
             }
         ],
         "_class_name_deep__expression_until_end_of_statement_or_block": [
@@ -5698,7 +5687,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{non_token}}"
                     },
                     {
                         "match": ";|(?=\\})",
@@ -5708,7 +5697,7 @@
                         "include": "_secondary_parts__expression_until_end_of_statement_or_block"
                     },
                     {
-                        "match": "(?={{token}})",
+                        "match": "{{otherwise}}",
                         "pop": true
                     }
                 ]
@@ -5990,8 +5979,7 @@
                 "set": "_class_name_deep__expression_until_variable_binding"
             },
             {
-                "match": "{{otherwise}}",
-                "set": "_primary__expression_until_variable_binding"
+                "include": "_primary__expression_until_variable_binding"
             }
         ],
         "_class_name_deep__expression_until_variable_binding": [
@@ -6137,7 +6125,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{non_token}}"
                     },
                     {
                         "match": ";",
@@ -6151,7 +6139,7 @@
                         "include": "_secondary_parts__expression_until_variable_binding"
                     },
                     {
-                        "match": "(?={{token}})",
+                        "match": "{{otherwise}}",
                         "pop": true
                     }
                 ]

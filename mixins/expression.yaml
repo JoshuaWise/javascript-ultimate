@@ -69,8 +69,7 @@ _class_name_shallow__%%name%%:
   - match: '{{ident}}'
     scope: support.class.js
     set: _class_name_deep__%%name%%
-  - match: '{{otherwise}}'
-    set: _primary__%%name%%
+  - include: _primary__%%name%%
 
 _class_name_deep__%%name%%:
   - match: '{{space}}++'

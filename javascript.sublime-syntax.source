@@ -98,10 +98,10 @@ contexts:
     exitTo: 'true',
     beforeAnything: {match: '{{space}}*+{{statement_terminator}}', pop: true},
     overrideSecondary: {match: '{{line_terminator}}', set: [
-      {match: '{{space}}++'},
+      {match: '{{non_token}}'},
       {match: ';', pop: true},
       {include: _secondary_parts__expression_until_end_of_statement},
-      {match: '(?={{token}})', pop: true}
+      {match: '{{otherwise}}', pop: true}
     ]}
   }
   
@@ -112,10 +112,10 @@ contexts:
     exitTo: 'true',
     beforeAnything: {match: '{{space}}*+{{statement_terminator}}', pop: true},
     overrideSecondary: {match: '{{line_terminator}}', set: [
-      {match: '{{space}}++'},
+      {match: '{{non_token}}'},
       {match: ';|(?=\})', pop: true},
       {include: _secondary_parts__expression_until_end_of_statement_or_block},
-      {match: '(?={{token}})', pop: true}
+      {match: '{{otherwise}}', pop: true}
     ]}
   }
 
@@ -126,11 +126,11 @@ contexts:
     exitTo: 'true',
     overrideSecondary: [
       {match: '{{line_terminator}}', set: [
-        {match: '{{space}}++'},
+        {match: '{{non_token}}'},
         {match: ';', pop: true},
         {match: ',', set: _variable_binding},
         {include: _secondary_parts__expression_until_variable_binding},
-        {match: '(?={{token}})', pop: true}
+        {match: '{{otherwise}}', pop: true}
       ]},
       {match: ',', set: _variable_binding}
     ]
