@@ -150,6 +150,7 @@ _secondary_parts__%%name%%:
   - include: _conditional_expression__%%name%%
 
 _secondary__%%name%%:
+  %%~catchSecondary%%
   - match: '{{space}}++'
   - match: '%%exitMatch%%'
     %%exitType%%: %%exitTo%%
@@ -204,9 +205,9 @@ _square_bracket_reference__%%name%%:
   - match: '\['
     set: [_secondary__%%name%%, _optional_postfix_operator, expression_until_square_bracket]
 
-_function_invocation__%%name%%: # TODO: this should allow a trailing comma, as well as the spread operator
+_function_invocation__%%name%%:
   - match: '\('
-    set: [_secondary__%%name%%, expression_until_parenthesis]
+    set: [_secondary__%%name%%, expression_until_parenthesis_with_spread]
 
 _template_literal__%%name%%:
   - match: '(?=`)'

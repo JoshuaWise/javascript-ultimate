@@ -104,7 +104,7 @@ contexts:
       {match: '{{otherwise}}', pop: true}
     ]}
   }
-  
+
   expression_until_end_of_statement_or_block: {
     mixin: expression,
     exitMatch: ';|(?=\})',
@@ -134,6 +134,23 @@ contexts:
       ]},
       {match: ',', set: _variable_binding}
     ]
+  }
+
+  expression_until_parenthesis_with_spread: {
+    mixin: expression,
+    exitMatch: '\)',
+    exitType: pop,
+    exitTo: 'true',
+    overridePrimary: {match: '\.\.\.', scope: keyword.operator.js, pop: true},
+    catchSecondary: {match: '(?<=\.\.\.)', set: expression_until_parenthesis_no_comma}
+  }
+
+  expression_until_parenthesis_no_comma: {
+    mixin: expression,
+    exitMatch: '\)',
+    exitType: pop,
+    exitTo: 'true',
+    overrideSecondary: {match: ',', scope: invalid.illegal.js}
   }
 
 
