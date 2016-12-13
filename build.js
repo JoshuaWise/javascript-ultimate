@@ -29,5 +29,5 @@ glob('./*.sublime-syntax.source').forEach(filename => {
 			obj[context] = results[context];
 		}
 	});
-	fs.writeFileSync(filename.replace(/\.source$/g, ''), '%YAML 1.2\n---\n' + JSON.stringify(file, null, '\t'));
+	fs.writeFileSync(filename.replace(/\.source$/g, ''), '%YAML 1.2\n---\n' + JSON.stringify(file, null, '    '));
 });
