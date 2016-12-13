@@ -224,12 +224,23 @@ contexts:
   _variable_initializer:
     - match: '(?<=[}\]])'
       set:
-        - match: '='
-          scope: keyword.operator.js
-          set: expression_until_variable_binding
+        - match: '{{line_terminator}}'
+          set: _variable_initializer_likely_candidates
+        - include: _variable_initializer_likely_candidates
         - include: otherwise_invalid
     - match: '{{otherwise}}'
       set: _variable_statement_continue
+
+  _variable_initializer_likely_candidates:
+    - match: '='
+      scope: keyword.operator.js
+      set: expression_until_variable_binding
+    - match: ';'
+      scope: invalid.illegal.js
+      pop: true
+    - match: ','
+      scope: invalid.illegal.js
+      set: _variable_binding
 
   _variable_statement_continue:
     - match: '{{line_terminator}}'
