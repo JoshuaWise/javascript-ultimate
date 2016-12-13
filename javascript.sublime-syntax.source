@@ -114,7 +114,7 @@ contexts:
       {match: '{{line_terminator}}', set: [
         {match: '{{space}}++'},
         {match: ';', pop: true},
-        {match: ',', set: _variable_binding}
+        {match: ',', set: _variable_binding},
         {include: _secondary_parts__expression_until_end_of_statement},
         {match: '(?={{token}})', pop: true}
       ]},

@@ -5439,10 +5439,6 @@
         ],
         "expression_until_variable_binding": [
             {
-                "match": "{{space}}*+{{statement_terminator}}",
-                "pop": true
-            },
-            {
                 "match": "{{otherwise}}",
                 "set": [
                     "_secondary__expression_until_variable_binding",
@@ -5490,7 +5486,7 @@
                 "match": "{{space}}++"
             },
             {
-                "match": "(?=[^\\s\\S])",
+                "match": "(?=;)",
                 "pop": true
             },
             {
@@ -5509,7 +5505,7 @@
                         "match": "{{space}}++"
                     },
                     {
-                        "match": "(?=[^\\s\\S])",
+                        "match": "(?=;)",
                         "pop": true
                     },
                     {
@@ -5520,7 +5516,7 @@
                                 "match": "{{space}}++"
                             },
                             {
-                                "match": "(?=[^\\s\\S])",
+                                "match": "(?=;)",
                                 "pop": true
                             },
                             {
@@ -5553,7 +5549,7 @@
                 "match": "{{space}}++"
             },
             {
-                "match": "(?=[^\\s\\S])",
+                "match": "(?=;)",
                 "pop": true
             },
             {
@@ -5583,7 +5579,7 @@
                 "match": "{{space}}++"
             },
             {
-                "match": "(?=[^\\s\\S])",
+                "match": "(?=;)",
                 "pop": true
             },
             {
@@ -5594,7 +5590,7 @@
                         "match": "{{space}}++"
                     },
                     {
-                        "match": "(?=[^\\s\\S])",
+                        "match": "(?=;)",
                         "pop": true
                     },
                     {
@@ -5625,7 +5621,7 @@
                         "match": "{{space}}++"
                     },
                     {
-                        "match": "(?=[^\\s\\S])",
+                        "match": "(?=;)",
                         "pop": true
                     },
                     {
@@ -5663,7 +5659,7 @@
                         "match": "{{space}}++"
                     },
                     {
-                        "match": "(?=[^\\s\\S])",
+                        "match": "(?=;)",
                         "pop": true
                     },
                     {
@@ -5714,7 +5710,7 @@
                 "match": "{{space}}++"
             },
             {
-                "match": "[^\\s\\S]",
+                "match": ";",
                 "pop": true
             },
             {
@@ -5732,13 +5728,13 @@
                         "set": "_variable_binding"
                     },
                     {
-                        "include": "_secondary__expression_until_end_of_statement"
+                        "include": "_secondary_parts__expression_until_end_of_statement"
+                    },
+                    {
+                        "match": "(?={{token}})",
+                        "pop": true
                     }
                 ]
-            },
-            {
-                "match": ";",
-                "pop": true
             },
             {
                 "match": ",",
@@ -5810,7 +5806,7 @@
                         "match": "{{space}}++"
                     },
                     {
-                        "match": "[^\\s\\S]",
+                        "match": ";",
                         "pop": true
                     },
                     {
