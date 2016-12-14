@@ -10,8 +10,8 @@ _primary_parts__%%name%%:
   - include: template_literal
   - include: regular_expression_literal
   - include: numeric_literal
+  - include: array_literal
   # TODO:
-  # - include: array_literal # TODO: support spread operator
   # - include: object_literal
   - include: _function_expression__%%name%%
   # - include: class_expression

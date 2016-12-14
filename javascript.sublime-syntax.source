@@ -161,6 +161,16 @@ contexts:
     overrideSecondary: {match: ',', scope: invalid.illegal.js}
   }
 
+  expression_until_square_bracket_with_spread_or_comma_anywhere: {
+    mixin: expression,
+    exitMatch: '\]',
+    exitType: pop,
+    exitTo: 'true',
+    overridePrimary: [
+      {match: ',+'},
+      {match: '\.\.\.', scope: keyword.operator.js, set: _primary__expression_until_comma_or_square_bracket},
+    ]
+  }
 
 
 
@@ -656,7 +666,9 @@ contexts:
       scope: storage.type.js
       pop: true
 
-
+  array_literal:
+    - match: '\['
+      set: expression_until_square_bracket_with_spread_or_comma_anywhere
 
 
 
