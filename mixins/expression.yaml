@@ -14,7 +14,7 @@ _primary_parts__%%name%%:
   # TODO:
   # - include: object_literal
   - include: _function_expression__%%name%%
-  # - include: class_expression
+  # - include: _class_expression__%%name%%
   - include: constant_or_variable
   - include: _new_keyword__%%name%%
   - include: _prefix_operators__%%name%%
