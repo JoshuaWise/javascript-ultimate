@@ -651,6 +651,13 @@ contexts:
       pop: true
     - include: otherwise_invalid
 
+  arrow_operator:
+    - match: '=>'
+      scope: storage.type.js
+      pop: true
+
+
+
 
 
 

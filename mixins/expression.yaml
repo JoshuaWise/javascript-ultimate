@@ -4,6 +4,7 @@
     set: [_secondary__%%name%%, _primary__%%name%%]
 
 _primary_parts__%%name%%:
+  - include: _arrow_function_expression__%%name%%
   - include: parenthesized_expression
   - include: string_literal
   - include: template_literal
@@ -14,7 +15,6 @@ _primary_parts__%%name%%:
   # - include: object_literal
   - include: _function_expression__%%name%%
   # - include: class_expression
-  # - include: _arrow_function_expression # TODO: support rest operator
   - include: constant_or_variable
   - include: _new_keyword__%%name%%
   - include: _prefix_operators__%%name%%
@@ -145,6 +145,25 @@ _function_expression_name__%%name%%:
     pop: true
   - match: '\('
     pop: true
+
+_arrow_function_expression__%%name%%:
+  - match: '\((?={{to_token}}(?:(?:{{ident}}|\{|\[|\.\.\.)[^)]*+)?+\){{to_token}}=>)'
+    set: [_arrow_function_body__%%name%%, arrow_operator, parameter_binding_list]
+  - match: '{{reserved_word}}(?={{to_token}}=>)'
+    scope: invalid.illegal.js
+    set: [_arrow_function_body__%%name%%, arrow_operator]
+  - match: '{{ident}}(?={{to_token}}=>)'
+    scope: variable.language.js
+    set: [_arrow_function_body__%%name%%, arrow_operator]
+
+_arrow_function_body__%%name%%:
+  - match: '{{space}}++'
+  - match: '(?=%%exitMatch%%)'
+    pop: true
+  - include: block_statement
+  - match: '(?={{token}})'
+    set: _primary__%%name%%
+
 
 
 
