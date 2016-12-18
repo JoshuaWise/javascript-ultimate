@@ -8313,14 +8313,14 @@
         ],
         "_secondary__expression_until_end_of_statement": [
             {
+                "match": "^(?={{to_token}}{{statement_keyword}})",
+                "pop": true
+            },
+            {
                 "match": "{{space}}++"
             },
             {
                 "match": ";",
-                "pop": true
-            },
-            {
-                "match": "^(?={{to_token}}{{statement_keyword}})",
                 "pop": true
             },
             {
@@ -8860,14 +8860,14 @@
         ],
         "_secondary__expression_until_end_of_statement_or_block": [
             {
+                "match": "^(?={{to_token}}{{statement_keyword}})",
+                "pop": true
+            },
+            {
                 "match": "{{space}}++"
             },
             {
                 "match": ";|(?=\\})",
-                "pop": true
-            },
-            {
-                "match": "^(?={{to_token}}{{statement_keyword}})",
                 "pop": true
             },
             {
@@ -9403,14 +9403,14 @@
         ],
         "_secondary__expression_until_variable_binding": [
             {
+                "match": "^(?={{to_token}}{{statement_keyword}})",
+                "pop": true
+            },
+            {
                 "match": "{{space}}++"
             },
             {
                 "match": ";",
-                "pop": true
-            },
-            {
-                "match": "^(?={{to_token}}{{statement_keyword}})",
                 "pop": true
             },
             {

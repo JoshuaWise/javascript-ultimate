@@ -106,8 +106,8 @@ contexts:
       {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
       {include: expression_until_end_of_statement}
     ]},
+    catchSecondary: {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
     overrideSecondary: [
-      {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
       {match: '{{line_terminator}}', set: [
           {match: '{{non_token}}'},
           {match: ';', pop: true},
@@ -127,8 +127,8 @@ contexts:
       {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
       {include: expression_until_end_of_statement_or_block}
     ]},
+    catchSecondary: {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
     overrideSecondary: [
-      {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
       {match: '{{line_terminator}}', set: [
         {match: '{{non_token}}'},
         {match: ';|(?=\})', pop: true},
@@ -147,8 +147,8 @@ contexts:
       {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
       {include: expression_until_variable_binding}
     ]},
+    catchSecondary: {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
     overrideSecondary: [
-      {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
       {match: '{{line_terminator}}', set: [
         {match: '{{non_token}}'},
         {match: ';', pop: true},
