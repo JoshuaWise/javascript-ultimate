@@ -38,6 +38,7 @@ variables:
   statement_terminator: '(?:;|{{line_terminator}})'
   ident: '(?:{{b_before}}[{{ident_start}}][{{ident_part}}]*+{{b_after}})'
   reserved_word: (?:{{b_before}}(?:{{keyword}}|{{future_reserved_word}}|null|true|false){{b_after}})
+  statement_keyword: (?:import|export|var|let|const|if|with|while|do|for|switch|try|catch|finally|break|continue|case|return|throw|debugger)
 
 contexts:
   prototype:
@@ -87,6 +88,10 @@ contexts:
   expression_until_end_of_template_interpolation: {mixin: expression, exitMatch: '\}', exitType: set, exitTo: _template_literal_contents, exitExtra: 'scope: variable.language.js'}
   expression_until_comma_or_curly_bracket: {mixin: expression, exitMatch: '[,}]', exitType: pop, exitTo: 'true'}
   expression_until_comma_or_square_bracket: {mixin: expression, exitMatch: '[,\]]', exitType: pop, exitTo: 'true'}
+  expression_until_parameter_binding: {mixin: expression, exitMatch: '(?=\))', exitType: pop, exitTo: 'true', overrideSecondary: {match: '(?=,)', pop: true}}
+  expression_until_parenthesis_with_spread: {mixin: expression, exitMatch: '\)', exitType: pop, exitTo: 'true', overridePrimary: {match: '\.\.\.', scope: keyword.operator.js, pop: true}, catchSecondary: {match: '(?<=\.\.\.)', set: expression_until_parenthesis_no_comma}}
+  expression_until_parenthesis_no_comma: {mixin: expression, exitMatch: '\)', exitType: pop, exitTo: 'true', overrideSecondary: {match: ',', scope: invalid.illegal.js}}
+  expression_until_square_bracket_with_spread_or_comma_anywhere: {mixin: expression, exitMatch: '\]', exitType: pop, exitTo: 'true', overridePrimary: [{match: ',+'}, {match: '\.\.\.', scope: keyword.operator.js, set: _primary__expression_until_comma_or_square_bracket}]}
   expression_until_for_statement_third_section: {mixin: expression, exitMatch: ';|(?=\))', exitType: pop, exitTo: 'true'}
   expression_until_for_binding: {mixin: expression, exitMatch: '(?=[,;)])', exitType: pop, exitTo: 'true', override: {match: '{{b_before}}(?:of|in){{b_after}}', scope: invalid.illegal.js}}
   _for_statement_first_expression: {mixin: expression, exitMatch: '(?=[;)]|{{b_before}}(?:of|in){{b_after}})', exitType: pop, exitTo: 'true'}
@@ -97,12 +102,19 @@ contexts:
     exitType: pop,
     exitTo: 'true',
     beforeAnything: {match: '{{space}}*+{{statement_terminator}}', pop: true},
-    overrideSecondary: {match: '{{line_terminator}}', set: [
-      {match: '{{non_token}}'},
-      {match: ';', pop: true},
-      {include: _secondary_parts__expression_until_end_of_statement},
-      {match: '{{otherwise}}', pop: true}
-    ]}
+    overridePrimary: {match: '{{line_terminator}}', set: [
+      {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
+      {include: expression_until_end_of_statement}
+    ]},
+    overrideSecondary: [
+      {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
+      {match: '{{line_terminator}}', set: [
+          {match: '{{non_token}}'},
+          {match: ';', pop: true},
+          {include: _secondary_parts__expression_until_end_of_statement},
+          {match: '{{otherwise}}', pop: true}
+      ]}
+    ]
   }
 
   expression_until_end_of_statement_or_block: {
@@ -111,12 +123,19 @@ contexts:
     exitType: pop,
     exitTo: 'true',
     beforeAnything: {match: '{{space}}*+{{statement_terminator}}', pop: true},
-    overrideSecondary: {match: '{{line_terminator}}', set: [
-      {match: '{{non_token}}'},
-      {match: ';|(?=\})', pop: true},
-      {include: _secondary_parts__expression_until_end_of_statement_or_block},
-      {match: '{{otherwise}}', pop: true}
-    ]}
+    overridePrimary: {match: '{{line_terminator}}', set: [
+      {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
+      {include: expression_until_end_of_statement_or_block}
+    ]},
+    overrideSecondary: [
+      {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
+      {match: '{{line_terminator}}', set: [
+        {match: '{{non_token}}'},
+        {match: ';|(?=\})', pop: true},
+        {include: _secondary_parts__expression_until_end_of_statement_or_block},
+        {match: '{{otherwise}}', pop: true}
+      ]}
+    ]
   }
 
   expression_until_variable_binding: {
@@ -124,7 +143,12 @@ contexts:
     exitMatch: ';',
     exitType: pop,
     exitTo: 'true',
+    overridePrimary: {match: '{{line_terminator}}', set: [
+      {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
+      {include: expression_until_variable_binding}
+    ]},
     overrideSecondary: [
+      {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
       {match: '{{line_terminator}}', set: [
         {match: '{{non_token}}'},
         {match: ';', pop: true},
@@ -135,42 +159,7 @@ contexts:
       {match: ',', set: _variable_binding}
     ]
   }
-  
-  expression_until_parameter_binding: {
-    mixin: expression,
-    exitMatch: '(?=\))',
-    exitType: pop,
-    exitTo: 'true',
-    overrideSecondary: {match: '(?=,)', pop: true}
-  }
 
-  expression_until_parenthesis_with_spread: {
-    mixin: expression,
-    exitMatch: '\)',
-    exitType: pop,
-    exitTo: 'true',
-    overridePrimary: {match: '\.\.\.', scope: keyword.operator.js, pop: true},
-    catchSecondary: {match: '(?<=\.\.\.)', set: expression_until_parenthesis_no_comma}
-  }
-
-  expression_until_parenthesis_no_comma: {
-    mixin: expression,
-    exitMatch: '\)',
-    exitType: pop,
-    exitTo: 'true',
-    overrideSecondary: {match: ',', scope: invalid.illegal.js}
-  }
-
-  expression_until_square_bracket_with_spread_or_comma_anywhere: {
-    mixin: expression,
-    exitMatch: '\]',
-    exitType: pop,
-    exitTo: 'true',
-    overridePrimary: [
-      {match: ',+'},
-      {match: '\.\.\.', scope: keyword.operator.js, set: _primary__expression_until_comma_or_square_bracket},
-    ]
-  }
 
 
 

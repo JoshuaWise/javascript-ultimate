@@ -19,8 +19,6 @@ _primary_parts__%%name%%:
   - include: _new_keyword__%%name%%
   - include: _prefix_operators__%%name%%
   - include: _unary_operators__%%name%%
-  - include: reserved_word_reference
-  - include: identifier_reference
 
 _primary__%%name%%:
   - match: '{{space}}++'
@@ -29,6 +27,8 @@ _primary__%%name%%:
   %%~override%%
   %%~overridePrimary%%
   - include: _primary_parts__%%name%%
+  - include: reserved_word_reference
+  - include: identifier_reference
   - include: otherwise_invalid
 
 _new_keyword__%%name%%:
