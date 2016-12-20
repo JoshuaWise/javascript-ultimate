@@ -17,7 +17,7 @@ variables:
   line_terminator_chars: '\x{000a}\x{000d}\x{2028}\x{2029}'
 
   # Low-level JavaScript categories
-  keyword: '(?:break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|function|if|import|in|instanceof|new|return|super|switch|this|throw|try|typeof|var|void|while|with|yield|let|static)'
+  keyword: '(?:break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|function|if|import|in|instanceof|new|return|super|switch|this|throw|try|typeof|var|void|while|with|yield|let|of|static)'
   future_reserved_word: '(?:enum|await|implements|interface|package|private|protected|public)'
   hex_escape_sequence: '(?:x\h{2})'
   unicode_escape_sequence: '(?:u\h{4}|u\{\h++\})'
@@ -82,29 +82,29 @@ contexts:
 
 
 
-  expression_until_parenthesis: {mixin: expression, exitMatch: '\)', exitType: pop, exitTo: 'true'}
-  expression_until_square_bracket: {mixin: expression, exitMatch: '\]', exitType: pop, exitTo: 'true'}
-  expression_until_colon: {mixin: expression, exitMatch: ':', exitType: pop, exitTo: 'true'}
-  expression_until_end_of_template_interpolation: {mixin: expression, exitMatch: '\}', exitType: set, exitTo: _template_literal_contents, exitExtra: 'scope: variable.language.js'}
-  expression_until_comma_or_curly_bracket: {mixin: expression, exitMatch: '[,}]', exitType: pop, exitTo: 'true'}
-  expression_until_comma_or_square_bracket: {mixin: expression, exitMatch: '[,\]]', exitType: pop, exitTo: 'true'}
-  expression_until_parameter_binding: {mixin: expression, exitMatch: '(?=\))', exitType: pop, exitTo: 'true', overrideSecondary: {match: '(?=,)', pop: true}}
-  expression_until_parenthesis_with_spread: {mixin: expression, exitMatch: '\)', exitType: pop, exitTo: 'true', overridePrimary: {match: '\.\.\.', scope: keyword.operator.js, pop: true}, catchSecondary: {match: '(?<=\.\.\.)', set: expression_until_parenthesis_no_comma}}
-  expression_until_parenthesis_no_comma: {mixin: expression, exitMatch: '\)', exitType: pop, exitTo: 'true', overrideSecondary: {match: ',', scope: invalid.illegal.js}}
-  expression_until_square_bracket_with_spread_or_comma_anywhere: {mixin: expression, exitMatch: '\]', exitType: pop, exitTo: 'true', overridePrimary: [{match: ',+'}, {match: '\.\.\.', scope: keyword.operator.js, set: _primary__expression_until_comma_or_square_bracket}]}
-  expression_until_for_statement_third_section: {mixin: expression, exitMatch: ';|(?=\))', exitType: pop, exitTo: 'true'}
-  expression_until_for_binding: {mixin: expression, exitMatch: '(?=[,;)])', exitType: pop, exitTo: 'true', override: {match: '{{b_before}}(?:of|in){{b_after}}', scope: invalid.illegal.js}}
-  _for_statement_first_expression: {mixin: expression, exitMatch: '(?=[;)]|{{b_before}}(?:of|in){{b_after}})', exitType: pop, exitTo: 'true'}
+  expression_until_parenthesis: {mixin: expression, exitMatch: '\)'}
+  expression_until_square_bracket: {mixin: expression, exitMatch: '\]'}
+  expression_until_colon: {mixin: expression, exitMatch: ':'}
+  expression_until_end_of_template_interpolation: {mixin: expression, exitMatch: '\}', exitExtra: 'scope: variable.language.js'}
+  expression_until_comma_or_curly_bracket: {mixin: expression, exitMatch: '[,}]'}
+  expression_until_comma_or_square_bracket_ahead: {mixin: expression, exitMatch: '(?=[,\]])'}
+  expression_until_parameter_binding_list: {mixin: expression, exitMatch: '(?=\))', overrideSecondary: {match: '(?=,)', pop: true}}
+  expression_until_parenthesis_with_spread: {mixin: expression, exitMatch: '\)', overridePrimary: {match: '\.\.\.', scope: keyword.operator.js, pop: true}, catchSecondary: {match: '(?<=\.\.\.)', set: expression_until_parenthesis_no_comma}}
+  expression_until_parenthesis_no_comma: {mixin: expression, exitMatch: '\)', overrideSecondary: {match: ',', scope: invalid.illegal.js}}
+  expression_until_parenthesis_ahead_no_comma: {mixin: expression, exitMatch: '(?=\))', overrideSecondary: {match: ',', scope: invalid.illegal.js}}
+  expression_until_square_bracket_with_spread_or_comma_anywhere: {mixin: expression, exitMatch: '\]', overridePrimary: [{match: ',++'}, {match: '\.\.\.', scope: keyword.operator.js, set: _primary__expression_until_comma_or_square_bracket_ahead}]}
+  expression_until_square_bracket_ahead_no_comma: {mixin: expression, exitMatch: '(?=\])', overrideSecondary: {match: ',', scope: invalid.illegal.js}}
+  expression_until_for_statement_third_section: {mixin: expression, exitMatch: ';|(?=\))'}
+  expression_until_for_binding: {mixin: expression, exitMatch: '(?=[,;)])', override: {match: '{{b_before}}(?:of|in){{b_after}}', scope: invalid.illegal.js}}
+  _for_statement_first_expression: {mixin: expression, exitMatch: '(?=[;)]|{{b_before}}(?:of|in){{b_after}})'}
 
   expression_until_end_of_statement: {
     mixin: expression,
     exitMatch: ';',
-    exitType: pop,
-    exitTo: 'true',
     beforeAnything: {match: '{{space}}*+{{statement_terminator}}', pop: true},
     overridePrimary: {match: '{{line_terminator}}', set: [
       {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
-      {include: expression_until_end_of_statement}
+      {include: _primary__expression_until_end_of_statement}
     ]},
     catchSecondary: {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
     overrideSecondary: [
@@ -120,12 +120,10 @@ contexts:
   expression_until_end_of_statement_or_block: {
     mixin: expression,
     exitMatch: ';|(?=\})',
-    exitType: pop,
-    exitTo: 'true',
     beforeAnything: {match: '{{space}}*+{{statement_terminator}}', pop: true},
     overridePrimary: {match: '{{line_terminator}}', set: [
       {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
-      {include: expression_until_end_of_statement_or_block}
+      {include: _primary__expression_until_end_of_statement_or_block}
     ]},
     catchSecondary: {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
     overrideSecondary: [
@@ -141,12 +139,13 @@ contexts:
   expression_until_variable_binding: {
     mixin: expression,
     exitMatch: ';',
-    exitType: pop,
-    exitTo: 'true',
-    overridePrimary: {match: '{{line_terminator}}', set: [
-      {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
-      {include: expression_until_variable_binding}
-    ]},
+    overridePrimary: [
+      {match: '{{line_terminator}}', set: [
+        {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
+        {include: _primary__expression_until_variable_binding}
+      ]},
+      {match: ',', set: _variable_binding},
+    ],
     catchSecondary: {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
     overrideSecondary: [
       {match: '{{line_terminator}}', set: [
@@ -167,31 +166,23 @@ contexts:
 
 
 
+  destructuring_spread_for_array_destructuring: {mixin: destructuring_spread, exitMatch: '\]', initializer: expression_until_square_bracket_ahead_no_comma}
+  destructuring_spread_for_parameter_binding_list: {mixin: destructuring_spread, exitMatch: '\)', initializer: expression_until_parenthesis_ahead_no_comma}
+
+  parameter_binding_until_parenthesis: {mixin: parameter_binding, exitMatch: '\)'}
+  parameter_binding_for_object_destructuring: {mixin: parameter_binding, exitMatch: '[,}]', overrideAfter: {match: '=', scope: keyword.operator.js, set: expression_until_comma_or_curly_bracket}}
+  parameter_binding_for_array_destructuring: {mixin: parameter_binding, exitMatch: '\]', overrideAfter: [{match: '=', scope: keyword.operator.js, push: expression_until_comma_or_square_bracket_ahead}, {match: ',', push: __parameter_binding_for_array_destructuring}], overrideBefore: [{match: ',++'}, {include: destructuring_spread_for_array_destructuring}]}
+  parameter_binding_for_for_statement: {mixin: parameter_binding, exitMatch: '(?=[,;)]|{{b_before}}(?:of|in){{b_after}})', overrideAfter: {match: '(?==)', scope: keyword.operator.js, pop: true}}
+  parameter_binding_list: {mixin: parameter_binding, exitMatch: '\)', overrideAfter: [{match: ',', set: parameter_binding_list}, {match: '=', scope: keyword.operator.js, push: expression_until_parameter_binding_list}], overrideBefore: {include: destructuring_spread_for_parameter_binding_list}}
+  parameter_binding: {mixin: parameter_binding, exitMatch: '[^\s\S]', catchAfter: {match: '{{otherwise}}', pop: true}}
 
 
-  parameter_binding_until_parenthesis: [{match: '{{non_token}}'}, {match: '\)', pop: true},
-  {match: '{{otherwise}}', set: [_continue_parameter_binding_until_parenthesis, _parameter_binding]}]
-  _continue_parameter_binding_until_parenthesis: [{match: '{{non_token}}'}, {match: '\)', pop: true}, {include: otherwise_invalid}]
 
-  parameter_binding_until_parenthesis_or_initializer_no_comma: [{match: '{{non_token}}'}, {match: '\)', pop: true},
-  {match: '{{otherwise}}', set: [_continue_parameter_binding_until_parenthesis_or_initializer_no_comma, _parameter_binding]}]
-  _continue_parameter_binding_until_parenthesis_or_initializer_no_comma: [{match: '{{non_token}}'}, {match: '\)', pop: true}, {match: '=', scope: keyword.operator.js, set: expression_until_parenthesis_no_comma}, {include: otherwise_invalid}]
 
-  parameter_binding_until_comma_or_curly_bracket_or_initializer: [{match: '{{non_token}}'}, {match: '[,}]', pop: true},
-  {match: '{{otherwise}}', set: [_continue_parameter_binding_until_comma_or_curly_bracket_or_initializer, _parameter_binding]}]
-  _continue_parameter_binding_until_comma_or_curly_bracket_or_initializer: [{match: '{{non_token}}'}, {match: '=', scope: keyword.operator.js, pop: true}, {match: '[,}]', pop: true}, {include: otherwise_invalid}]
 
-  parameter_binding_until_comma_or_square_bracket_or_initializer: [{match: '{{non_token}}'}, {match: '[,\]]', pop: true},
-  {match: '{{otherwise}}', set: [_continue_parameter_binding_until_comma_or_square_bracket_or_initializer, _parameter_binding]}]
-  _continue_parameter_binding_until_comma_or_square_bracket_or_initializer: [{match: '{{non_token}}'}, {match: '=', scope: keyword.operator.js, pop: true}, {match: '[,\]]', pop: true}, {include: otherwise_invalid}]
 
-  parameter_binding_list: [{match: '{{non_token}}'}, {match: '\)', pop: true}, {match: '\.\.\.', scope: keyword.operator.js, set: parameter_binding_until_parenthesis_or_initializer_no_comma},
-  {match: '{{otherwise}}', set: [_continue_parameter_binding_list, _parameter_binding]}]
-  _continue_parameter_binding_list: [{match: '{{non_token}}'}, {match: '\)', pop: true}, {match: ',', set: parameter_binding_list}, {match: '=', scope: keyword.operator.js, push: expression_until_parameter_binding}, {include: otherwise_invalid}]
 
-  parameter_binding_for_statement: [{match: '{{non_token}}'}, {match: '(?=[,;)]|{{b_before}}(?:of|in){{b_after}})', pop: true},
-  {match: '{{otherwise}}', set: [_continue_parameter_binding_for_statement, _parameter_binding]}]
-  _continue_parameter_binding_for_statement: [{match: '{{non_token}}'}, {match: '(?==)', scope: keyword.operator.js, pop: true}, {match: '(?=[,;)]|{{b_before}}(?:of|in){{b_after}})', pop: true}, {include: otherwise_invalid}]
+
 
   end_of_statement: [{match: '{{statement_terminator}}', pop: true}, {include: otherwise_invalid}]
   otherwise_invalid: [{match: '{{token}}', scope: invalid.illegal.js}]
@@ -245,7 +236,7 @@ contexts:
 
   _continue_variable_binding:
     - match: '(?!{{reserved_word}})(?=\{|\[|{{ident}})'
-      set: [_variable_initializer, _parameter_binding]
+      set: [_variable_initializer, parameter_binding]
 
   _variable_initializer:
     - match: '(?<=[}\]])'
@@ -324,7 +315,7 @@ contexts:
       set: statement
     - match: '{{b_before}}(?:var|let|const){{b_after}}'
       scope: storage.type.js
-      set: [_for_statement_interpret_binding, parameter_binding_for_statement]
+      set: [_for_statement_interpret_binding, parameter_binding_for_for_statement]
     - match: ';'
       set: [statement, expression_until_parenthesis, expression_until_for_statement_third_section]
     - match: '{{otherwise}}'
@@ -346,7 +337,7 @@ contexts:
       scope: keyword.operator.js
       set: [_for_statement_variable_binding_continuation, expression_until_for_binding]
     - match: ','
-      set: [_for_statement_variable_binding_continuation, parameter_binding_for_statement]
+      set: [_for_statement_variable_binding_continuation, parameter_binding_for_for_statement]
     - match: ';'
       set: [statement, expression_until_parenthesis, expression_until_for_statement_third_section]
     - match: '{{b_before}}(?:of|in){{b_after}}'
@@ -361,7 +352,7 @@ contexts:
       scope: keyword.operator.js
       push: expression_until_for_binding
     - match: ','
-      push: parameter_binding_for_statement
+      push: parameter_binding_for_for_statement
     - match: ';'
       set: [statement, expression_until_parenthesis, expression_until_for_statement_third_section]
     - include: otherwise_invalid
@@ -525,7 +516,7 @@ contexts:
     - include: _string_escape_sequences
     - match: '\$\{'
       scope: variable.language.js
-      set: expression_until_end_of_template_interpolation
+      set: [_template_literal_contents, expression_until_end_of_template_interpolation]
     - match: '`'
       scope: punctuation.definition.string.end.js
       pop: true
@@ -650,11 +641,6 @@ contexts:
       pop: true
     - include: otherwise_invalid
 
-  arrow_operator:
-    - match: '=>'
-      scope: storage.type.js
-      pop: true
-
   array_literal:
     - match: '\['
       set: expression_until_square_bracket_with_spread_or_comma_anywhere
@@ -666,6 +652,13 @@ contexts:
 
 
 
+
+
+  _arrow_operator:
+    - match: '=>'
+      scope: storage.type.js
+      pop: true
+
   _property_name:
     - match: '{{ident}}(?={{to_token}}:)' # this doesn't extend through new lines
       scope: entity.other.js
@@ -675,60 +668,54 @@ contexts:
     - include: numeric_literal
     - include: string_literal
 
+
+
+
+
+
+
+
+
+
+  object_destructuring:
+    - match: '\{'
+      set: [_object_destructuring_continue, _object_destructuring_value, _object_destructuring_pattern]
+
+  array_destructuring:
+    - match: '\['
+      set: parameter_binding_for_array_destructuring
+
   _object_destructuring_pattern:
     - match: '\}'
       pop: true
     - include: _property_name
     - match: '{{reserved_word}}'
       scope: invalid.illegal.js
-      set: _continue_parameter_binding_until_comma_or_curly_bracket_or_initializer
+      set: _after__parameter_binding_for_object_destructuring
     - match: '{{ident}}'
       scope: variable.language.js
-      set: _continue_parameter_binding_until_comma_or_curly_bracket_or_initializer
+      set: _after__parameter_binding_for_object_destructuring
     - include: otherwise_invalid
 
   _object_destructuring_value:
-    - match: '(?<=[,=}])'
+    - match: '(?<=[,}])'
       pop: true
     - match: '{{otherwise}}'
       set:
-        - match: '[,=}]'
+        - match: '[,}]'
           scope: invalid.illegal.js
           pop: true
         - match: ':'
-          set: parameter_binding_until_comma_or_curly_bracket_or_initializer
+          set: parameter_binding_for_object_destructuring
         - include: otherwise_invalid
 
   _object_destructuring_continue:
-    - match: '(?<==)'
-      push: expression_until_comma_or_curly_bracket
     - match: '(?<=,)'
       push: [_object_destructuring_value, _object_destructuring_pattern]
     - match: '(?<=\})'
       pop: true
 
-  _array_destructuring_pattern:
-    - match: '{{non_token}}'
-    - match: '\.\.\.'
-      scope: keyword.operator.js
-      set: [_array_destructuring_end, _parameter_binding_identifier]
-    - include: parameter_binding_until_comma_or_square_bracket_or_initializer
-
-  _array_destructuring_continue:
-    - match: '(?<==)'
-      push: expression_until_comma_or_square_bracket
-    - match: '(?<=,)'
-      push: _array_destructuring_pattern
-    - match: '(?<=\])'
-      pop: true
-    - include: otherwise_invalid
-
-  _array_destructuring_end:
-    - match: '\]'
-      pop: true
-    - include: otherwise_invalid
-
-  _parameter_binding_identifier:
+  parameter_identifier:
     - match: '{{reserved_word}}'
       scope: invalid.illegal.js
       pop: true
@@ -736,11 +723,4 @@ contexts:
       scope: variable.language.js
       pop: true
     - include: otherwise_invalid
-
-  _parameter_binding:
-    - match: '\{'
-      set: [_object_destructuring_continue, _object_destructuring_value, _object_destructuring_pattern]
-    - match: '\['
-      set: [_array_destructuring_continue, _array_destructuring_pattern]
-    - include: _parameter_binding_identifier
 

@@ -148,13 +148,13 @@ _function_expression_name__%%name%%:
 
 _arrow_function_expression__%%name%%:
   - match: '\((?={{to_token}}(?:(?:{{ident}}|\{|\[|\.\.\.)[^)]*+)?+\){{to_token}}=>)'
-    set: [_arrow_function_body__%%name%%, arrow_operator, parameter_binding_list]
+    set: [_arrow_function_body__%%name%%, _arrow_operator, parameter_binding_list]
   - match: '{{reserved_word}}(?={{to_token}}=>)'
     scope: invalid.illegal.js
-    set: [_arrow_function_body__%%name%%, arrow_operator]
+    set: [_arrow_function_body__%%name%%, _arrow_operator]
   - match: '{{ident}}(?={{to_token}}=>)'
     scope: variable.language.js
-    set: [_arrow_function_body__%%name%%, arrow_operator]
+    set: [_arrow_function_body__%%name%%, _arrow_operator]
 
 _arrow_function_body__%%name%%:
   - match: '{{space}}++'
@@ -186,7 +186,7 @@ _secondary__%%name%%:
   %%~catchSecondary%%
   - match: '{{space}}++'
   - match: '%%exitMatch%%'
-    %%exitType%%: %%exitTo%%
+    pop: true
     %%~exitExtra%%
   %%~override%%
   %%~overrideSecondary%%
@@ -219,7 +219,7 @@ _dot_reference__%%name%%:
     set:
       - match: '{{space}}++'
       - match: '%%exitMatch%%'
-        %%exitType%%: %%exitTo%%
+        pop: true
         %%~exitExtra%%
       - match: '{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}'
         scope: support.constant.js
