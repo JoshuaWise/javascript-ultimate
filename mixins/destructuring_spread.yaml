@@ -1,0 +1,17 @@
+%%name%%:
+  - match: '\.\.\.'
+    scope: keyword.operator.js
+    set: [_end__%%name%%, _identifier__%%name%%]
+
+_identifier__%%name%%:
+  - match: '(?=%%exitMatch%%)'
+    pop: true
+  - include: parameter_identifier
+
+_end__%%name%%:
+  - match: '(?=%%exitMatch%%)'
+    pop: true
+  - match: '='
+    scope: keyword.operator.js
+    set: %%initializer%%
+  - include: otherwise_invalid

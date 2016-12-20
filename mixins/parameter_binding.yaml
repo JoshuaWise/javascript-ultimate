@@ -1,0 +1,20 @@
+%%name%%:
+  - match: '{{otherwise}}'
+    set: [_after__%%name%%, __%%name%%]
+
+__%%name%%:
+  - match: '{{space}}++'
+  %%~overrideBefore%%
+  - match: '(?=%%exitMatch%%)'
+    pop: true
+  - include: object_destructuring
+  - include: array_destructuring
+  - include: parameter_identifier
+
+_after__%%name%%:
+  %%~catchAfter%%
+  - match: '{{space}}++'
+  %%~overrideAfter%%
+  - match: '%%exitMatch%%'
+    pop: true
+  - include: otherwise_invalid
