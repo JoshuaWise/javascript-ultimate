@@ -6,7 +6,7 @@
         "js",
         "htc"
     ],
-    "first_line_match": "^#!/usr/bin/env node(?:{{space}}[^{{line_terminator_chars}}]*+)?+(?={{line_terminator}}|$)",
+    "first_line_match": "{{shebang}}",
     "scope": "source.js",
     "variables": {
         "unicode_other_id_start": "\\x{2118}\\x{212E}\\x{309B}\\x{309C}",
@@ -34,7 +34,8 @@
         "statement_terminator": "(?:;|{{line_terminator}})",
         "ident": "(?:{{b_before}}[{{ident_start}}][{{ident_part}}]*+{{b_after}})",
         "reserved_word": "(?:{{b_before}}(?:{{keyword}}|{{future_reserved_word}}|null|true|false){{b_after}})",
-        "statement_keyword": "(?:import|export|var|let|const|if|with|while|do|for|switch|try|catch|finally|break|continue|case|return|throw|debugger)"
+        "statement_keyword": "(?:import|export|var|let|const|if|with|while|do|for|switch|try|catch|finally|break|continue|case|return|throw|debugger)",
+        "shebang": "^#!/usr/bin/env node(?:{{space}}[^{{line_terminator_chars}}]*+)?+(?={{line_terminator}}|$)"
     },
     "contexts": {
         "prototype": [
@@ -82,7 +83,7 @@
         ],
         "main": [
             {
-                "match": "^#!/usr/bin/env node(?:{{space}}[^{{line_terminator_chars}}]*+)?+(?={{line_terminator}}|$)",
+                "match": "{{shebang}}",
                 "scope": "comment.line.shebang.js"
             },
             {
