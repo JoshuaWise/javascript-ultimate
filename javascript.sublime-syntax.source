@@ -674,7 +674,7 @@ contexts:
           set: opening_parenthesis_ahead_or_comma_or_closing_curly_bracket
         - include: property_name_parenthesis_only
         - include: otherwise_invalid
-    - include: property_name_parenthesis_only
+    - include: property_name_possible_parenthesis
     - match: '{{reserved_word}}'
       scope: invalid.illegal.js
       set: need_comma_or_closing_curly_bracket

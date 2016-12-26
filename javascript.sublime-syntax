@@ -1009,7 +1009,7 @@
                 ]
             },
             {
-                "include": "property_name_parenthesis_only"
+                "include": "property_name_possible_parenthesis"
             },
             {
                 "match": "{{reserved_word}}",
