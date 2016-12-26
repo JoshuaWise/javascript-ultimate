@@ -12,7 +12,7 @@ _primary_parts__%%name%%:
   - include: numeric_literal
   - include: array_literal
   # TODO:
-  # - include: object_literal
+  - include: object_literal
   - include: _function_expression__%%name%%
   # - include: _class_expression__%%name%%
   - include: constant_or_variable

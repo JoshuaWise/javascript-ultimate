@@ -126,6 +126,36 @@
                 "pop": true
             }
         ],
+        "need_comma_or_closing_curly_bracket": [
+            {
+                "match": "[,}]",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "block_statement_or_comma_or_closing_curly_bracket_ahead": [
+            {
+                "match": "(?=[,}])",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "opening_parenthesis_ahead_or_comma_or_closing_curly_bracket": [
+            {
+                "match": "[,}]|(?=\\()",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
         "block_statement": [
             {
                 "match": "\\{",
@@ -939,28 +969,111 @@
                 "set": "expression_until_square_bracket_with_spread_or_comma_anywhere"
             }
         ],
+        "object_literal": [
+            {
+                "match": "\\{",
+                "set": [
+                    "_object_literal_continue",
+                    "_object_literal_value",
+                    "_object_literal_pattern"
+                ]
+            }
+        ],
+        "_object_literal_pattern": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "\\}",
+                "pop": true
+            },
+            {
+                "match": "\\*",
+                "scope": "keyword.operator.js",
+                "set": [
+                    {
+                        "match": "[,}]",
+                        "pop": true
+                    },
+                    {
+                        "match": "{{ident}}",
+                        "scope": "entity.other.js",
+                        "set": "opening_parenthesis_ahead_or_comma_or_closing_curly_bracket"
+                    },
+                    {
+                        "include": "property_name_parenthesis_only"
+                    },
+                    {
+                        "include": "otherwise_invalid"
+                    }
+                ]
+            },
+            {
+                "include": "property_name_parenthesis_only"
+            },
+            {
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "set": "need_comma_or_closing_curly_bracket"
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "entity.other.js",
+                "set": "need_comma_or_closing_curly_bracket"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_object_literal_value": [
+            {
+                "match": "(?<=[,}])",
+                "pop": true
+            },
+            {
+                "match": "{{otherwise}}",
+                "set": [
+                    {
+                        "match": "[,}]",
+                        "scope": "invalid.illegal.js",
+                        "pop": true
+                    },
+                    {
+                        "match": "\\(",
+                        "set": [
+                            "need_comma_or_closing_curly_bracket",
+                            "block_statement_or_comma_or_closing_curly_bracket_ahead",
+                            "parameter_binding_list"
+                        ]
+                    },
+                    {
+                        "match": ":",
+                        "set": "expression_until_comma_or_curly_bracket"
+                    },
+                    {
+                        "include": "otherwise_invalid"
+                    }
+                ]
+            }
+        ],
+        "_object_literal_continue": [
+            {
+                "match": "(?<=,)",
+                "push": [
+                    "_object_literal_value",
+                    "_object_literal_pattern"
+                ]
+            },
+            {
+                "match": "(?<=\\})",
+                "pop": true
+            }
+        ],
         "_arrow_operator": [
             {
                 "match": "=>",
                 "scope": "storage.type.js",
                 "pop": true
-            }
-        ],
-        "_property_name": [
-            {
-                "match": "{{ident}}(?={{to_token}}:)",
-                "scope": "entity.other.js",
-                "pop": true
-            },
-            {
-                "match": "\\[",
-                "set": "expression_until_square_bracket"
-            },
-            {
-                "include": "numeric_literal"
-            },
-            {
-                "include": "string_literal"
             }
         ],
         "object_destructuring": [
@@ -985,7 +1098,7 @@
                 "pop": true
             },
             {
-                "include": "_property_name"
+                "include": "property_name"
             },
             {
                 "match": "{{reserved_word}}",
@@ -1082,6 +1195,9 @@
             },
             {
                 "include": "array_literal"
+            },
+            {
+                "include": "object_literal"
             },
             {
                 "include": "_function_expression__expression_until_parenthesis"
@@ -1592,6 +1708,9 @@
                 "include": "array_literal"
             },
             {
+                "include": "object_literal"
+            },
+            {
                 "include": "_function_expression__expression_until_square_bracket"
             },
             {
@@ -2100,6 +2219,9 @@
                 "include": "array_literal"
             },
             {
+                "include": "object_literal"
+            },
+            {
                 "include": "_function_expression__expression_until_colon"
             },
             {
@@ -2606,6 +2728,9 @@
             },
             {
                 "include": "array_literal"
+            },
+            {
+                "include": "object_literal"
             },
             {
                 "include": "_function_expression__expression_until_end_of_template_interpolation"
@@ -3118,6 +3243,9 @@
                 "include": "array_literal"
             },
             {
+                "include": "object_literal"
+            },
+            {
                 "include": "_function_expression__expression_until_comma_or_curly_bracket"
             },
             {
@@ -3626,6 +3754,9 @@
                 "include": "array_literal"
             },
             {
+                "include": "object_literal"
+            },
+            {
                 "include": "_function_expression__expression_until_comma_or_square_bracket_ahead"
             },
             {
@@ -4132,6 +4263,9 @@
             },
             {
                 "include": "array_literal"
+            },
+            {
+                "include": "object_literal"
             },
             {
                 "include": "_function_expression__expression_until_parameter_binding_list"
@@ -4644,6 +4778,9 @@
             },
             {
                 "include": "array_literal"
+            },
+            {
+                "include": "object_literal"
             },
             {
                 "include": "_function_expression__expression_until_parenthesis_with_spread"
@@ -5163,6 +5300,9 @@
                 "include": "array_literal"
             },
             {
+                "include": "object_literal"
+            },
+            {
                 "include": "_function_expression__expression_until_parenthesis_no_comma"
             },
             {
@@ -5675,6 +5815,9 @@
                 "include": "array_literal"
             },
             {
+                "include": "object_literal"
+            },
+            {
                 "include": "_function_expression__expression_until_parenthesis_ahead_no_comma"
             },
             {
@@ -6185,6 +6328,9 @@
             },
             {
                 "include": "array_literal"
+            },
+            {
+                "include": "object_literal"
             },
             {
                 "include": "_function_expression__expression_until_square_bracket_with_spread_or_comma_anywhere"
@@ -6703,6 +6849,9 @@
                 "include": "array_literal"
             },
             {
+                "include": "object_literal"
+            },
+            {
                 "include": "_function_expression__expression_until_square_bracket_ahead_no_comma"
             },
             {
@@ -7215,6 +7364,9 @@
                 "include": "array_literal"
             },
             {
+                "include": "object_literal"
+            },
+            {
                 "include": "_function_expression__expression_until_for_statement_third_section"
             },
             {
@@ -7721,6 +7873,9 @@
             },
             {
                 "include": "array_literal"
+            },
+            {
+                "include": "object_literal"
             },
             {
                 "include": "_function_expression__expression_until_for_binding"
@@ -8239,6 +8394,9 @@
                 "include": "array_literal"
             },
             {
+                "include": "object_literal"
+            },
+            {
                 "include": "_function_expression___for_statement_first_expression"
             },
             {
@@ -8749,6 +8907,9 @@
             },
             {
                 "include": "array_literal"
+            },
+            {
+                "include": "object_literal"
             },
             {
                 "include": "_function_expression__expression_until_end_of_statement"
@@ -9298,6 +9459,9 @@
                 "include": "array_literal"
             },
             {
+                "include": "object_literal"
+            },
+            {
                 "include": "_function_expression__expression_until_end_of_statement_or_block"
             },
             {
@@ -9839,6 +10003,9 @@
             },
             {
                 "include": "array_literal"
+            },
+            {
+                "include": "object_literal"
             },
             {
                 "include": "_function_expression__expression_until_variable_binding"
@@ -10703,6 +10870,57 @@
             },
             {
                 "include": "otherwise_invalid"
+            }
+        ],
+        "property_name": [
+            {
+                "match": "{{ident}}(?={{to_token}}(?::))",
+                "scope": "entity.other.js",
+                "pop": true
+            },
+            {
+                "match": "\\[",
+                "set": "expression_until_square_bracket"
+            },
+            {
+                "include": "numeric_literal"
+            },
+            {
+                "include": "string_literal"
+            }
+        ],
+        "property_name_possible_parenthesis": [
+            {
+                "match": "{{ident}}(?={{to_token}}(?:[:(]))",
+                "scope": "entity.other.js",
+                "pop": true
+            },
+            {
+                "match": "\\[",
+                "set": "expression_until_square_bracket"
+            },
+            {
+                "include": "numeric_literal"
+            },
+            {
+                "include": "string_literal"
+            }
+        ],
+        "property_name_parenthesis_only": [
+            {
+                "match": "{{ident}}(?={{to_token}}(?:\\())",
+                "scope": "entity.other.js",
+                "pop": true
+            },
+            {
+                "match": "\\[",
+                "set": "expression_until_square_bracket"
+            },
+            {
+                "include": "numeric_literal"
+            },
+            {
+                "include": "string_literal"
             }
         ],
         "statement_in_block": [
