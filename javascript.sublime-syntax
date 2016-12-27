@@ -130,7 +130,7 @@
                 "pop": true
             }
         ],
-        "need_comma_or_closing_curly_bracket": [
+        "comma_or_closing_curly_bracket": [
             {
                 "match": "[,}]",
                 "pop": true
@@ -1018,7 +1018,7 @@
                         "include": "property_name_parenthesis_only"
                     },
                     {
-                        "include": "need_comma_or_closing_curly_bracket"
+                        "include": "comma_or_closing_curly_bracket"
                     }
                 ]
             },
@@ -1028,12 +1028,12 @@
             {
                 "match": "{{reserved_word}}",
                 "scope": "invalid.illegal.js",
-                "set": "need_comma_or_closing_curly_bracket"
+                "set": "comma_or_closing_curly_bracket"
             },
             {
                 "match": "{{ident}}",
                 "scope": "entity.other.js",
-                "set": "need_comma_or_closing_curly_bracket"
+                "set": "comma_or_closing_curly_bracket"
             },
             {
                 "include": "otherwise_invalid"
@@ -1055,7 +1055,7 @@
                     {
                         "match": "\\(",
                         "set": [
-                            "need_comma_or_closing_curly_bracket",
+                            "comma_or_closing_curly_bracket",
                             "block_statement_or_comma_or_closing_curly_bracket_ahead",
                             "parameter_binding_list"
                         ]

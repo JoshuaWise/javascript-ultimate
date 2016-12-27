@@ -201,7 +201,7 @@ contexts:
 
   need_opening_parenthesis: [{match: '\(', pop: true}]
   need_opening_curly_bracket: [{match: '\{', pop: true}]
-  need_comma_or_closing_curly_bracket: [{match: '[,}]', pop: true}, {include: otherwise_invalid}]
+  comma_or_closing_curly_bracket: [{match: '[,}]', pop: true}, {include: otherwise_invalid}]
   block_statement_or_comma_or_closing_curly_bracket_ahead: [{match: '(?=[,}])', pop: true}, {include: block_statement}, {include: otherwise_invalid}]
   opening_parenthesis_ahead_or_comma_or_closing_curly_bracket: [{match: '[,}]|(?=\()', pop: true}, {include: otherwise_invalid}]
 
@@ -681,14 +681,14 @@ contexts:
           scope: entity.function.js
           set: opening_parenthesis_ahead_or_comma_or_closing_curly_bracket
         - include: property_name_parenthesis_only
-        - include: need_comma_or_closing_curly_bracket
+        - include: comma_or_closing_curly_bracket
     - include: property_name_possible_parenthesis
     - match: '{{reserved_word}}'
       scope: invalid.illegal.js
-      set: need_comma_or_closing_curly_bracket
+      set: comma_or_closing_curly_bracket
     - match: '{{ident}}'
       scope: entity.other.js
-      set: need_comma_or_closing_curly_bracket
+      set: comma_or_closing_curly_bracket
     - include: otherwise_invalid
 
   _object_literal_value:
@@ -700,7 +700,7 @@ contexts:
           scope: invalid.illegal.js
           pop: true
         - match: '\('
-          set: [need_comma_or_closing_curly_bracket, block_statement_or_comma_or_closing_curly_bracket_ahead, parameter_binding_list]
+          set: [comma_or_closing_curly_bracket, block_statement_or_comma_or_closing_curly_bracket_ahead, parameter_binding_list]
         - match: ':'
           set: expression_until_comma_or_curly_bracket
         - include: otherwise_invalid
