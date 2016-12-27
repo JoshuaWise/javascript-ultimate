@@ -43,7 +43,7 @@ variables:
   arrow_function_with_parenthesis: '\((?={{to_token}}(?:(?:{{ident}}|\{|\[|\.\.\.)[^)]*+)?+\){{to_token}}=>)'
   arrow_function_with_reserved_word: '{{reserved_word}}(?={{to_token}}=>)'
   arrow_function_with_ident: '{{ident}}(?={{to_token}}=>)'
-  assignment_for_function: '(?={{to_token}}={{to_token}}(?:function{{b_after}}{{to_token}}\(|{{arrow_function_with_parenthesis}}|{{arrow_function_with_reserved_word}}|{{arrow_function_with_ident}}))'
+  assignment_for_function: '(?={{to_token}}={{to_token}}(?:function{{to_token}}\(|{{arrow_function_with_parenthesis}}|{{arrow_function_with_reserved_word}}|{{arrow_function_with_ident}}))'
 
 contexts:
   prototype:
