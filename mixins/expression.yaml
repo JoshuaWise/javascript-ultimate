@@ -129,7 +129,7 @@ _unary_operators__%%name%%:
     set: _primary__%%name%%
 
 _function_expression__%%name%%:
-  - match: '{{b_before}}(function)(\*)?+{{b_after}}'
+  - match: '{{b_before}}(function)(?:(\*)|{{b_after}})'
     captures: {1: storage.type.js, 2: keyword.operator.js}
     set: [block_statement, parameter_binding_list, _function_expression_name__%%name%%]
 

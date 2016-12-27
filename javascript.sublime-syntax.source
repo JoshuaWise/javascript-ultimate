@@ -651,11 +651,11 @@ contexts:
       pop: true
 
   function_declaration:
-    - match: '{{b_before}}(function)(\*)?+{{b_after}}'
+    - match: '{{b_before}}(function)(?:(\*)|{{b_after}})'
       captures: {1: storage.type.js, 2: keyword.operator.js}
       set: [block_statement, parameter_binding_list, _function_declaration_name]
 
-  _function_declaration_name:
+  _function_declaration_name: # this doesn't extend through new lines
     - match: '({{reserved_word}}){{to_token}}\('
       captures: {1: invalid.illegal.js}
       pop: true

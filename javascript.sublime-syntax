@@ -948,7 +948,7 @@
         ],
         "function_declaration": [
             {
-                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
                 "captures": {
                     "1": "storage.type.js",
                     "2": "keyword.operator.js"
@@ -1428,13 +1428,13 @@
         ],
         "_function_expression__expression_until_parenthesis": [
             {
-                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
                 "captures": {
                     "1": "storage.type.js",
                     "2": "keyword.operator.js"
                 },
                 "set": [
-                    "block_statement",
+                    "_block_statement_or_exit__expression_until_parenthesis",
                     "parameter_binding_list",
                     "_function_expression_name__expression_until_parenthesis"
                 ]
@@ -1507,6 +1507,18 @@
             {
                 "match": "(?={{token}})",
                 "set": "_primary__expression_until_parenthesis"
+            }
+        ],
+        "_block_statement_or_exit__expression_until_parenthesis": [
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_secondary_parts__expression_until_parenthesis": [
@@ -1950,13 +1962,13 @@
         ],
         "_function_expression__expression_until_square_bracket": [
             {
-                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
                 "captures": {
                     "1": "storage.type.js",
                     "2": "keyword.operator.js"
                 },
                 "set": [
-                    "block_statement",
+                    "_block_statement_or_exit__expression_until_square_bracket",
                     "parameter_binding_list",
                     "_function_expression_name__expression_until_square_bracket"
                 ]
@@ -2029,6 +2041,18 @@
             {
                 "match": "(?={{token}})",
                 "set": "_primary__expression_until_square_bracket"
+            }
+        ],
+        "_block_statement_or_exit__expression_until_square_bracket": [
+            {
+                "match": "(?=\\])",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_secondary_parts__expression_until_square_bracket": [
@@ -2472,13 +2496,13 @@
         ],
         "_function_expression__expression_until_colon": [
             {
-                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
                 "captures": {
                     "1": "storage.type.js",
                     "2": "keyword.operator.js"
                 },
                 "set": [
-                    "block_statement",
+                    "_block_statement_or_exit__expression_until_colon",
                     "parameter_binding_list",
                     "_function_expression_name__expression_until_colon"
                 ]
@@ -2551,6 +2575,18 @@
             {
                 "match": "(?={{token}})",
                 "set": "_primary__expression_until_colon"
+            }
+        ],
+        "_block_statement_or_exit__expression_until_colon": [
+            {
+                "match": "(?=:)",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_secondary_parts__expression_until_colon": [
@@ -2994,13 +3030,13 @@
         ],
         "_function_expression__expression_until_end_of_template_interpolation": [
             {
-                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
                 "captures": {
                     "1": "storage.type.js",
                     "2": "keyword.operator.js"
                 },
                 "set": [
-                    "block_statement",
+                    "_block_statement_or_exit__expression_until_end_of_template_interpolation",
                     "parameter_binding_list",
                     "_function_expression_name__expression_until_end_of_template_interpolation"
                 ]
@@ -3073,6 +3109,18 @@
             {
                 "match": "(?={{token}})",
                 "set": "_primary__expression_until_end_of_template_interpolation"
+            }
+        ],
+        "_block_statement_or_exit__expression_until_end_of_template_interpolation": [
+            {
+                "match": "(?=\\})",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_secondary_parts__expression_until_end_of_template_interpolation": [
@@ -3518,13 +3566,13 @@
         ],
         "_function_expression__expression_until_comma_or_curly_bracket": [
             {
-                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
                 "captures": {
                     "1": "storage.type.js",
                     "2": "keyword.operator.js"
                 },
                 "set": [
-                    "block_statement",
+                    "_block_statement_or_exit__expression_until_comma_or_curly_bracket",
                     "parameter_binding_list",
                     "_function_expression_name__expression_until_comma_or_curly_bracket"
                 ]
@@ -3597,6 +3645,18 @@
             {
                 "match": "(?={{token}})",
                 "set": "_primary__expression_until_comma_or_curly_bracket"
+            }
+        ],
+        "_block_statement_or_exit__expression_until_comma_or_curly_bracket": [
+            {
+                "match": "(?=[,}])",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_secondary_parts__expression_until_comma_or_curly_bracket": [
@@ -4040,13 +4100,13 @@
         ],
         "_function_expression__expression_until_comma_or_square_bracket_ahead": [
             {
-                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
                 "captures": {
                     "1": "storage.type.js",
                     "2": "keyword.operator.js"
                 },
                 "set": [
-                    "block_statement",
+                    "_block_statement_or_exit__expression_until_comma_or_square_bracket_ahead",
                     "parameter_binding_list",
                     "_function_expression_name__expression_until_comma_or_square_bracket_ahead"
                 ]
@@ -4119,6 +4179,18 @@
             {
                 "match": "(?={{token}})",
                 "set": "_primary__expression_until_comma_or_square_bracket_ahead"
+            }
+        ],
+        "_block_statement_or_exit__expression_until_comma_or_square_bracket_ahead": [
+            {
+                "match": "(?=(?=[,\\]]))",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_secondary_parts__expression_until_comma_or_square_bracket_ahead": [
@@ -4562,13 +4634,13 @@
         ],
         "_function_expression__expression_until_parameter_binding_list": [
             {
-                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
                 "captures": {
                     "1": "storage.type.js",
                     "2": "keyword.operator.js"
                 },
                 "set": [
-                    "block_statement",
+                    "_block_statement_or_exit__expression_until_parameter_binding_list",
                     "parameter_binding_list",
                     "_function_expression_name__expression_until_parameter_binding_list"
                 ]
@@ -4641,6 +4713,18 @@
             {
                 "match": "(?={{token}})",
                 "set": "_primary__expression_until_parameter_binding_list"
+            }
+        ],
+        "_block_statement_or_exit__expression_until_parameter_binding_list": [
+            {
+                "match": "(?=(?=\\)))",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_secondary_parts__expression_until_parameter_binding_list": [
@@ -5093,13 +5177,13 @@
         ],
         "_function_expression__expression_until_parenthesis_with_spread": [
             {
-                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
                 "captures": {
                     "1": "storage.type.js",
                     "2": "keyword.operator.js"
                 },
                 "set": [
-                    "block_statement",
+                    "_block_statement_or_exit__expression_until_parenthesis_with_spread",
                     "parameter_binding_list",
                     "_function_expression_name__expression_until_parenthesis_with_spread"
                 ]
@@ -5172,6 +5256,18 @@
             {
                 "match": "(?={{token}})",
                 "set": "_primary__expression_until_parenthesis_with_spread"
+            }
+        ],
+        "_block_statement_or_exit__expression_until_parenthesis_with_spread": [
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_secondary_parts__expression_until_parenthesis_with_spread": [
@@ -5619,13 +5715,13 @@
         ],
         "_function_expression__expression_until_parenthesis_no_comma": [
             {
-                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
                 "captures": {
                     "1": "storage.type.js",
                     "2": "keyword.operator.js"
                 },
                 "set": [
-                    "block_statement",
+                    "_block_statement_or_exit__expression_until_parenthesis_no_comma",
                     "parameter_binding_list",
                     "_function_expression_name__expression_until_parenthesis_no_comma"
                 ]
@@ -5698,6 +5794,18 @@
             {
                 "match": "(?={{token}})",
                 "set": "_primary__expression_until_parenthesis_no_comma"
+            }
+        ],
+        "_block_statement_or_exit__expression_until_parenthesis_no_comma": [
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_secondary_parts__expression_until_parenthesis_no_comma": [
@@ -6145,13 +6253,13 @@
         ],
         "_function_expression__expression_until_parenthesis_ahead_no_comma": [
             {
-                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
                 "captures": {
                     "1": "storage.type.js",
                     "2": "keyword.operator.js"
                 },
                 "set": [
-                    "block_statement",
+                    "_block_statement_or_exit__expression_until_parenthesis_ahead_no_comma",
                     "parameter_binding_list",
                     "_function_expression_name__expression_until_parenthesis_ahead_no_comma"
                 ]
@@ -6224,6 +6332,18 @@
             {
                 "match": "(?={{token}})",
                 "set": "_primary__expression_until_parenthesis_ahead_no_comma"
+            }
+        ],
+        "_block_statement_or_exit__expression_until_parenthesis_ahead_no_comma": [
+            {
+                "match": "(?=(?=\\)))",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_secondary_parts__expression_until_parenthesis_ahead_no_comma": [
@@ -6679,13 +6799,13 @@
         ],
         "_function_expression__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
-                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
                 "captures": {
                     "1": "storage.type.js",
                     "2": "keyword.operator.js"
                 },
                 "set": [
-                    "block_statement",
+                    "_block_statement_or_exit__expression_until_square_bracket_with_spread_or_comma_anywhere",
                     "parameter_binding_list",
                     "_function_expression_name__expression_until_square_bracket_with_spread_or_comma_anywhere"
                 ]
@@ -6758,6 +6878,18 @@
             {
                 "match": "(?={{token}})",
                 "set": "_primary__expression_until_square_bracket_with_spread_or_comma_anywhere"
+            }
+        ],
+        "_block_statement_or_exit__expression_until_square_bracket_with_spread_or_comma_anywhere": [
+            {
+                "match": "(?=\\])",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_secondary_parts__expression_until_square_bracket_with_spread_or_comma_anywhere": [
@@ -7201,13 +7333,13 @@
         ],
         "_function_expression__expression_until_square_bracket_ahead_no_comma": [
             {
-                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
                 "captures": {
                     "1": "storage.type.js",
                     "2": "keyword.operator.js"
                 },
                 "set": [
-                    "block_statement",
+                    "_block_statement_or_exit__expression_until_square_bracket_ahead_no_comma",
                     "parameter_binding_list",
                     "_function_expression_name__expression_until_square_bracket_ahead_no_comma"
                 ]
@@ -7280,6 +7412,18 @@
             {
                 "match": "(?={{token}})",
                 "set": "_primary__expression_until_square_bracket_ahead_no_comma"
+            }
+        ],
+        "_block_statement_or_exit__expression_until_square_bracket_ahead_no_comma": [
+            {
+                "match": "(?=(?=\\]))",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_secondary_parts__expression_until_square_bracket_ahead_no_comma": [
@@ -7727,13 +7871,13 @@
         ],
         "_function_expression__expression_until_for_statement_third_section": [
             {
-                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
                 "captures": {
                     "1": "storage.type.js",
                     "2": "keyword.operator.js"
                 },
                 "set": [
-                    "block_statement",
+                    "_block_statement_or_exit__expression_until_for_statement_third_section",
                     "parameter_binding_list",
                     "_function_expression_name__expression_until_for_statement_third_section"
                 ]
@@ -7806,6 +7950,18 @@
             {
                 "match": "(?={{token}})",
                 "set": "_primary__expression_until_for_statement_third_section"
+            }
+        ],
+        "_block_statement_or_exit__expression_until_for_statement_third_section": [
+            {
+                "match": "(?=;|(?=\\)))",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_secondary_parts__expression_until_for_statement_third_section": [
@@ -8253,13 +8409,13 @@
         ],
         "_function_expression__expression_until_for_binding": [
             {
-                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
                 "captures": {
                     "1": "storage.type.js",
                     "2": "keyword.operator.js"
                 },
                 "set": [
-                    "block_statement",
+                    "_block_statement_or_exit__expression_until_for_binding",
                     "parameter_binding_list",
                     "_function_expression_name__expression_until_for_binding"
                 ]
@@ -8332,6 +8488,18 @@
             {
                 "match": "(?={{token}})",
                 "set": "_primary__expression_until_for_binding"
+            }
+        ],
+        "_block_statement_or_exit__expression_until_for_binding": [
+            {
+                "match": "(?=(?=[,;)]))",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_secondary_parts__expression_until_for_binding": [
@@ -8779,13 +8947,13 @@
         ],
         "_function_expression___for_statement_first_expression": [
             {
-                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
                 "captures": {
                     "1": "storage.type.js",
                     "2": "keyword.operator.js"
                 },
                 "set": [
-                    "block_statement",
+                    "_block_statement_or_exit___for_statement_first_expression",
                     "parameter_binding_list",
                     "_function_expression_name___for_statement_first_expression"
                 ]
@@ -8858,6 +9026,18 @@
             {
                 "match": "(?={{token}})",
                 "set": "_primary___for_statement_first_expression"
+            }
+        ],
+        "_block_statement_or_exit___for_statement_first_expression": [
+            {
+                "match": "(?=(?=[;)]|{{b_before}}(?:of|in){{b_after}}))",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_secondary_parts___for_statement_first_expression": [
@@ -9317,13 +9497,13 @@
         ],
         "_function_expression__expression_until_end_of_statement": [
             {
-                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
                 "captures": {
                     "1": "storage.type.js",
                     "2": "keyword.operator.js"
                 },
                 "set": [
-                    "block_statement",
+                    "_block_statement_or_exit__expression_until_end_of_statement",
                     "parameter_binding_list",
                     "_function_expression_name__expression_until_end_of_statement"
                 ]
@@ -9396,6 +9576,18 @@
             {
                 "match": "(?={{token}})",
                 "set": "_primary__expression_until_end_of_statement"
+            }
+        ],
+        "_block_statement_or_exit__expression_until_end_of_statement": [
+            {
+                "match": "(?=;)",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_secondary_parts__expression_until_end_of_statement": [
@@ -9878,13 +10070,13 @@
         ],
         "_function_expression__expression_until_end_of_statement_or_block": [
             {
-                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
                 "captures": {
                     "1": "storage.type.js",
                     "2": "keyword.operator.js"
                 },
                 "set": [
-                    "block_statement",
+                    "_block_statement_or_exit__expression_until_end_of_statement_or_block",
                     "parameter_binding_list",
                     "_function_expression_name__expression_until_end_of_statement_or_block"
                 ]
@@ -9957,6 +10149,18 @@
             {
                 "match": "(?={{token}})",
                 "set": "_primary__expression_until_end_of_statement_or_block"
+            }
+        ],
+        "_block_statement_or_exit__expression_until_end_of_statement_or_block": [
+            {
+                "match": "(?=;|(?=\\}))",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_secondary_parts__expression_until_end_of_statement_or_block": [
@@ -10439,13 +10643,13 @@
         ],
         "_function_expression__expression_until_variable_binding": [
             {
-                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
                 "captures": {
                     "1": "storage.type.js",
                     "2": "keyword.operator.js"
                 },
                 "set": [
-                    "block_statement",
+                    "_block_statement_or_exit__expression_until_variable_binding",
                     "parameter_binding_list",
                     "_function_expression_name__expression_until_variable_binding"
                 ]
@@ -10518,6 +10722,18 @@
             {
                 "match": "(?={{token}})",
                 "set": "_primary__expression_until_variable_binding"
+            }
+        ],
+        "_block_statement_or_exit__expression_until_variable_binding": [
+            {
+                "match": "(?=;)",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_secondary_parts__expression_until_variable_binding": [
