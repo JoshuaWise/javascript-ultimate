@@ -722,7 +722,7 @@ contexts:
 
   _arrow_operator:
     - match: '=>'
-      scope: storage.type.js
+      scope: keyword.operator.js
       pop: true
 
 
