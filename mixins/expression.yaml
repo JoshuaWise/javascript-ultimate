@@ -11,9 +11,9 @@ _primary_parts__%%name%%:
   - include: regular_expression_literal
   - include: numeric_literal
   - include: array_literal
-  # TODO:
   - include: object_literal
   - include: _function_expression__%%name%%
+  # TODO:
   # - include: _class_expression__%%name%%
   - include: constant_or_variable
   - include: _new_keyword__%%name%%
