@@ -529,7 +529,7 @@ contexts:
   _template_literal_contents:
     - meta_include_prototype: false
     - meta_scope: string.quoted.template.js
-    - match: '\\\$'
+    - match: '\\[$`]'
       scope: constant.character.escape.js
     - include: _string_escape_sequences
     - match: '\$\{'

@@ -743,7 +743,7 @@
                 "meta_scope": "string.quoted.template.js"
             },
             {
-                "match": "\\\\\\$",
+                "match": "\\\\[$`]",
                 "scope": "constant.character.escape.js"
             },
             {
