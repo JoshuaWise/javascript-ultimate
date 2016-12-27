@@ -1,0 +1,8 @@
+%%name%%:
+  - match: '{{ident}}(?={{to_token}}(?:%%identTail%%))' # this doesn't extend through new lines
+    scope: entity.other.js
+    pop: true
+  - match: '\['
+    set: expression_until_square_bracket
+  - include: numeric_literal
+  - include: string_literal
