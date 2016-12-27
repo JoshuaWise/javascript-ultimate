@@ -664,16 +664,14 @@ contexts:
     - match: '{{non_token}}'
     - match: '\}'
       pop: true
-    - match: '\*'
-      scope: keyword.operator.js
+    - match: '(\*)|{{b_before}}(get|set){{b_after}}'
+      captures: {1: keyword.operator.js, 2: storage.type.js}
       set:
-        - match: '[,}]'
-          pop: true
         - match: '{{ident}}'
           scope: entity.other.js
           set: opening_parenthesis_ahead_or_comma_or_closing_curly_bracket
         - include: property_name_parenthesis_only
-        - include: otherwise_invalid
+        - include: need_comma_or_closing_curly_bracket
     - include: property_name_possible_parenthesis
     - match: '{{reserved_word}}'
       scope: invalid.illegal.js
