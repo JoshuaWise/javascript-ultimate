@@ -716,6 +716,57 @@ contexts:
     - match: '(?<=\})'
       pop: true
 
+  # class_declaration:
+  #   - match: '{{b_before}}class{{b_after}}'
+  #     scope: storage.type.js
+  #     set: [_class_block, _class_heritage, _class_declaration_name]
+
+  # _class_declaration_name:
+  #   - match: '{{reserved_word}}'
+  #     scope: invalid.illegal.js
+  #     pop: true
+  #   - match: '{{ident}}'
+  #     scope: entity.function.js
+  #     pop: true
+  #   - include: otherwise_invalid
+
+  # _class_heritage:
+  #   - match: '{{b_before}}extends{{b_after}}'
+  #     scope: storage.modifier.js
+  #     pop: true
+  #   - match: '(?=\{)'
+  #     pop: true
+  #   - include: otherwise_invalid
+
+  # _class_block:
+  #   - match: '\{'
+  #     set: _class_block_contents
+  #   - include: otherwise_invalid
+
+  # _class_block_contents:
+  #   - match: '{{non_token}}'
+  #   - match: '\}'
+  #     pop: true
+  #   - match: '{{b_before}}static{{b_after}}'
+  #     set:
+  #       - match: '{{non_token}}'
+  #       - match: '\}'
+  #         pop: true
+  #       - include: _class_method
+  #   - include: _class_method
+
+  # _class_method:
+  #   - match: '(\*)|{{b_before}}(get|set){{b_after}}'
+  #     captures: {1: keyword.operator.js, 2: storage.type.js}
+  #     set:
+  #       - match: '{{ident}}'
+  #         scope: entity.function.js
+  #         set: opening_parenthesis_or_method_ahead
+  #       - include: property_name_parenthesis_only
+  #       - include: method_ahead
+  #   - include: property_name_parenthesis_only
+  #   - include: otherwise_invalid
+
 
 
 
