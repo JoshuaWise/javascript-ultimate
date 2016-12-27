@@ -39,7 +39,8 @@
         "arrow_function_with_parenthesis": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
         "arrow_function_with_reserved_word": "{{reserved_word}}(?={{to_token}}=>)",
         "arrow_function_with_ident": "{{ident}}(?={{to_token}}=>)",
-        "assignment_for_function": "(?={{to_token}}={{to_token}}(?:function\\*?+{{to_token}}\\(|{{arrow_function_with_parenthesis}}|{{arrow_function_with_reserved_word}}|{{arrow_function_with_ident}}))"
+        "assignment_for_function": "(?={{to_token}}={{to_token}}(?:function\\*?+{{to_token}}\\(|{{arrow_function_with_parenthesis}}|{{arrow_function_with_reserved_word}}|{{arrow_function_with_ident}}))",
+        "property_assignment_for_function": "(?={{to_token}}:{{to_token}}(?:function\\*?+{{to_token}}\\(|{{arrow_function_with_parenthesis}}|{{arrow_function_with_reserved_word}}|{{arrow_function_with_ident}}))"
     },
     "contexts": {
         "prototype": [
@@ -1021,6 +1022,11 @@
                         "include": "comma_or_closing_curly_bracket"
                     }
                 ]
+            },
+            {
+                "match": "{{ident}}{{property_assignment_for_function}}",
+                "scope": "entity.function.js",
+                "pop": true
             },
             {
                 "include": "property_name_possible_parenthesis"
