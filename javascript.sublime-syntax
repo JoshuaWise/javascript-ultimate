@@ -639,12 +639,15 @@
         ],
         "string_literal": [
             {
-                "match": "('|\")(use strict)(\\1)",
+                "match": "(')(use strict)(')|(\")(use strict)(\")",
                 "scope": "string.quoted.js",
                 "captures": {
                     "1": "punctuation.definition.string.begin.js",
                     "2": "comment.directive.js",
-                    "3": "punctuation.definition.string.end.js"
+                    "3": "punctuation.definition.string.end.js",
+                    "4": "punctuation.definition.string.begin.js",
+                    "5": "comment.directive.js",
+                    "6": "punctuation.definition.string.end.js"
                 },
                 "pop": true
             },
