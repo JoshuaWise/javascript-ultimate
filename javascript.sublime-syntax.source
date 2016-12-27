@@ -199,6 +199,7 @@ contexts:
   end_of_statement: [{match: '{{statement_terminator}}', pop: true}, {include: otherwise_invalid}]
   otherwise_invalid: [{match: '{{token}}', scope: invalid.illegal.js}]
 
+  # TODO: make these need_... contexts smarter and include otherwise_invalid
   need_opening_parenthesis: [{match: '\(', pop: true}]
   need_opening_curly_bracket: [{match: '\{', pop: true}]
   comma_or_closing_curly_bracket: [{match: '[,}]', pop: true}, {include: otherwise_invalid}]
