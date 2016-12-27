@@ -47,7 +47,7 @@ variables:
 
 contexts:
   prototype:
-    - match: '(//)[^{{line_terminator_chars}}]*+{{line_terminator}}?+'
+    - match: '(//)[^{{line_terminator_chars}}]*+'
       scope: comment.line.double-slash.js
       captures:
         1: punctuation.definition.comment.js
