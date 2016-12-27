@@ -35,7 +35,11 @@
         "ident": "(?:{{b_before}}[{{ident_start}}][{{ident_part}}]*+{{b_after}})",
         "reserved_word": "(?:{{b_before}}(?:{{keyword}}|{{future_reserved_word}}|null|true|false){{b_after}})",
         "statement_keyword": "(?:import|export|var|let|const|if|with|while|do|for|switch|try|catch|finally|break|continue|case|return|throw|debugger)",
-        "shebang": "^#!/usr/bin/env node(?:{{space}}[^{{line_terminator_chars}}]*+)?+(?={{line_terminator}}|$)"
+        "shebang": "^#!/usr/bin/env node(?:{{space}}[^{{line_terminator_chars}}]*+)?+(?={{line_terminator}}|$)",
+        "arrow_function_with_parenthesis": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+        "arrow_function_with_reserved_word": "{{reserved_word}}(?={{to_token}}=>)",
+        "arrow_function_with_ident": "{{ident}}(?={{to_token}}=>)",
+        "assignment_for_function": "(?={{to_token}}={{to_token}}(?:function{{b_after}}{{to_token}}\\(|{{arrow_function_with_parenthesis}}|{{arrow_function_with_reserved_word}}|{{arrow_function_with_ident}}))"
     },
     "contexts": {
         "prototype": [
@@ -206,7 +210,7 @@
                 "match": "(?!{{reserved_word}})(?=\\{|\\[|{{ident}})",
                 "set": [
                     "_variable_initializer",
-                    "parameter_binding"
+                    "variable_binding"
                 ]
             }
         ],
@@ -362,7 +366,7 @@
                 "scope": "storage.type.js",
                 "set": [
                     "_for_statement_interpret_binding",
-                    "parameter_binding_for_for_statement"
+                    "variable_binding_for_for_statement"
                 ]
             },
             {
@@ -420,7 +424,7 @@
                 "match": ",",
                 "set": [
                     "_for_statement_variable_binding_continuation",
-                    "parameter_binding_for_for_statement"
+                    "variable_binding_for_for_statement"
                 ]
             },
             {
@@ -455,7 +459,7 @@
             },
             {
                 "match": ",",
-                "push": "parameter_binding_for_for_statement"
+                "push": "variable_binding_for_for_statement"
             },
             {
                 "match": ";",
@@ -908,7 +912,7 @@
                 "set": "_optional_postfix_operator"
             },
             {
-                "match": "{{b_before}}(?:eval|isFinite|isNaN|parseFloat|parseInt|decodeURI|decodeURIComponent|encodeURI|encodeURIComponent){{b_after}}",
+                "match": "{{b_before}}(?:eval|isFinite|isNaN|parseFloat|parseInt|decodeURI|decodeURIComponent|encodeURI|encodeURIComponent|setTimeout|setInterval|clearTimeout|clearInterval|setImmediate|clearImmediate){{b_after}}",
                 "scope": "support.function.js",
                 "set": "_optional_postfix_operator"
             },
@@ -919,6 +923,11 @@
                     "2": "support.constant.js"
                 },
                 "set": "_optional_postfix_operator"
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "pop": true
             },
             {
                 "match": "{{ident}}",
@@ -999,7 +1008,7 @@
                 "set": [
                     {
                         "match": "{{ident}}",
-                        "scope": "entity.other.js",
+                        "scope": "entity.function.js",
                         "set": "opening_parenthesis_ahead_or_comma_or_closing_curly_bracket"
                     },
                     {
@@ -1150,21 +1159,6 @@
             {
                 "match": "(?<=\\})",
                 "pop": true
-            }
-        ],
-        "parameter_identifier": [
-            {
-                "match": "{{reserved_word}}",
-                "scope": "invalid.illegal.js",
-                "pop": true
-            },
-            {
-                "match": "{{ident}}",
-                "scope": "variable.language.js",
-                "pop": true
-            },
-            {
-                "include": "otherwise_invalid"
             }
         ],
         "expression_until_parenthesis": [
@@ -1463,7 +1457,7 @@
         ],
         "_arrow_function_expression__expression_until_parenthesis": [
             {
-                "match": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+                "match": "{{arrow_function_with_parenthesis}}",
                 "set": [
                     "_arrow_function_body__expression_until_parenthesis",
                     "_arrow_operator",
@@ -1471,7 +1465,7 @@
                 ]
             },
             {
-                "match": "{{reserved_word}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "set": [
                     "_arrow_function_body__expression_until_parenthesis",
@@ -1479,7 +1473,7 @@
                 ]
             },
             {
-                "match": "{{ident}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_ident}}",
                 "scope": "variable.language.js",
                 "set": [
                     "_arrow_function_body__expression_until_parenthesis",
@@ -1604,6 +1598,22 @@
                         "pop": true
                     },
                     {
+                        "match": "{{b_before}}constructor{{b_after}}",
+                        "scope": "support.class.js",
+                        "set": [
+                            "_secondary__expression_until_parenthesis",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{ident}}{{assignment_for_function}}",
+                        "scope": "entity.name.function.js",
+                        "set": [
+                            "_secondary__expression_until_parenthesis",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
                         "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
                         "scope": "support.constant.js",
                         "set": [
@@ -1614,14 +1624,6 @@
                     {
                         "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
                         "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
                         "set": [
                             "_secondary__expression_until_parenthesis",
                             "_optional_postfix_operator"
@@ -1974,7 +1976,7 @@
         ],
         "_arrow_function_expression__expression_until_square_bracket": [
             {
-                "match": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+                "match": "{{arrow_function_with_parenthesis}}",
                 "set": [
                     "_arrow_function_body__expression_until_square_bracket",
                     "_arrow_operator",
@@ -1982,7 +1984,7 @@
                 ]
             },
             {
-                "match": "{{reserved_word}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "set": [
                     "_arrow_function_body__expression_until_square_bracket",
@@ -1990,7 +1992,7 @@
                 ]
             },
             {
-                "match": "{{ident}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_ident}}",
                 "scope": "variable.language.js",
                 "set": [
                     "_arrow_function_body__expression_until_square_bracket",
@@ -2115,6 +2117,22 @@
                         "pop": true
                     },
                     {
+                        "match": "{{b_before}}constructor{{b_after}}",
+                        "scope": "support.class.js",
+                        "set": [
+                            "_secondary__expression_until_square_bracket",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{ident}}{{assignment_for_function}}",
+                        "scope": "entity.name.function.js",
+                        "set": [
+                            "_secondary__expression_until_square_bracket",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
                         "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
                         "scope": "support.constant.js",
                         "set": [
@@ -2125,14 +2143,6 @@
                     {
                         "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
                         "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_square_bracket",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
                         "set": [
                             "_secondary__expression_until_square_bracket",
                             "_optional_postfix_operator"
@@ -2485,7 +2495,7 @@
         ],
         "_arrow_function_expression__expression_until_colon": [
             {
-                "match": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+                "match": "{{arrow_function_with_parenthesis}}",
                 "set": [
                     "_arrow_function_body__expression_until_colon",
                     "_arrow_operator",
@@ -2493,7 +2503,7 @@
                 ]
             },
             {
-                "match": "{{reserved_word}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "set": [
                     "_arrow_function_body__expression_until_colon",
@@ -2501,7 +2511,7 @@
                 ]
             },
             {
-                "match": "{{ident}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_ident}}",
                 "scope": "variable.language.js",
                 "set": [
                     "_arrow_function_body__expression_until_colon",
@@ -2626,6 +2636,22 @@
                         "pop": true
                     },
                     {
+                        "match": "{{b_before}}constructor{{b_after}}",
+                        "scope": "support.class.js",
+                        "set": [
+                            "_secondary__expression_until_colon",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{ident}}{{assignment_for_function}}",
+                        "scope": "entity.name.function.js",
+                        "set": [
+                            "_secondary__expression_until_colon",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
                         "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
                         "scope": "support.constant.js",
                         "set": [
@@ -2636,14 +2662,6 @@
                     {
                         "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
                         "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_colon",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
                         "set": [
                             "_secondary__expression_until_colon",
                             "_optional_postfix_operator"
@@ -2996,7 +3014,7 @@
         ],
         "_arrow_function_expression__expression_until_end_of_template_interpolation": [
             {
-                "match": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+                "match": "{{arrow_function_with_parenthesis}}",
                 "set": [
                     "_arrow_function_body__expression_until_end_of_template_interpolation",
                     "_arrow_operator",
@@ -3004,7 +3022,7 @@
                 ]
             },
             {
-                "match": "{{reserved_word}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "set": [
                     "_arrow_function_body__expression_until_end_of_template_interpolation",
@@ -3012,7 +3030,7 @@
                 ]
             },
             {
-                "match": "{{ident}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_ident}}",
                 "scope": "variable.language.js",
                 "set": [
                     "_arrow_function_body__expression_until_end_of_template_interpolation",
@@ -3139,6 +3157,22 @@
                         "scope": "variable.language.js"
                     },
                     {
+                        "match": "{{b_before}}constructor{{b_after}}",
+                        "scope": "support.class.js",
+                        "set": [
+                            "_secondary__expression_until_end_of_template_interpolation",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{ident}}{{assignment_for_function}}",
+                        "scope": "entity.name.function.js",
+                        "set": [
+                            "_secondary__expression_until_end_of_template_interpolation",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
                         "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
                         "scope": "support.constant.js",
                         "set": [
@@ -3149,14 +3183,6 @@
                     {
                         "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
                         "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_end_of_template_interpolation",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
                         "set": [
                             "_secondary__expression_until_end_of_template_interpolation",
                             "_optional_postfix_operator"
@@ -3509,7 +3535,7 @@
         ],
         "_arrow_function_expression__expression_until_comma_or_curly_bracket": [
             {
-                "match": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+                "match": "{{arrow_function_with_parenthesis}}",
                 "set": [
                     "_arrow_function_body__expression_until_comma_or_curly_bracket",
                     "_arrow_operator",
@@ -3517,7 +3543,7 @@
                 ]
             },
             {
-                "match": "{{reserved_word}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "set": [
                     "_arrow_function_body__expression_until_comma_or_curly_bracket",
@@ -3525,7 +3551,7 @@
                 ]
             },
             {
-                "match": "{{ident}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_ident}}",
                 "scope": "variable.language.js",
                 "set": [
                     "_arrow_function_body__expression_until_comma_or_curly_bracket",
@@ -3650,6 +3676,22 @@
                         "pop": true
                     },
                     {
+                        "match": "{{b_before}}constructor{{b_after}}",
+                        "scope": "support.class.js",
+                        "set": [
+                            "_secondary__expression_until_comma_or_curly_bracket",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{ident}}{{assignment_for_function}}",
+                        "scope": "entity.name.function.js",
+                        "set": [
+                            "_secondary__expression_until_comma_or_curly_bracket",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
                         "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
                         "scope": "support.constant.js",
                         "set": [
@@ -3660,14 +3702,6 @@
                     {
                         "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
                         "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_comma_or_curly_bracket",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
                         "set": [
                             "_secondary__expression_until_comma_or_curly_bracket",
                             "_optional_postfix_operator"
@@ -4020,7 +4054,7 @@
         ],
         "_arrow_function_expression__expression_until_comma_or_square_bracket_ahead": [
             {
-                "match": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+                "match": "{{arrow_function_with_parenthesis}}",
                 "set": [
                     "_arrow_function_body__expression_until_comma_or_square_bracket_ahead",
                     "_arrow_operator",
@@ -4028,7 +4062,7 @@
                 ]
             },
             {
-                "match": "{{reserved_word}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "set": [
                     "_arrow_function_body__expression_until_comma_or_square_bracket_ahead",
@@ -4036,7 +4070,7 @@
                 ]
             },
             {
-                "match": "{{ident}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_ident}}",
                 "scope": "variable.language.js",
                 "set": [
                     "_arrow_function_body__expression_until_comma_or_square_bracket_ahead",
@@ -4161,6 +4195,22 @@
                         "pop": true
                     },
                     {
+                        "match": "{{b_before}}constructor{{b_after}}",
+                        "scope": "support.class.js",
+                        "set": [
+                            "_secondary__expression_until_comma_or_square_bracket_ahead",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{ident}}{{assignment_for_function}}",
+                        "scope": "entity.name.function.js",
+                        "set": [
+                            "_secondary__expression_until_comma_or_square_bracket_ahead",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
                         "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
                         "scope": "support.constant.js",
                         "set": [
@@ -4171,14 +4221,6 @@
                     {
                         "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
                         "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_comma_or_square_bracket_ahead",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
                         "set": [
                             "_secondary__expression_until_comma_or_square_bracket_ahead",
                             "_optional_postfix_operator"
@@ -4531,7 +4573,7 @@
         ],
         "_arrow_function_expression__expression_until_parameter_binding_list": [
             {
-                "match": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+                "match": "{{arrow_function_with_parenthesis}}",
                 "set": [
                     "_arrow_function_body__expression_until_parameter_binding_list",
                     "_arrow_operator",
@@ -4539,7 +4581,7 @@
                 ]
             },
             {
-                "match": "{{reserved_word}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "set": [
                     "_arrow_function_body__expression_until_parameter_binding_list",
@@ -4547,7 +4589,7 @@
                 ]
             },
             {
-                "match": "{{ident}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_ident}}",
                 "scope": "variable.language.js",
                 "set": [
                     "_arrow_function_body__expression_until_parameter_binding_list",
@@ -4676,6 +4718,22 @@
                         "pop": true
                     },
                     {
+                        "match": "{{b_before}}constructor{{b_after}}",
+                        "scope": "support.class.js",
+                        "set": [
+                            "_secondary__expression_until_parameter_binding_list",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{ident}}{{assignment_for_function}}",
+                        "scope": "entity.name.function.js",
+                        "set": [
+                            "_secondary__expression_until_parameter_binding_list",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
                         "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
                         "scope": "support.constant.js",
                         "set": [
@@ -4686,14 +4744,6 @@
                     {
                         "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
                         "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_parameter_binding_list",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
                         "set": [
                             "_secondary__expression_until_parameter_binding_list",
                             "_optional_postfix_operator"
@@ -5051,7 +5101,7 @@
         ],
         "_arrow_function_expression__expression_until_parenthesis_with_spread": [
             {
-                "match": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+                "match": "{{arrow_function_with_parenthesis}}",
                 "set": [
                     "_arrow_function_body__expression_until_parenthesis_with_spread",
                     "_arrow_operator",
@@ -5059,7 +5109,7 @@
                 ]
             },
             {
-                "match": "{{reserved_word}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "set": [
                     "_arrow_function_body__expression_until_parenthesis_with_spread",
@@ -5067,7 +5117,7 @@
                 ]
             },
             {
-                "match": "{{ident}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_ident}}",
                 "scope": "variable.language.js",
                 "set": [
                     "_arrow_function_body__expression_until_parenthesis_with_spread",
@@ -5196,6 +5246,22 @@
                         "pop": true
                     },
                     {
+                        "match": "{{b_before}}constructor{{b_after}}",
+                        "scope": "support.class.js",
+                        "set": [
+                            "_secondary__expression_until_parenthesis_with_spread",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{ident}}{{assignment_for_function}}",
+                        "scope": "entity.name.function.js",
+                        "set": [
+                            "_secondary__expression_until_parenthesis_with_spread",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
                         "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
                         "scope": "support.constant.js",
                         "set": [
@@ -5206,14 +5272,6 @@
                     {
                         "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
                         "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis_with_spread",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
                         "set": [
                             "_secondary__expression_until_parenthesis_with_spread",
                             "_optional_postfix_operator"
@@ -5566,7 +5624,7 @@
         ],
         "_arrow_function_expression__expression_until_parenthesis_no_comma": [
             {
-                "match": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+                "match": "{{arrow_function_with_parenthesis}}",
                 "set": [
                     "_arrow_function_body__expression_until_parenthesis_no_comma",
                     "_arrow_operator",
@@ -5574,7 +5632,7 @@
                 ]
             },
             {
-                "match": "{{reserved_word}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "set": [
                     "_arrow_function_body__expression_until_parenthesis_no_comma",
@@ -5582,7 +5640,7 @@
                 ]
             },
             {
-                "match": "{{ident}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_ident}}",
                 "scope": "variable.language.js",
                 "set": [
                     "_arrow_function_body__expression_until_parenthesis_no_comma",
@@ -5711,6 +5769,22 @@
                         "pop": true
                     },
                     {
+                        "match": "{{b_before}}constructor{{b_after}}",
+                        "scope": "support.class.js",
+                        "set": [
+                            "_secondary__expression_until_parenthesis_no_comma",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{ident}}{{assignment_for_function}}",
+                        "scope": "entity.name.function.js",
+                        "set": [
+                            "_secondary__expression_until_parenthesis_no_comma",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
                         "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
                         "scope": "support.constant.js",
                         "set": [
@@ -5721,14 +5795,6 @@
                     {
                         "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
                         "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis_no_comma",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
                         "set": [
                             "_secondary__expression_until_parenthesis_no_comma",
                             "_optional_postfix_operator"
@@ -6081,7 +6147,7 @@
         ],
         "_arrow_function_expression__expression_until_parenthesis_ahead_no_comma": [
             {
-                "match": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+                "match": "{{arrow_function_with_parenthesis}}",
                 "set": [
                     "_arrow_function_body__expression_until_parenthesis_ahead_no_comma",
                     "_arrow_operator",
@@ -6089,7 +6155,7 @@
                 ]
             },
             {
-                "match": "{{reserved_word}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "set": [
                     "_arrow_function_body__expression_until_parenthesis_ahead_no_comma",
@@ -6097,7 +6163,7 @@
                 ]
             },
             {
-                "match": "{{ident}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_ident}}",
                 "scope": "variable.language.js",
                 "set": [
                     "_arrow_function_body__expression_until_parenthesis_ahead_no_comma",
@@ -6226,6 +6292,22 @@
                         "pop": true
                     },
                     {
+                        "match": "{{b_before}}constructor{{b_after}}",
+                        "scope": "support.class.js",
+                        "set": [
+                            "_secondary__expression_until_parenthesis_ahead_no_comma",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{ident}}{{assignment_for_function}}",
+                        "scope": "entity.name.function.js",
+                        "set": [
+                            "_secondary__expression_until_parenthesis_ahead_no_comma",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
                         "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
                         "scope": "support.constant.js",
                         "set": [
@@ -6236,14 +6318,6 @@
                     {
                         "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
                         "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis_ahead_no_comma",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
                         "set": [
                             "_secondary__expression_until_parenthesis_ahead_no_comma",
                             "_optional_postfix_operator"
@@ -6604,7 +6678,7 @@
         ],
         "_arrow_function_expression__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
-                "match": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+                "match": "{{arrow_function_with_parenthesis}}",
                 "set": [
                     "_arrow_function_body__expression_until_square_bracket_with_spread_or_comma_anywhere",
                     "_arrow_operator",
@@ -6612,7 +6686,7 @@
                 ]
             },
             {
-                "match": "{{reserved_word}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "set": [
                     "_arrow_function_body__expression_until_square_bracket_with_spread_or_comma_anywhere",
@@ -6620,7 +6694,7 @@
                 ]
             },
             {
-                "match": "{{ident}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_ident}}",
                 "scope": "variable.language.js",
                 "set": [
                     "_arrow_function_body__expression_until_square_bracket_with_spread_or_comma_anywhere",
@@ -6745,6 +6819,22 @@
                         "pop": true
                     },
                     {
+                        "match": "{{b_before}}constructor{{b_after}}",
+                        "scope": "support.class.js",
+                        "set": [
+                            "_secondary__expression_until_square_bracket_with_spread_or_comma_anywhere",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{ident}}{{assignment_for_function}}",
+                        "scope": "entity.name.function.js",
+                        "set": [
+                            "_secondary__expression_until_square_bracket_with_spread_or_comma_anywhere",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
                         "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
                         "scope": "support.constant.js",
                         "set": [
@@ -6755,14 +6845,6 @@
                     {
                         "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
                         "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_square_bracket_with_spread_or_comma_anywhere",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
                         "set": [
                             "_secondary__expression_until_square_bracket_with_spread_or_comma_anywhere",
                             "_optional_postfix_operator"
@@ -7115,7 +7197,7 @@
         ],
         "_arrow_function_expression__expression_until_square_bracket_ahead_no_comma": [
             {
-                "match": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+                "match": "{{arrow_function_with_parenthesis}}",
                 "set": [
                     "_arrow_function_body__expression_until_square_bracket_ahead_no_comma",
                     "_arrow_operator",
@@ -7123,7 +7205,7 @@
                 ]
             },
             {
-                "match": "{{reserved_word}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "set": [
                     "_arrow_function_body__expression_until_square_bracket_ahead_no_comma",
@@ -7131,7 +7213,7 @@
                 ]
             },
             {
-                "match": "{{ident}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_ident}}",
                 "scope": "variable.language.js",
                 "set": [
                     "_arrow_function_body__expression_until_square_bracket_ahead_no_comma",
@@ -7260,6 +7342,22 @@
                         "pop": true
                     },
                     {
+                        "match": "{{b_before}}constructor{{b_after}}",
+                        "scope": "support.class.js",
+                        "set": [
+                            "_secondary__expression_until_square_bracket_ahead_no_comma",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{ident}}{{assignment_for_function}}",
+                        "scope": "entity.name.function.js",
+                        "set": [
+                            "_secondary__expression_until_square_bracket_ahead_no_comma",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
                         "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
                         "scope": "support.constant.js",
                         "set": [
@@ -7270,14 +7368,6 @@
                     {
                         "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
                         "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_square_bracket_ahead_no_comma",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
                         "set": [
                             "_secondary__expression_until_square_bracket_ahead_no_comma",
                             "_optional_postfix_operator"
@@ -7630,7 +7720,7 @@
         ],
         "_arrow_function_expression__expression_until_for_statement_third_section": [
             {
-                "match": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+                "match": "{{arrow_function_with_parenthesis}}",
                 "set": [
                     "_arrow_function_body__expression_until_for_statement_third_section",
                     "_arrow_operator",
@@ -7638,7 +7728,7 @@
                 ]
             },
             {
-                "match": "{{reserved_word}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "set": [
                     "_arrow_function_body__expression_until_for_statement_third_section",
@@ -7646,7 +7736,7 @@
                 ]
             },
             {
-                "match": "{{ident}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_ident}}",
                 "scope": "variable.language.js",
                 "set": [
                     "_arrow_function_body__expression_until_for_statement_third_section",
@@ -7771,6 +7861,22 @@
                         "pop": true
                     },
                     {
+                        "match": "{{b_before}}constructor{{b_after}}",
+                        "scope": "support.class.js",
+                        "set": [
+                            "_secondary__expression_until_for_statement_third_section",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{ident}}{{assignment_for_function}}",
+                        "scope": "entity.name.function.js",
+                        "set": [
+                            "_secondary__expression_until_for_statement_third_section",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
                         "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
                         "scope": "support.constant.js",
                         "set": [
@@ -7781,14 +7887,6 @@
                     {
                         "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
                         "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_for_statement_third_section",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
                         "set": [
                             "_secondary__expression_until_for_statement_third_section",
                             "_optional_postfix_operator"
@@ -8145,7 +8243,7 @@
         ],
         "_arrow_function_expression__expression_until_for_binding": [
             {
-                "match": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+                "match": "{{arrow_function_with_parenthesis}}",
                 "set": [
                     "_arrow_function_body__expression_until_for_binding",
                     "_arrow_operator",
@@ -8153,7 +8251,7 @@
                 ]
             },
             {
-                "match": "{{reserved_word}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "set": [
                     "_arrow_function_body__expression_until_for_binding",
@@ -8161,7 +8259,7 @@
                 ]
             },
             {
-                "match": "{{ident}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_ident}}",
                 "scope": "variable.language.js",
                 "set": [
                     "_arrow_function_body__expression_until_for_binding",
@@ -8290,6 +8388,22 @@
                         "pop": true
                     },
                     {
+                        "match": "{{b_before}}constructor{{b_after}}",
+                        "scope": "support.class.js",
+                        "set": [
+                            "_secondary__expression_until_for_binding",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{ident}}{{assignment_for_function}}",
+                        "scope": "entity.name.function.js",
+                        "set": [
+                            "_secondary__expression_until_for_binding",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
                         "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
                         "scope": "support.constant.js",
                         "set": [
@@ -8300,14 +8414,6 @@
                     {
                         "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
                         "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_for_binding",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
                         "set": [
                             "_secondary__expression_until_for_binding",
                             "_optional_postfix_operator"
@@ -8660,7 +8766,7 @@
         ],
         "_arrow_function_expression___for_statement_first_expression": [
             {
-                "match": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+                "match": "{{arrow_function_with_parenthesis}}",
                 "set": [
                     "_arrow_function_body___for_statement_first_expression",
                     "_arrow_operator",
@@ -8668,7 +8774,7 @@
                 ]
             },
             {
-                "match": "{{reserved_word}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "set": [
                     "_arrow_function_body___for_statement_first_expression",
@@ -8676,7 +8782,7 @@
                 ]
             },
             {
-                "match": "{{ident}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_ident}}",
                 "scope": "variable.language.js",
                 "set": [
                     "_arrow_function_body___for_statement_first_expression",
@@ -8801,6 +8907,22 @@
                         "pop": true
                     },
                     {
+                        "match": "{{b_before}}constructor{{b_after}}",
+                        "scope": "support.class.js",
+                        "set": [
+                            "_secondary___for_statement_first_expression",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{ident}}{{assignment_for_function}}",
+                        "scope": "entity.name.function.js",
+                        "set": [
+                            "_secondary___for_statement_first_expression",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
                         "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
                         "scope": "support.constant.js",
                         "set": [
@@ -8811,14 +8933,6 @@
                     {
                         "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
                         "scope": "support.function.js",
-                        "set": [
-                            "_secondary___for_statement_first_expression",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
                         "set": [
                             "_secondary___for_statement_first_expression",
                             "_optional_postfix_operator"
@@ -9187,7 +9301,7 @@
         ],
         "_arrow_function_expression__expression_until_end_of_statement": [
             {
-                "match": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+                "match": "{{arrow_function_with_parenthesis}}",
                 "set": [
                     "_arrow_function_body__expression_until_end_of_statement",
                     "_arrow_operator",
@@ -9195,7 +9309,7 @@
                 ]
             },
             {
-                "match": "{{reserved_word}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "set": [
                     "_arrow_function_body__expression_until_end_of_statement",
@@ -9203,7 +9317,7 @@
                 ]
             },
             {
-                "match": "{{ident}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_ident}}",
                 "scope": "variable.language.js",
                 "set": [
                     "_arrow_function_body__expression_until_end_of_statement",
@@ -9351,6 +9465,22 @@
                         "pop": true
                     },
                     {
+                        "match": "{{b_before}}constructor{{b_after}}",
+                        "scope": "support.class.js",
+                        "set": [
+                            "_secondary__expression_until_end_of_statement",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{ident}}{{assignment_for_function}}",
+                        "scope": "entity.name.function.js",
+                        "set": [
+                            "_secondary__expression_until_end_of_statement",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
                         "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
                         "scope": "support.constant.js",
                         "set": [
@@ -9361,14 +9491,6 @@
                     {
                         "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
                         "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_end_of_statement",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
                         "set": [
                             "_secondary__expression_until_end_of_statement",
                             "_optional_postfix_operator"
@@ -9737,7 +9859,7 @@
         ],
         "_arrow_function_expression__expression_until_end_of_statement_or_block": [
             {
-                "match": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+                "match": "{{arrow_function_with_parenthesis}}",
                 "set": [
                     "_arrow_function_body__expression_until_end_of_statement_or_block",
                     "_arrow_operator",
@@ -9745,7 +9867,7 @@
                 ]
             },
             {
-                "match": "{{reserved_word}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "set": [
                     "_arrow_function_body__expression_until_end_of_statement_or_block",
@@ -9753,7 +9875,7 @@
                 ]
             },
             {
-                "match": "{{ident}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_ident}}",
                 "scope": "variable.language.js",
                 "set": [
                     "_arrow_function_body__expression_until_end_of_statement_or_block",
@@ -9901,6 +10023,22 @@
                         "pop": true
                     },
                     {
+                        "match": "{{b_before}}constructor{{b_after}}",
+                        "scope": "support.class.js",
+                        "set": [
+                            "_secondary__expression_until_end_of_statement_or_block",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{ident}}{{assignment_for_function}}",
+                        "scope": "entity.name.function.js",
+                        "set": [
+                            "_secondary__expression_until_end_of_statement_or_block",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
                         "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
                         "scope": "support.constant.js",
                         "set": [
@@ -9911,14 +10049,6 @@
                     {
                         "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
                         "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_end_of_statement_or_block",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
                         "set": [
                             "_secondary__expression_until_end_of_statement_or_block",
                             "_optional_postfix_operator"
@@ -10287,7 +10417,7 @@
         ],
         "_arrow_function_expression__expression_until_variable_binding": [
             {
-                "match": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+                "match": "{{arrow_function_with_parenthesis}}",
                 "set": [
                     "_arrow_function_body__expression_until_variable_binding",
                     "_arrow_operator",
@@ -10295,7 +10425,7 @@
                 ]
             },
             {
-                "match": "{{reserved_word}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "set": [
                     "_arrow_function_body__expression_until_variable_binding",
@@ -10303,7 +10433,7 @@
                 ]
             },
             {
-                "match": "{{ident}}(?={{to_token}}=>)",
+                "match": "{{arrow_function_with_ident}}",
                 "scope": "variable.language.js",
                 "set": [
                     "_arrow_function_body__expression_until_variable_binding",
@@ -10459,6 +10589,22 @@
                         "pop": true
                     },
                     {
+                        "match": "{{b_before}}constructor{{b_after}}",
+                        "scope": "support.class.js",
+                        "set": [
+                            "_secondary__expression_until_variable_binding",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
+                        "match": "{{ident}}{{assignment_for_function}}",
+                        "scope": "entity.name.function.js",
+                        "set": [
+                            "_secondary__expression_until_variable_binding",
+                            "_optional_postfix_operator"
+                        ]
+                    },
+                    {
                         "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
                         "scope": "support.constant.js",
                         "set": [
@@ -10469,14 +10615,6 @@
                     {
                         "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
                         "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_variable_binding",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
                         "set": [
                             "_secondary__expression_until_variable_binding",
                             "_optional_postfix_operator"
@@ -10549,7 +10687,17 @@
                 "pop": true
             },
             {
-                "include": "parameter_identifier"
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "variable.language.js",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_end__destructuring_spread_for_array_destructuring": [
@@ -10582,7 +10730,17 @@
                 "pop": true
             },
             {
-                "include": "parameter_identifier"
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "variable.language.js",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_end__destructuring_spread_for_parameter_binding_list": [
@@ -10623,7 +10781,17 @@
                 "include": "array_destructuring"
             },
             {
-                "include": "parameter_identifier"
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "variable.language.js",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_after__parameter_binding_until_parenthesis": [
@@ -10662,7 +10830,17 @@
                 "include": "array_destructuring"
             },
             {
-                "include": "parameter_identifier"
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "variable.language.js",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_after__parameter_binding_for_object_destructuring": [
@@ -10712,7 +10890,17 @@
                 "include": "array_destructuring"
             },
             {
-                "include": "parameter_identifier"
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "variable.language.js",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_after__parameter_binding_for_array_destructuring": [
@@ -10730,50 +10918,6 @@
             },
             {
                 "match": "\\]",
-                "pop": true
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "parameter_binding_for_for_statement": [
-            {
-                "match": "{{otherwise}}",
-                "set": [
-                    "_after__parameter_binding_for_for_statement",
-                    "__parameter_binding_for_for_statement"
-                ]
-            }
-        ],
-        "__parameter_binding_for_for_statement": [
-            {
-                "match": "{{space}}++"
-            },
-            {
-                "match": "(?=(?=[,;)]|{{b_before}}(?:of|in){{b_after}}))",
-                "pop": true
-            },
-            {
-                "include": "object_destructuring"
-            },
-            {
-                "include": "array_destructuring"
-            },
-            {
-                "include": "parameter_identifier"
-            }
-        ],
-        "_after__parameter_binding_for_for_statement": [
-            {
-                "match": "{{space}}++"
-            },
-            {
-                "match": "(?==)",
-                "scope": "keyword.operator.js",
-                "pop": true
-            },
-            {
-                "match": "(?=[,;)]|{{b_before}}(?:of|in){{b_after}})",
                 "pop": true
             },
             {
@@ -10807,7 +10951,17 @@
                 "include": "array_destructuring"
             },
             {
-                "include": "parameter_identifier"
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "variable.language.js",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_after__parameter_binding_list": [
@@ -10831,16 +10985,74 @@
                 "include": "otherwise_invalid"
             }
         ],
-        "parameter_binding": [
+        "variable_binding_for_for_statement": [
             {
                 "match": "{{otherwise}}",
                 "set": [
-                    "_after__parameter_binding",
-                    "__parameter_binding"
+                    "_after__variable_binding_for_for_statement",
+                    "__variable_binding_for_for_statement"
                 ]
             }
         ],
-        "__parameter_binding": [
+        "__variable_binding_for_for_statement": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=(?=[,;)]|{{b_before}}(?:of|in){{b_after}}))",
+                "pop": true
+            },
+            {
+                "include": "object_destructuring"
+            },
+            {
+                "include": "array_destructuring"
+            },
+            {
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.function.js",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_after__variable_binding_for_for_statement": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?==)",
+                "scope": "keyword.operator.js",
+                "pop": true
+            },
+            {
+                "match": "(?=[,;)]|{{b_before}}(?:of|in){{b_after}})",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "variable_binding": [
+            {
+                "match": "{{otherwise}}",
+                "set": [
+                    "_after__variable_binding",
+                    "__variable_binding"
+                ]
+            }
+        ],
+        "__variable_binding": [
             {
                 "match": "{{space}}++"
             },
@@ -10855,10 +11067,24 @@
                 "include": "array_destructuring"
             },
             {
-                "include": "parameter_identifier"
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.function.js",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
-        "_after__parameter_binding": [
+        "_after__variable_binding": [
             {
                 "match": "{{otherwise}}",
                 "pop": true

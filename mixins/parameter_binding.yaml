@@ -9,7 +9,14 @@ __%%name%%:
     pop: true
   - include: object_destructuring
   - include: array_destructuring
-  - include: parameter_identifier
+  - match: '{{reserved_word}}'
+    scope: invalid.illegal.js
+    pop: true
+  %%~overrideIdent%%
+  - match: '{{ident}}'
+    %%~identExtra%%
+    pop: true
+  - include: otherwise_invalid
 
 _after__%%name%%:
   %%~catchAfter%%

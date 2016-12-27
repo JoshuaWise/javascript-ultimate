@@ -40,6 +40,10 @@ variables:
   reserved_word: (?:{{b_before}}(?:{{keyword}}|{{future_reserved_word}}|null|true|false){{b_after}})
   statement_keyword: (?:import|export|var|let|const|if|with|while|do|for|switch|try|catch|finally|break|continue|case|return|throw|debugger)
   shebang: '^#!/usr/bin/env node(?:{{space}}[^{{line_terminator_chars}}]*+)?+(?={{line_terminator}}|$)'
+  arrow_function_with_parenthesis: '\((?={{to_token}}(?:(?:{{ident}}|\{|\[|\.\.\.)[^)]*+)?+\){{to_token}}=>)'
+  arrow_function_with_reserved_word: '{{reserved_word}}(?={{to_token}}=>)'
+  arrow_function_with_ident: '{{ident}}(?={{to_token}}=>)'
+  assignment_for_function: '(?={{to_token}}={{to_token}}(?:function{{b_after}}{{to_token}}\(|{{arrow_function_with_parenthesis}}|{{arrow_function_with_reserved_word}}|{{arrow_function_with_ident}}))'
 
 contexts:
   prototype:
@@ -172,12 +176,12 @@ contexts:
   destructuring_spread_for_array_destructuring: {mixin: destructuring_spread, exitMatch: '\]', initializer: expression_until_square_bracket_ahead_no_comma}
   destructuring_spread_for_parameter_binding_list: {mixin: destructuring_spread, exitMatch: '\)', initializer: expression_until_parenthesis_ahead_no_comma}
 
-  parameter_binding_until_parenthesis: {mixin: parameter_binding, exitMatch: '\)'}
-  parameter_binding_for_object_destructuring: {mixin: parameter_binding, exitMatch: '[,}]', overrideAfter: {match: '=', scope: keyword.operator.js, set: expression_until_comma_or_curly_bracket}}
-  parameter_binding_for_array_destructuring: {mixin: parameter_binding, exitMatch: '\]', overrideAfter: [{match: '=', scope: keyword.operator.js, push: expression_until_comma_or_square_bracket_ahead}, {match: ',', push: __parameter_binding_for_array_destructuring}], overrideBefore: [{match: ',++'}, {include: destructuring_spread_for_array_destructuring}]}
-  parameter_binding_for_for_statement: {mixin: parameter_binding, exitMatch: '(?=[,;)]|{{b_before}}(?:of|in){{b_after}})', overrideAfter: {match: '(?==)', scope: keyword.operator.js, pop: true}}
-  parameter_binding_list: {mixin: parameter_binding, exitMatch: '\)', overrideAfter: [{match: ',', set: parameter_binding_list}, {match: '=', scope: keyword.operator.js, push: expression_until_parameter_binding_list}], overrideBefore: {include: destructuring_spread_for_parameter_binding_list}}
-  parameter_binding: {mixin: parameter_binding, exitMatch: '[^\s\S]', catchAfter: {match: '{{otherwise}}', pop: true}}
+  parameter_binding_until_parenthesis: {mixin: parameter_binding, exitMatch: '\)', identExtra: 'scope: variable.language.js'}
+  parameter_binding_for_object_destructuring: {mixin: parameter_binding, exitMatch: '[,}]', overrideAfter: {match: '=', scope: keyword.operator.js, set: expression_until_comma_or_curly_bracket}, identExtra: 'scope: variable.language.js'}
+  parameter_binding_for_array_destructuring: {mixin: parameter_binding, exitMatch: '\]', overrideAfter: [{match: '=', scope: keyword.operator.js, push: expression_until_comma_or_square_bracket_ahead}, {match: ',', push: __parameter_binding_for_array_destructuring}], overrideBefore: [{match: ',++'}, {include: destructuring_spread_for_array_destructuring}], identExtra: 'scope: variable.language.js'}
+  parameter_binding_list: {mixin: parameter_binding, exitMatch: '\)', overrideAfter: [{match: ',', set: parameter_binding_list}, {match: '=', scope: keyword.operator.js, push: expression_until_parameter_binding_list}], overrideBefore: {include: destructuring_spread_for_parameter_binding_list}, identExtra: 'scope: variable.language.js'}
+  variable_binding_for_for_statement: {mixin: parameter_binding, exitMatch: '(?=[,;)]|{{b_before}}(?:of|in){{b_after}})', overrideAfter: {match: '(?==)', scope: keyword.operator.js, pop: true}, overrideIdent: {match: '{{ident}}{{assignment_for_function}}', scope: entity.function.js, pop: true}}
+  variable_binding: {mixin: parameter_binding, exitMatch: '[^\s\S]', catchAfter: {match: '{{otherwise}}', pop: true}, overrideIdent: {match: '{{ident}}{{assignment_for_function}}', scope: entity.function.js, pop: true}}
 
   property_name: {mixin: property_name, identTail: ':'}
   property_name_possible_parenthesis: {mixin: property_name, identTail: '[:(]'}
@@ -247,7 +251,7 @@ contexts:
 
   _continue_variable_binding:
     - match: '(?!{{reserved_word}})(?=\{|\[|{{ident}})'
-      set: [_variable_initializer, parameter_binding]
+      set: [_variable_initializer, variable_binding]
 
   _variable_initializer:
     - match: '(?<=[}\]])'
@@ -326,7 +330,7 @@ contexts:
       set: statement
     - match: '{{b_before}}(?:var|let|const){{b_after}}'
       scope: storage.type.js
-      set: [_for_statement_interpret_binding, parameter_binding_for_for_statement]
+      set: [_for_statement_interpret_binding, variable_binding_for_for_statement]
     - match: ';'
       set: [statement, expression_until_parenthesis, expression_until_for_statement_third_section]
     - match: '{{otherwise}}'
@@ -348,7 +352,7 @@ contexts:
       scope: keyword.operator.js
       set: [_for_statement_variable_binding_continuation, expression_until_for_binding]
     - match: ','
-      set: [_for_statement_variable_binding_continuation, parameter_binding_for_for_statement]
+      set: [_for_statement_variable_binding_continuation, variable_binding_for_for_statement]
     - match: ';'
       set: [statement, expression_until_parenthesis, expression_until_for_statement_third_section]
     - match: '{{b_before}}(?:of|in){{b_after}}'
@@ -363,7 +367,7 @@ contexts:
       scope: keyword.operator.js
       push: expression_until_for_binding
     - match: ','
-      push: parameter_binding_for_for_statement
+      push: variable_binding_for_for_statement
     - match: ';'
       set: [statement, expression_until_parenthesis, expression_until_for_statement_third_section]
     - include: otherwise_invalid
@@ -623,7 +627,7 @@ contexts:
     - match: '{{b_before}}(?:console|Math|JSON|Reflect|Intl|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT){{b_after}}'
       scope: support.constant.js
       set: _optional_postfix_operator
-    - match: '{{b_before}}(?:eval|isFinite|isNaN|parseFloat|parseInt|decodeURI|decodeURIComponent|encodeURI|encodeURIComponent){{b_after}}'
+    - match: '{{b_before}}(?:eval|isFinite|isNaN|parseFloat|parseInt|decodeURI|decodeURIComponent|encodeURI|encodeURIComponent|setTimeout|setInterval|clearTimeout|clearInterval|setImmediate|clearImmediate){{b_after}}'
       scope: support.function.js
       set: _optional_postfix_operator
     - match: '({{ident}}){{to_token}}\.{{to_token}}(prototype){{b_after}}'
@@ -631,6 +635,9 @@ contexts:
         1: support.class.js
         2: support.constant.js
       set: _optional_postfix_operator
+    - match: '{{ident}}{{assignment_for_function}}'
+      scope: entity.name.function.js
+      pop: true
     - match: '{{ident}}'
       set: _optional_postfix_operator
 
@@ -671,7 +678,7 @@ contexts:
       captures: {1: keyword.operator.js, 2: storage.type.js}
       set:
         - match: '{{ident}}'
-          scope: entity.other.js
+          scope: entity.function.js
           set: opening_parenthesis_ahead_or_comma_or_closing_curly_bracket
         - include: property_name_parenthesis_only
         - include: need_comma_or_closing_curly_bracket
@@ -764,13 +771,3 @@ contexts:
       push: [_object_destructuring_value, _object_destructuring_pattern]
     - match: '(?<=\})'
       pop: true
-
-  parameter_identifier:
-    - match: '{{reserved_word}}'
-      scope: invalid.illegal.js
-      pop: true
-    - match: '{{ident}}'
-      scope: variable.language.js
-      pop: true
-    - include: otherwise_invalid
-

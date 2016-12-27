@@ -6,7 +6,13 @@
 _identifier__%%name%%:
   - match: '(?=%%exitMatch%%)'
     pop: true
-  - include: parameter_identifier
+  - match: '{{reserved_word}}'
+    scope: invalid.illegal.js
+    pop: true
+  - match: '{{ident}}'
+    scope: variable.language.js
+    pop: true
+  - include: otherwise_invalid
 
 _end__%%name%%:
   - match: '(?=%%exitMatch%%)'
