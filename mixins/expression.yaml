@@ -128,6 +128,7 @@ _unary_operators__%%name%%:
     scope: bitwise-operator.js
     set: _primary__%%name%%
 
+# TODO: Make this less aggresive at displaying errors
 _function_expression__%%name%%:
   - match: '{{b_before}}(function)(?:(\*)|{{b_after}})'
     captures: {1: storage.type.js, 2: keyword.operator.js}
