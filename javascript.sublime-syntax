@@ -39,7 +39,7 @@
         "arrow_function_with_parenthesis": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
         "arrow_function_with_reserved_word": "{{reserved_word}}(?={{to_token}}=>)",
         "arrow_function_with_ident": "{{ident}}(?={{to_token}}=>)",
-        "assignment_for_function": "(?={{to_token}}={{to_token}}(?:function{{to_token}}\\(|{{arrow_function_with_parenthesis}}|{{arrow_function_with_reserved_word}}|{{arrow_function_with_ident}}))"
+        "assignment_for_function": "(?={{to_token}}={{to_token}}(?:function\\*?+{{to_token}}\\(|{{arrow_function_with_parenthesis}}|{{arrow_function_with_reserved_word}}|{{arrow_function_with_ident}}))"
     },
     "contexts": {
         "prototype": [
@@ -947,8 +947,11 @@
         ],
         "function_declaration": [
             {
-                "match": "{{b_before}}function{{b_after}}",
-                "scope": "storage.type.js",
+                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "captures": {
+                    "1": "storage.type.js",
+                    "2": "keyword.operator.js"
+                },
                 "set": [
                     "block_statement",
                     "parameter_binding_list",
@@ -1419,8 +1422,11 @@
         ],
         "_function_expression__expression_until_parenthesis": [
             {
-                "match": "{{b_before}}function{{b_after}}",
-                "scope": "storage.type.js",
+                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "captures": {
+                    "1": "storage.type.js",
+                    "2": "keyword.operator.js"
+                },
                 "set": [
                     "block_statement",
                     "parameter_binding_list",
@@ -1938,8 +1944,11 @@
         ],
         "_function_expression__expression_until_square_bracket": [
             {
-                "match": "{{b_before}}function{{b_after}}",
-                "scope": "storage.type.js",
+                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "captures": {
+                    "1": "storage.type.js",
+                    "2": "keyword.operator.js"
+                },
                 "set": [
                     "block_statement",
                     "parameter_binding_list",
@@ -2457,8 +2466,11 @@
         ],
         "_function_expression__expression_until_colon": [
             {
-                "match": "{{b_before}}function{{b_after}}",
-                "scope": "storage.type.js",
+                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "captures": {
+                    "1": "storage.type.js",
+                    "2": "keyword.operator.js"
+                },
                 "set": [
                     "block_statement",
                     "parameter_binding_list",
@@ -2976,8 +2988,11 @@
         ],
         "_function_expression__expression_until_end_of_template_interpolation": [
             {
-                "match": "{{b_before}}function{{b_after}}",
-                "scope": "storage.type.js",
+                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "captures": {
+                    "1": "storage.type.js",
+                    "2": "keyword.operator.js"
+                },
                 "set": [
                     "block_statement",
                     "parameter_binding_list",
@@ -3497,8 +3512,11 @@
         ],
         "_function_expression__expression_until_comma_or_curly_bracket": [
             {
-                "match": "{{b_before}}function{{b_after}}",
-                "scope": "storage.type.js",
+                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "captures": {
+                    "1": "storage.type.js",
+                    "2": "keyword.operator.js"
+                },
                 "set": [
                     "block_statement",
                     "parameter_binding_list",
@@ -4016,8 +4034,11 @@
         ],
         "_function_expression__expression_until_comma_or_square_bracket_ahead": [
             {
-                "match": "{{b_before}}function{{b_after}}",
-                "scope": "storage.type.js",
+                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "captures": {
+                    "1": "storage.type.js",
+                    "2": "keyword.operator.js"
+                },
                 "set": [
                     "block_statement",
                     "parameter_binding_list",
@@ -4535,8 +4556,11 @@
         ],
         "_function_expression__expression_until_parameter_binding_list": [
             {
-                "match": "{{b_before}}function{{b_after}}",
-                "scope": "storage.type.js",
+                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "captures": {
+                    "1": "storage.type.js",
+                    "2": "keyword.operator.js"
+                },
                 "set": [
                     "block_statement",
                     "parameter_binding_list",
@@ -5063,8 +5087,11 @@
         ],
         "_function_expression__expression_until_parenthesis_with_spread": [
             {
-                "match": "{{b_before}}function{{b_after}}",
-                "scope": "storage.type.js",
+                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "captures": {
+                    "1": "storage.type.js",
+                    "2": "keyword.operator.js"
+                },
                 "set": [
                     "block_statement",
                     "parameter_binding_list",
@@ -5586,8 +5613,11 @@
         ],
         "_function_expression__expression_until_parenthesis_no_comma": [
             {
-                "match": "{{b_before}}function{{b_after}}",
-                "scope": "storage.type.js",
+                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "captures": {
+                    "1": "storage.type.js",
+                    "2": "keyword.operator.js"
+                },
                 "set": [
                     "block_statement",
                     "parameter_binding_list",
@@ -6109,8 +6139,11 @@
         ],
         "_function_expression__expression_until_parenthesis_ahead_no_comma": [
             {
-                "match": "{{b_before}}function{{b_after}}",
-                "scope": "storage.type.js",
+                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "captures": {
+                    "1": "storage.type.js",
+                    "2": "keyword.operator.js"
+                },
                 "set": [
                     "block_statement",
                     "parameter_binding_list",
@@ -6640,8 +6673,11 @@
         ],
         "_function_expression__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
-                "match": "{{b_before}}function{{b_after}}",
-                "scope": "storage.type.js",
+                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "captures": {
+                    "1": "storage.type.js",
+                    "2": "keyword.operator.js"
+                },
                 "set": [
                     "block_statement",
                     "parameter_binding_list",
@@ -7159,8 +7195,11 @@
         ],
         "_function_expression__expression_until_square_bracket_ahead_no_comma": [
             {
-                "match": "{{b_before}}function{{b_after}}",
-                "scope": "storage.type.js",
+                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "captures": {
+                    "1": "storage.type.js",
+                    "2": "keyword.operator.js"
+                },
                 "set": [
                     "block_statement",
                     "parameter_binding_list",
@@ -7682,8 +7721,11 @@
         ],
         "_function_expression__expression_until_for_statement_third_section": [
             {
-                "match": "{{b_before}}function{{b_after}}",
-                "scope": "storage.type.js",
+                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "captures": {
+                    "1": "storage.type.js",
+                    "2": "keyword.operator.js"
+                },
                 "set": [
                     "block_statement",
                     "parameter_binding_list",
@@ -8205,8 +8247,11 @@
         ],
         "_function_expression__expression_until_for_binding": [
             {
-                "match": "{{b_before}}function{{b_after}}",
-                "scope": "storage.type.js",
+                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "captures": {
+                    "1": "storage.type.js",
+                    "2": "keyword.operator.js"
+                },
                 "set": [
                     "block_statement",
                     "parameter_binding_list",
@@ -8728,8 +8773,11 @@
         ],
         "_function_expression___for_statement_first_expression": [
             {
-                "match": "{{b_before}}function{{b_after}}",
-                "scope": "storage.type.js",
+                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "captures": {
+                    "1": "storage.type.js",
+                    "2": "keyword.operator.js"
+                },
                 "set": [
                     "block_statement",
                     "parameter_binding_list",
@@ -9263,8 +9311,11 @@
         ],
         "_function_expression__expression_until_end_of_statement": [
             {
-                "match": "{{b_before}}function{{b_after}}",
-                "scope": "storage.type.js",
+                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "captures": {
+                    "1": "storage.type.js",
+                    "2": "keyword.operator.js"
+                },
                 "set": [
                     "block_statement",
                     "parameter_binding_list",
@@ -9821,8 +9872,11 @@
         ],
         "_function_expression__expression_until_end_of_statement_or_block": [
             {
-                "match": "{{b_before}}function{{b_after}}",
-                "scope": "storage.type.js",
+                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "captures": {
+                    "1": "storage.type.js",
+                    "2": "keyword.operator.js"
+                },
                 "set": [
                     "block_statement",
                     "parameter_binding_list",
@@ -10379,8 +10433,11 @@
         ],
         "_function_expression__expression_until_variable_binding": [
             {
-                "match": "{{b_before}}function{{b_after}}",
-                "scope": "storage.type.js",
+                "match": "{{b_before}}(function)(\\*)?+{{b_after}}",
+                "captures": {
+                    "1": "storage.type.js",
+                    "2": "keyword.operator.js"
+                },
                 "set": [
                     "block_statement",
                     "parameter_binding_list",
