@@ -21,3 +21,5 @@
     pop: true
   - match: '{{otherwise}}'
     set: %%expressionStatement%%
+
+# TODO: any statement that "set"s to the "statement" context must be in here, and instead "set" to %%name%%
