@@ -91,6 +91,7 @@ contexts:
   expression_until_parenthesis: {mixin: expression, exitMatch: '\)'}
   expression_until_square_bracket: {mixin: expression, exitMatch: '\]'}
   expression_until_colon: {mixin: expression, exitMatch: ':'}
+  expression_until_curly_bracket_ahead_or_colon: {mixin: expression, exitMatch: ':|(?=\})'}
   expression_until_end_of_template_interpolation: {mixin: expression, exitMatch: '\}', exitExtra: 'scope: variable.language.js'}
   expression_until_comma_or_curly_bracket: {mixin: expression, exitMatch: '[,}]'}
   expression_until_comma_or_square_bracket_ahead: {mixin: expression, exitMatch: '(?=[,\]])'}
@@ -196,15 +197,17 @@ contexts:
       scope: keyword.control.js
       push:
         - match: '{{non_token}}'
+        - match: '(?=\})'
+          pop: true
         - match: ':'
           scope: invalid.illegal.js
           pop: true
         - match: '{{otherwise}}'
-          set: expression_until_colon
+          set: expression_until_curly_bracket_ahead_or_colon
     - match: '{{b_before}}default{{b_after}}'
       scope: keyword.control.js
       push:
-        - match: ':'
+        - match: ':|(?=\})'
           pop: true
         - include: otherwise_invalid
     - match: '{{otherwise}}'
