@@ -265,6 +265,6 @@ _template_literal__%%name%%:
   - match: '(?=`)'
     set: [_secondary__%%name%%, template_literal]
 
-_conditional_expression__%%name%%:
+_conditional_expression__%%name%%: # TODO: make this less aggressive
   - match: '\?'
     set: [_secondary__%%name%%, _primary__%%name%%, expression_until_colon]
