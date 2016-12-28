@@ -200,12 +200,9 @@ contexts:
   end_of_statement: [{match: '{{statement_terminator}}', pop: true}, {include: otherwise_invalid}]
   otherwise_invalid: [{match: '{{token}}', scope: invalid.illegal.js}]
 
-  # TODO: make these need_... contexts smarter and include otherwise_invalid
-  need_opening_parenthesis: [{match: '\(', pop: true}]
-  need_opening_curly_bracket: [{match: '\{', pop: true}]
-  comma_or_closing_curly_bracket: [{match: '[,}]', pop: true}, {include: otherwise_invalid}]
-  block_statement_or_comma_or_closing_curly_bracket_ahead: [{match: '(?=[,}])', pop: true}, {include: block_statement}, {include: otherwise_invalid}]
-  opening_parenthesis_ahead_or_comma_or_closing_curly_bracket: [{match: '[,}]|(?=\()', pop: true}, {include: otherwise_invalid}]
+  need_comma_or_closing_curly_bracket: [{match: '[,}]', pop: true}, {include: otherwise_invalid}]
+  need_block_statement_or_comma_or_closing_curly_bracket_ahead: [{match: '(?=[,}])', pop: true}, {include: block_statement}, {include: otherwise_invalid}]
+  need_opening_parenthesis_ahead_or_comma_or_closing_curly_bracket: [{match: '[,}]|(?=\()', pop: true}, {include: otherwise_invalid}]
 
 
 
@@ -297,7 +294,12 @@ contexts:
   if_statement:
     - match: '{{b_before}}if{{b_after}}'
       scope: keyword.control.js
-      set: [_optional_else_statement, statement, expression_until_parenthesis, need_opening_parenthesis]
+      set: _if_statement_want_parenthesis
+
+  _if_statement_want_parenthesis:
+    mixin: want_token
+    match: '\('
+    goto: '[_optional_else_statement, statement, expression_until_parenthesis]'
 
   _optional_else_statement:
     - match: '{{non_token}}'
@@ -310,7 +312,12 @@ contexts:
   with_or_while_statement:
     - match: '{{b_before}}(?:while|with){{b_after}}'
       scope: keyword.control.js
-      set: [statement, expression_until_parenthesis, need_opening_parenthesis]
+      set: _with_or_while_statement_want_parenthesis
+
+  _with_or_while_statement_want_parenthesis:
+    mixin: want_token
+    match: '\('
+    goto: '[statement, expression_until_parenthesis]'
 
   do_statement:
     - match: '{{b_before}}do{{b_after}}'
@@ -319,12 +326,23 @@ contexts:
 
   _do_while:
     - match: '{{b_before}}while{{b_after}}'
-      set: [expression_until_parenthesis, need_opening_parenthesis]
+      scope: keyword.control.js
+      set: _do_while_want_parenthesis
+
+  _do_while_want_parenthesis:
+    mixin: want_token
+    match: '\('
+    goto: 'expression_until_parenthesis'
 
   for_statement:
     - match: '{{b_before}}for{{b_after}}'
       scope: keyword.control.js
-      set: [_for_statement_first_section, need_opening_parenthesis]
+      set: _for_statement_want_parenthesis
+
+  _for_statement_want_parenthesis:
+    mixin: want_token
+    match: '\('
+    goto: '_for_statement_first_section'
 
   _for_statement_first_section:
     - match: '{{non_token}}'
@@ -377,7 +395,17 @@ contexts:
   switch_statement:
     - match: '{{b_before}}switch{{b_after}}'
       scope: keyword.control.js
-      set: [_switch_statement_block, need_opening_curly_bracket, expression_until_parenthesis, need_opening_parenthesis]
+      set: _switch_statement_want_parenthesis
+
+  _switch_statement_want_parenthesis:
+    mixin: want_token
+    match: '\('
+    goto: '[_switch_statement_want_curly_bracket, expression_until_parenthesis]'
+
+  _switch_statement_want_curly_bracket:
+    mixin: want_token
+    match: '\{'
+    goto: '_switch_statement_block'
 
   _switch_statement_block:
     - match: '{{non_token}}'
@@ -404,13 +432,28 @@ contexts:
   try_statement:
     - match: '{{b_before}}try{{b_after}}'
       scope: keyword.control.js
-      set: [_catch_or_finally_statement, block_statement]
+      set: _try_statement_want_curly_bracket
+
+  _try_statement_want_curly_bracket:
+    mixin: want_token
+    match: '(?=\{)'
+    goto: '[_catch_or_finally_statement, block_statement]'
 
   _catch_or_finally_statement:
     - include: _finally_statement
     - match: '{{b_before}}catch{{b_after}}'
       scope: keyword.control.js
-      set: [_optional_finally_statement, block_statement, parameter_binding_until_parenthesis, need_opening_parenthesis]
+      set: _catch_statement_want_parenthesis
+
+  _catch_statement_want_parenthesis:
+    mixin: want_token
+    match: '\('
+    goto: '[_catch_statement_want_curly_bracket, parameter_binding_until_parenthesis]'
+
+  _catch_statement_want_curly_bracket:
+    mixin: want_token
+    match: '(?=\{)'
+    goto: '[_optional_finally_statement, block_statement]'
 
   _optional_finally_statement:
     - match: '{{non_token}}'
@@ -421,7 +464,12 @@ contexts:
   _finally_statement:
     - match: '{{b_before}}finally{{b_after}}'
       scope: keyword.control.js
-      set: block_statement
+      set: _finally_statement_want_curly_bracket
+
+  _finally_statement_want_curly_bracket:
+    mixin: want_token
+    match: '(?=\{)'
+    goto: 'block_statement'
 
   goto_statement:
     - match: '{{b_before}}(?:break|continue){{b_after}}'
@@ -459,8 +507,6 @@ contexts:
       captures:
         1: entity.name.section.js
       pop: true
-    - match: ':'
-      scope: invalid.illegal.js
 
 
 
@@ -682,19 +728,19 @@ contexts:
       set:
         - match: '{{ident}}'
           scope: entity.function.js
-          set: opening_parenthesis_ahead_or_comma_or_closing_curly_bracket
+          set: need_opening_parenthesis_ahead_or_comma_or_closing_curly_bracket
         - include: property_name_parenthesis_only
-        - include: comma_or_closing_curly_bracket
+        - include: need_comma_or_closing_curly_bracket
     - match: '{{ident}}{{property_assignment_for_function}}'
       scope: entity.function.js
       pop: true
     - include: property_name_possible_parenthesis
     - match: '{{reserved_word}}'
       scope: invalid.illegal.js
-      set: comma_or_closing_curly_bracket
+      set: need_comma_or_closing_curly_bracket
     - match: '{{ident}}'
       scope: entity.other.js
-      set: comma_or_closing_curly_bracket
+      set: need_comma_or_closing_curly_bracket
     - include: otherwise_invalid
 
   _object_literal_value:
@@ -706,7 +752,7 @@ contexts:
           scope: invalid.illegal.js
           pop: true
         - match: '\('
-          set: [comma_or_closing_curly_bracket, block_statement_or_comma_or_closing_curly_bracket_ahead, parameter_binding_list]
+          set: [need_comma_or_closing_curly_bracket, need_block_statement_or_comma_or_closing_curly_bracket_ahead, parameter_binding_list]
         - match: ':'
           set: expression_until_comma_or_curly_bracket
         - include: otherwise_invalid

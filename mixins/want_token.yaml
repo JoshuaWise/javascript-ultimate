@@ -1,0 +1,12 @@
+%%name%%:
+  - match: '{{space}}++'
+  - match: '{{line_terminator}}'
+    set:
+      - match: '{{non_token}}'
+      - match: '%%match%%'
+        set: %%goto%%
+      - match: '{{otherwise}}'
+        pop: true
+  - match: '%%match%%'
+    set: %%goto%%
+  - include: otherwise_invalid
