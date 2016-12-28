@@ -1,0 +1,25 @@
+%%name%%:
+  mixin: expression
+  exitMatch: '%%exitMatch%%'
+  beforeAnything: %%beforeAnything%%
+  overridePrimary:
+    - match: '{{line_terminator}}'
+      set:
+        - match: '^(?={{to_token}}{{statement_keyword}})'
+          pop: true
+        - include: _primary__%%name%%
+    %%~alternatively%%
+  catchSecondary:
+    - match: '^(?={{to_token}}{{statement_keyword}})'
+      pop: true
+  overrideSecondary:
+    - match: '{{line_terminator}}'
+      set:
+        - match: '{{non_token}}'
+        - match: '%%exitMatch%%'
+          pop: true
+        %%~alternatively%%
+        - include: _secondary_parts__%%name%%
+        - match: '{{otherwise}}'
+          pop: true
+    %%~alternatively%%

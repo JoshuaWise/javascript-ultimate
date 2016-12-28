@@ -6,20 +6,27 @@ const Mixin = require('./lib/mixin');
 const mixins = glob('./mixins/*.yaml').map(filename => new Mixin(filename));
 
 const getMixin = (name) => {
-	return mixins.find(mixin => mixin.name === name);
+	const mixin = mixins.find(mixin => mixin.name === name);
+	if (!mixin) {
+		throw new ReferenceError(`Unrecognized mixin "${name}".`);
+	}
+	return mixin;
 };
 
 const walkMixins = (obj, fn) => {
+	let count = 0;
 	for (let key in obj) {
 		if (obj[key].hasOwnProperty('mixin')) {
 			fn(obj[key], key, obj);
+			count += 1;
 		}
 	}
+	return count;
 };
 
-const processMixins = filename => {
+glob('./*.sublime-syntax.source').forEach(function process(filename) {
 	const file = yaml.safeLoad(fs.readFileSync(filename).toString());
-	walkMixins(file.contexts, (def, key, obj) => {
+	const count = walkMixins(file.contexts, (def, key, obj) => {
 		const mixin = getMixin(def.mixin);
 		def.name = key;
 		delete def.mixin;
@@ -29,8 +36,7 @@ const processMixins = filename => {
 			obj[context] = results[context];
 		}
 	});
-	fs.writeFileSync(filename.replace(/\.source$/g, ''), '%YAML 1.2\n---\n' + JSON.stringify(file, null, '    '));
-};
-
-glob('./*.sublime-syntax.source').forEach(processMixins);
-glob('./*.sublime-syntax').forEach(processMixins);
+	filename = filename.replace(/\.source$/g, '');
+	fs.writeFileSync(filename, '%YAML 1.2\n---\n' + JSON.stringify(file, null, '    '));
+	count && process(filename);
+});

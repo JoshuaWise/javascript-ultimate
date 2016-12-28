@@ -104,66 +104,10 @@ contexts:
   expression_until_for_binding: {mixin: expression, exitMatch: '(?=[,;)])', override: {match: '{{b_before}}(?:of|in){{b_after}}', scope: invalid.illegal.js}}
   _for_statement_first_expression: {mixin: expression, exitMatch: '(?=[;)]|{{b_before}}(?:of|in){{b_after}})'}
 
-  expression_until_end_of_statement: {
-    mixin: expression,
-    exitMatch: ';',
-    beforeAnything: {match: '{{space}}*+{{statement_terminator}}', pop: true},
-    overridePrimary: {match: '{{line_terminator}}', set: [
-      {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
-      {include: _primary__expression_until_end_of_statement}
-    ]},
-    catchSecondary: {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
-    overrideSecondary: [
-      {match: '{{line_terminator}}', set: [
-          {match: '{{non_token}}'},
-          {match: ';', pop: true},
-          {include: _secondary_parts__expression_until_end_of_statement},
-          {match: '{{otherwise}}', pop: true}
-      ]}
-    ]
-  }
-
-  expression_until_end_of_statement_or_block: {
-    mixin: expression,
-    exitMatch: ';|(?=\})',
-    beforeAnything: {match: '{{space}}*+{{statement_terminator}}', pop: true},
-    overridePrimary: {match: '{{line_terminator}}', set: [
-      {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
-      {include: _primary__expression_until_end_of_statement_or_block}
-    ]},
-    catchSecondary: {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
-    overrideSecondary: [
-      {match: '{{line_terminator}}', set: [
-        {match: '{{non_token}}'},
-        {match: ';|(?=\})', pop: true},
-        {include: _secondary_parts__expression_until_end_of_statement_or_block},
-        {match: '{{otherwise}}', pop: true}
-      ]}
-    ]
-  }
-
-  expression_until_variable_binding: {
-    mixin: expression,
-    exitMatch: ';',
-    overridePrimary: [
-      {match: '{{line_terminator}}', set: [
-        {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
-        {include: _primary__expression_until_variable_binding}
-      ]},
-      {match: ',', set: _variable_binding},
-    ],
-    catchSecondary: {match: '^(?={{to_token}}{{statement_keyword}})', pop: true},
-    overrideSecondary: [
-      {match: '{{line_terminator}}', set: [
-        {match: '{{non_token}}'},
-        {match: ';', pop: true},
-        {match: ',', set: _variable_binding},
-        {include: _secondary_parts__expression_until_variable_binding},
-        {match: '{{otherwise}}', pop: true}
-      ]},
-      {match: ',', set: _variable_binding}
-    ]
-  }
+  expression_until_end_of_statement: {mixin: open_ended_expression, exitMatch: ';', beforeAnything: "{match: '{{space}}*+{{statement_terminator}}', pop: true}"}
+  expression_until_end_of_statement_or_block: {mixin: open_ended_expression, exitMatch: ';|(?=\})', beforeAnything: "{match: '{{space}}*+{{statement_terminator}}', pop: true}"}
+  expression_until_variable_binding: {mixin: open_ended_expression, exitMatch: ';', beforeAnything: '""', alternatively: {match: ',', set: _variable_statement_want_binding}}
+  expression_until_variable_binding_or_end_of_block: {mixin: open_ended_expression, exitMatch: ';|(?=\})', beforeAnything: '""', alternatively: {match: ',', set: _variable_statement_want_binding}}
 
 
 
@@ -237,20 +181,12 @@ contexts:
   variable_statement:
     - match: '{{b_before}}(?:var|let|const){{b_after}}'
       scope: storage.type.js
-      set: _variable_binding
+      set: _variable_statement_want_binding
 
-  _variable_binding:
-    - match: '{{line_terminator}}'
-      set:
-        - include: _continue_variable_binding
-        - match: '(?={{token}})'
-          pop: true
-    - include: _continue_variable_binding
-    - include: otherwise_invalid
-
-  _continue_variable_binding:
-    - match: '(?!{{reserved_word}})(?=\{|\[|{{ident}})'
-      set: [_variable_initializer, variable_binding]
+  _variable_statement_want_binding:
+    mixin: want_token
+    match: '(?!{{reserved_word}})(?=\{|\[|{{ident}})'
+    goto: '[_variable_initializer, variable_binding]'
 
   _variable_initializer:
     - match: '(?<=[}\]])'
@@ -260,7 +196,7 @@ contexts:
         - include: _variable_initializer_likely_candidates
         - include: otherwise_invalid
     - match: '{{otherwise}}'
-      set: _variable_statement_continue
+      set: _variable_statement_want_continue
 
   _variable_initializer_likely_candidates:
     - match: '='
@@ -271,25 +207,21 @@ contexts:
       pop: true
     - match: ','
       scope: invalid.illegal.js
-      set: _variable_binding
+      set: _variable_statement_want_binding
+
+  _variable_statement_want_continue:
+    mixin: want_token
+    match: '(?=[;=,])'
+    goto: '_variable_statement_continue'
 
   _variable_statement_continue:
-    - match: '{{line_terminator}}'
-      set:
-        - include: _continue_variable_statement_continue
-        - match: '(?={{token}})'
-          pop: true
-    - include: _continue_variable_statement_continue
-    - include: otherwise_invalid
-
-  _continue_variable_statement_continue:
     - match: ';'
       pop: true
     - match: '='
       scope: keyword.operator.js
       set: expression_until_variable_binding
     - match: ','
-      set: _variable_binding
+      set: _variable_statement_want_binding
 
   switch_statement:
     - match: '{{b_before}}switch{{b_after}}'
