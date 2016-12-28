@@ -1180,57 +1180,58 @@
         "_dot_reference__expression_until_parenthesis": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents__expression_until_parenthesis"
+            }
+        ],
+        "_dot_reference_contents__expression_until_parenthesis": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "\\)",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
                 "set": [
-                    {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": "\\)",
-                        "pop": true
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary__expression_until_parenthesis",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
-                    }
+                    "_secondary__expression_until_parenthesis",
+                    "_optional_postfix_operator"
                 ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary__expression_until_parenthesis",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference__expression_until_parenthesis": [
@@ -1711,57 +1712,58 @@
         "_dot_reference__expression_until_square_bracket": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents__expression_until_square_bracket"
+            }
+        ],
+        "_dot_reference_contents__expression_until_square_bracket": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "\\]",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
                 "set": [
-                    {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": "\\]",
-                        "pop": true
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary__expression_until_square_bracket",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary__expression_until_square_bracket",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary__expression_until_square_bracket",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_square_bracket",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary__expression_until_square_bracket",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
-                    }
+                    "_secondary__expression_until_square_bracket",
+                    "_optional_postfix_operator"
                 ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary__expression_until_square_bracket",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_square_bracket",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_square_bracket",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary__expression_until_square_bracket",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference__expression_until_square_bracket": [
@@ -2242,57 +2244,58 @@
         "_dot_reference__expression_until_colon": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents__expression_until_colon"
+            }
+        ],
+        "_dot_reference_contents__expression_until_colon": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": ":",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
                 "set": [
-                    {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": ":",
-                        "pop": true
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary__expression_until_colon",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary__expression_until_colon",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary__expression_until_colon",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_colon",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary__expression_until_colon",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
-                    }
+                    "_secondary__expression_until_colon",
+                    "_optional_postfix_operator"
                 ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary__expression_until_colon",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_colon",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_colon",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary__expression_until_colon",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference__expression_until_colon": [
@@ -2773,57 +2776,58 @@
         "_dot_reference__expression_until_curly_bracket_ahead_or_colon": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents__expression_until_curly_bracket_ahead_or_colon"
+            }
+        ],
+        "_dot_reference_contents__expression_until_curly_bracket_ahead_or_colon": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": ":|(?=\\})",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
                 "set": [
-                    {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": ":|(?=\\})",
-                        "pop": true
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary__expression_until_curly_bracket_ahead_or_colon",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary__expression_until_curly_bracket_ahead_or_colon",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary__expression_until_curly_bracket_ahead_or_colon",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_curly_bracket_ahead_or_colon",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary__expression_until_curly_bracket_ahead_or_colon",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
-                    }
+                    "_secondary__expression_until_curly_bracket_ahead_or_colon",
+                    "_optional_postfix_operator"
                 ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary__expression_until_curly_bracket_ahead_or_colon",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_curly_bracket_ahead_or_colon",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_curly_bracket_ahead_or_colon",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary__expression_until_curly_bracket_ahead_or_colon",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference__expression_until_curly_bracket_ahead_or_colon": [
@@ -3305,58 +3309,59 @@
         "_dot_reference__expression_until_end_of_template_interpolation": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents__expression_until_end_of_template_interpolation"
+            }
+        ],
+        "_dot_reference_contents__expression_until_end_of_template_interpolation": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "\\}",
+                "pop": true,
+                "scope": "variable.language.js"
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
                 "set": [
-                    {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": "\\}",
-                        "pop": true,
-                        "scope": "variable.language.js"
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary__expression_until_end_of_template_interpolation",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary__expression_until_end_of_template_interpolation",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary__expression_until_end_of_template_interpolation",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_end_of_template_interpolation",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary__expression_until_end_of_template_interpolation",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
-                    }
+                    "_secondary__expression_until_end_of_template_interpolation",
+                    "_optional_postfix_operator"
                 ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary__expression_until_end_of_template_interpolation",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_end_of_template_interpolation",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_end_of_template_interpolation",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary__expression_until_end_of_template_interpolation",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference__expression_until_end_of_template_interpolation": [
@@ -3837,57 +3842,58 @@
         "_dot_reference__expression_until_comma_or_curly_bracket": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents__expression_until_comma_or_curly_bracket"
+            }
+        ],
+        "_dot_reference_contents__expression_until_comma_or_curly_bracket": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "[,}]",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
                 "set": [
-                    {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": "[,}]",
-                        "pop": true
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary__expression_until_comma_or_curly_bracket",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary__expression_until_comma_or_curly_bracket",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary__expression_until_comma_or_curly_bracket",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_comma_or_curly_bracket",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary__expression_until_comma_or_curly_bracket",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
-                    }
+                    "_secondary__expression_until_comma_or_curly_bracket",
+                    "_optional_postfix_operator"
                 ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary__expression_until_comma_or_curly_bracket",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_comma_or_curly_bracket",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_comma_or_curly_bracket",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary__expression_until_comma_or_curly_bracket",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference__expression_until_comma_or_curly_bracket": [
@@ -4368,57 +4374,58 @@
         "_dot_reference__expression_until_comma_or_square_bracket_ahead": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents__expression_until_comma_or_square_bracket_ahead"
+            }
+        ],
+        "_dot_reference_contents__expression_until_comma_or_square_bracket_ahead": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=[,\\]])",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
                 "set": [
-                    {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": "(?=[,\\]])",
-                        "pop": true
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary__expression_until_comma_or_square_bracket_ahead",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary__expression_until_comma_or_square_bracket_ahead",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary__expression_until_comma_or_square_bracket_ahead",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_comma_or_square_bracket_ahead",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary__expression_until_comma_or_square_bracket_ahead",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
-                    }
+                    "_secondary__expression_until_comma_or_square_bracket_ahead",
+                    "_optional_postfix_operator"
                 ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary__expression_until_comma_or_square_bracket_ahead",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_comma_or_square_bracket_ahead",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_comma_or_square_bracket_ahead",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary__expression_until_comma_or_square_bracket_ahead",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference__expression_until_comma_or_square_bracket_ahead": [
@@ -4903,57 +4910,58 @@
         "_dot_reference__expression_until_parameter_binding_list": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents__expression_until_parameter_binding_list"
+            }
+        ],
+        "_dot_reference_contents__expression_until_parameter_binding_list": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
                 "set": [
-                    {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": "(?=\\))",
-                        "pop": true
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary__expression_until_parameter_binding_list",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary__expression_until_parameter_binding_list",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary__expression_until_parameter_binding_list",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_parameter_binding_list",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary__expression_until_parameter_binding_list",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
-                    }
+                    "_secondary__expression_until_parameter_binding_list",
+                    "_optional_postfix_operator"
                 ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary__expression_until_parameter_binding_list",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_parameter_binding_list",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_parameter_binding_list",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary__expression_until_parameter_binding_list",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference__expression_until_parameter_binding_list": [
@@ -5448,57 +5456,58 @@
         "_dot_reference__expression_until_parenthesis_with_spread": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents__expression_until_parenthesis_with_spread"
+            }
+        ],
+        "_dot_reference_contents__expression_until_parenthesis_with_spread": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "\\)",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
                 "set": [
-                    {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": "\\)",
-                        "pop": true
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis_with_spread",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis_with_spread",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis_with_spread",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis_with_spread",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary__expression_until_parenthesis_with_spread",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
-                    }
+                    "_secondary__expression_until_parenthesis_with_spread",
+                    "_optional_postfix_operator"
                 ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference__expression_until_parenthesis_with_spread": [
@@ -5983,57 +5992,58 @@
         "_dot_reference__expression_until_parenthesis_no_comma": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents__expression_until_parenthesis_no_comma"
+            }
+        ],
+        "_dot_reference_contents__expression_until_parenthesis_no_comma": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "\\)",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
                 "set": [
-                    {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": "\\)",
-                        "pop": true
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis_no_comma",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis_no_comma",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis_no_comma",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis_no_comma",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary__expression_until_parenthesis_no_comma",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
-                    }
+                    "_secondary__expression_until_parenthesis_no_comma",
+                    "_optional_postfix_operator"
                 ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_no_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_no_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_no_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary__expression_until_parenthesis_no_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference__expression_until_parenthesis_no_comma": [
@@ -6518,57 +6528,58 @@
         "_dot_reference__expression_until_parenthesis_ahead_no_comma": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents__expression_until_parenthesis_ahead_no_comma"
+            }
+        ],
+        "_dot_reference_contents__expression_until_parenthesis_ahead_no_comma": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
                 "set": [
-                    {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": "(?=\\))",
-                        "pop": true
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis_ahead_no_comma",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis_ahead_no_comma",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis_ahead_no_comma",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_parenthesis_ahead_no_comma",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary__expression_until_parenthesis_ahead_no_comma",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
-                    }
+                    "_secondary__expression_until_parenthesis_ahead_no_comma",
+                    "_optional_postfix_operator"
                 ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_no_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_no_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_no_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_no_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference__expression_until_parenthesis_ahead_no_comma": [
@@ -7065,57 +7076,58 @@
         "_dot_reference__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents__expression_until_square_bracket_with_spread_or_comma_anywhere"
+            }
+        ],
+        "_dot_reference_contents__expression_until_square_bracket_with_spread_or_comma_anywhere": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "\\]",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
                 "set": [
-                    {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": "\\]",
-                        "pop": true
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary__expression_until_square_bracket_with_spread_or_comma_anywhere",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary__expression_until_square_bracket_with_spread_or_comma_anywhere",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary__expression_until_square_bracket_with_spread_or_comma_anywhere",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_square_bracket_with_spread_or_comma_anywhere",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary__expression_until_square_bracket_with_spread_or_comma_anywhere",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
-                    }
+                    "_secondary__expression_until_square_bracket_with_spread_or_comma_anywhere",
+                    "_optional_postfix_operator"
                 ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary__expression_until_square_bracket_with_spread_or_comma_anywhere",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_square_bracket_with_spread_or_comma_anywhere",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_square_bracket_with_spread_or_comma_anywhere",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary__expression_until_square_bracket_with_spread_or_comma_anywhere",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference__expression_until_square_bracket_with_spread_or_comma_anywhere": [
@@ -7600,57 +7612,58 @@
         "_dot_reference__expression_until_square_bracket_ahead_no_comma": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents__expression_until_square_bracket_ahead_no_comma"
+            }
+        ],
+        "_dot_reference_contents__expression_until_square_bracket_ahead_no_comma": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=\\])",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
                 "set": [
-                    {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": "(?=\\])",
-                        "pop": true
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary__expression_until_square_bracket_ahead_no_comma",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary__expression_until_square_bracket_ahead_no_comma",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary__expression_until_square_bracket_ahead_no_comma",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_square_bracket_ahead_no_comma",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary__expression_until_square_bracket_ahead_no_comma",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
-                    }
+                    "_secondary__expression_until_square_bracket_ahead_no_comma",
+                    "_optional_postfix_operator"
                 ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary__expression_until_square_bracket_ahead_no_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_square_bracket_ahead_no_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_square_bracket_ahead_no_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary__expression_until_square_bracket_ahead_no_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference__expression_until_square_bracket_ahead_no_comma": [
@@ -8131,57 +8144,58 @@
         "_dot_reference__expression_until_for_statement_third_section": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents__expression_until_for_statement_third_section"
+            }
+        ],
+        "_dot_reference_contents__expression_until_for_statement_third_section": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": ";|(?=\\))",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
                 "set": [
-                    {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": ";|(?=\\))",
-                        "pop": true
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary__expression_until_for_statement_third_section",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary__expression_until_for_statement_third_section",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary__expression_until_for_statement_third_section",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_for_statement_third_section",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary__expression_until_for_statement_third_section",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
-                    }
+                    "_secondary__expression_until_for_statement_third_section",
+                    "_optional_postfix_operator"
                 ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary__expression_until_for_statement_third_section",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_for_statement_third_section",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_for_statement_third_section",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary__expression_until_for_statement_third_section",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference__expression_until_for_statement_third_section": [
@@ -8674,57 +8688,58 @@
         "_dot_reference__expression_until_for_binding": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents__expression_until_for_binding"
+            }
+        ],
+        "_dot_reference_contents__expression_until_for_binding": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=[,;)])",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
                 "set": [
-                    {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": "(?=[,;)])",
-                        "pop": true
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary__expression_until_for_binding",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary__expression_until_for_binding",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary__expression_until_for_binding",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary__expression_until_for_binding",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary__expression_until_for_binding",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
-                    }
+                    "_secondary__expression_until_for_binding",
+                    "_optional_postfix_operator"
                 ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary__expression_until_for_binding",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_for_binding",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_for_binding",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary__expression_until_for_binding",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference__expression_until_for_binding": [
@@ -9205,57 +9220,58 @@
         "_dot_reference___for_statement_first_expression": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents___for_statement_first_expression"
+            }
+        ],
+        "_dot_reference_contents___for_statement_first_expression": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=[;)]|{{b_before}}(?:of|in){{b_after}})",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
                 "set": [
-                    {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": "(?=[;)]|{{b_before}}(?:of|in){{b_after}})",
-                        "pop": true
-                    },
-                    {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary___for_statement_first_expression",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary___for_statement_first_expression",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary___for_statement_first_expression",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary___for_statement_first_expression",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary___for_statement_first_expression",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
-                    }
+                    "_secondary___for_statement_first_expression",
+                    "_optional_postfix_operator"
                 ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary___for_statement_first_expression",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary___for_statement_first_expression",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary___for_statement_first_expression",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary___for_statement_first_expression",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference___for_statement_first_expression": [
@@ -11924,57 +11940,70 @@
         "_dot_reference___expression_until_end_of_statement__statement_in_block": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents___expression_until_end_of_statement__statement_in_block"
+            }
+        ],
+        "_dot_reference_contents___expression_until_end_of_statement__statement_in_block": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": ";|(?=\\})",
+                "pop": true
+            },
+            {
+                "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": ";|(?=\\})",
+                        "match": "^(?={{to_token}}{{statement_keyword}})",
                         "pop": true
                     },
                     {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary___expression_until_end_of_statement__statement_in_block",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary___expression_until_end_of_statement__statement_in_block",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary___expression_until_end_of_statement__statement_in_block",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary___expression_until_end_of_statement__statement_in_block",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary___expression_until_end_of_statement__statement_in_block",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
+                        "include": "_dot_reference_contents___expression_until_end_of_statement__statement_in_block"
                     }
                 ]
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
+                "set": [
+                    "_secondary___expression_until_end_of_statement__statement_in_block",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary___expression_until_end_of_statement__statement_in_block",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary___expression_until_end_of_statement__statement_in_block",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary___expression_until_end_of_statement__statement_in_block",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary___expression_until_end_of_statement__statement_in_block",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference___expression_until_end_of_statement__statement_in_block": [
@@ -12534,57 +12563,74 @@
         "_dot_reference___expression_until_variable_binding__statement_in_block": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents___expression_until_variable_binding__statement_in_block"
+            }
+        ],
+        "_dot_reference_contents___expression_until_variable_binding__statement_in_block": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": ";|(?=\\})",
+                "pop": true
+            },
+            {
+                "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": ";|(?=\\})",
+                        "match": "^(?={{to_token}}{{statement_keyword}})",
                         "pop": true
                     },
                     {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary___expression_until_variable_binding__statement_in_block",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary___expression_until_variable_binding__statement_in_block",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary___expression_until_variable_binding__statement_in_block",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary___expression_until_variable_binding__statement_in_block",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary___expression_until_variable_binding__statement_in_block",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
+                        "include": "_dot_reference_contents___expression_until_variable_binding__statement_in_block"
                     }
                 ]
+            },
+            {
+                "match": ",",
+                "set": "_variable_statement_want_binding__statement_in_block"
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
+                "set": [
+                    "_secondary___expression_until_variable_binding__statement_in_block",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary___expression_until_variable_binding__statement_in_block",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary___expression_until_variable_binding__statement_in_block",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary___expression_until_variable_binding__statement_in_block",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary___expression_until_variable_binding__statement_in_block",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference___expression_until_variable_binding__statement_in_block": [
@@ -13128,57 +13174,70 @@
         "_dot_reference___expression_until_end_of_statement__statement": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents___expression_until_end_of_statement__statement"
+            }
+        ],
+        "_dot_reference_contents___expression_until_end_of_statement__statement": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": ";",
+                "pop": true
+            },
+            {
+                "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": ";",
+                        "match": "^(?={{to_token}}{{statement_keyword}})",
                         "pop": true
                     },
                     {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary___expression_until_end_of_statement__statement",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary___expression_until_end_of_statement__statement",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary___expression_until_end_of_statement__statement",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary___expression_until_end_of_statement__statement",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary___expression_until_end_of_statement__statement",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
+                        "include": "_dot_reference_contents___expression_until_end_of_statement__statement"
                     }
                 ]
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
+                "set": [
+                    "_secondary___expression_until_end_of_statement__statement",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary___expression_until_end_of_statement__statement",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary___expression_until_end_of_statement__statement",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary___expression_until_end_of_statement__statement",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary___expression_until_end_of_statement__statement",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference___expression_until_end_of_statement__statement": [
@@ -13738,57 +13797,74 @@
         "_dot_reference___expression_until_variable_binding__statement": [
             {
                 "match": "\\.",
+                "set": "_dot_reference_contents___expression_until_variable_binding__statement"
+            }
+        ],
+        "_dot_reference_contents___expression_until_variable_binding__statement": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": ";",
+                "pop": true
+            },
+            {
+                "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "{{space}}++"
-                    },
-                    {
-                        "match": ";",
+                        "match": "^(?={{to_token}}{{statement_keyword}})",
                         "pop": true
                     },
                     {
-                        "match": "{{b_before}}constructor{{b_after}}",
-                        "scope": "support.class.js",
-                        "set": [
-                            "_secondary___expression_until_variable_binding__statement",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}{{assignment_for_function}}",
-                        "scope": "entity.name.function.js",
-                        "set": [
-                            "_secondary___expression_until_variable_binding__statement",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
-                        "scope": "support.constant.js",
-                        "set": [
-                            "_secondary___expression_until_variable_binding__statement",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
-                        "scope": "support.function.js",
-                        "set": [
-                            "_secondary___expression_until_variable_binding__statement",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "match": "{{ident}}",
-                        "set": [
-                            "_secondary___expression_until_variable_binding__statement",
-                            "_optional_postfix_operator"
-                        ]
-                    },
-                    {
-                        "include": "otherwise_invalid"
+                        "include": "_dot_reference_contents___expression_until_variable_binding__statement"
                     }
                 ]
+            },
+            {
+                "match": ",",
+                "set": "_variable_statement_want_binding__statement"
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
+                "set": [
+                    "_secondary___expression_until_variable_binding__statement",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary___expression_until_variable_binding__statement",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|name|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT|hasInstance|isConcatSpreadable|iterator|species|toPrimitive|toStringTag|unscopables){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary___expression_until_variable_binding__statement",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary___expression_until_variable_binding__statement",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary___expression_until_variable_binding__statement",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "_square_bracket_reference___expression_until_variable_binding__statement": [

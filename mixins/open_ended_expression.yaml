@@ -30,3 +30,10 @@
         - match: '{{otherwise}}'
           pop: true
     %%~alternatively%%
+  overrideDotReference:
+    - match: '{{line_terminator}}'
+      set:
+        - match: '^(?={{to_token}}{{statement_keyword}})'
+          pop: true
+        - include: _dot_reference_contents__%%name%%
+    %%~alternatively%%
