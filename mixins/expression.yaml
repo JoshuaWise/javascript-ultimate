@@ -152,20 +152,40 @@ _unary_operators__%%name%%:
 _function_expression__%%name%%:
   - match: '{{b_before}}(function)(?:(\*)|{{b_after}})'
     captures: {1: storage.type.js, 2: keyword.operator.js}
-    set: [block_statement, parameter_binding_list, _function_expression_name__%%name%%]
+    set: _function_expression_name__%%name%%
 
 _function_expression_name__%%name%%:
   - match: '{{space}}++'
   - match: '(?=%%exitMatch%%)'
     pop: true
-  - match: '({{reserved_word}}){{to_token}}\('
-    captures: {1: invalid.illegal.js}
+  %%~overrideFunctionName%%
+  - match: '{{reserved_word}}'
+    scope: invalid.illegal.js
+    set: _function_expression_parenthesis__%%name%%
+  - match: '{{ident}}'
+    scope: entity.name.function.js
+    set: _function_expression_parenthesis__%%name%%
+  - match: '(?=\()'
+    set: _function_expression_parenthesis__%%name%%
+  - include: otherwise_invalid
+
+_function_expression_parenthesis__%%name%%:
+  - match: '{{space}}++'
+  - match: '(?=%%exitMatch%%)'
     pop: true
-  - match: '({{ident}}){{to_token}}\('
-    captures: {1: entity.name.function.js}
-    pop: true
+  %%~overrideFunctionParenthesis%%
   - match: '\('
+    set: [_function_expression_curly_bracket__%%name%%, parameter_binding_list]
+  - include: otherwise_invalid
+
+_function_expression_curly_bracket__%%name%%:
+  - match: '{{space}}++'
+  - match: '(?=%%exitMatch%%)'
     pop: true
+  %%~overrideFunctionCurlyBracket%%
+  - match: '(?=\{)'
+    set: block_statement
+  - include: otherwise_invalid
 
 _arrow_function_expression__%%name%%:
   - match: '{{arrow_function_with_parenthesis}}'

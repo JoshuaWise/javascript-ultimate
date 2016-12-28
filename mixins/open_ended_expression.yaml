@@ -51,3 +51,24 @@
           pop: true
         - include: _new_target__%%name%%
     %%~alternativelyLookahead%%
+  overrideFunctionName:
+    - match: '{{line_terminator}}'
+      set:
+        - match: '^(?={{to_token}}{{statement_keyword}})'
+          pop: true
+        - include: _function_expression_name__%%name%%
+    %%~alternativelyLookahead%%
+  overrideFunctionParenthesis:
+    - match: '{{line_terminator}}'
+      set:
+        - match: '^(?={{to_token}}{{statement_keyword}})'
+          pop: true
+        - include: _function_expression_parenthesis__%%name%%
+    %%~alternativelyLookahead%%
+  overrideFunctionCurlyBracket:
+    - match: '{{line_terminator}}'
+      set:
+        - match: '^(?={{to_token}}{{statement_keyword}})'
+          pop: true
+        - include: _function_expression_curly_bracket__%%name%%
+    %%~alternativelyLookahead%%
