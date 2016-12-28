@@ -1,5 +1,6 @@
 %%name%%:
   - match: '{{non_token}}'
+  %%~possibleExit%%
   - include: block_statement
   # TODO:
   # - include: import_statement
@@ -7,19 +8,135 @@
   - include: variable_statement
   - include: function_declaration
   # - include: class_declaration
-  - include: if_statement
-  - include: with_or_while_statement
-  - include: do_statement
-  - include: for_statement
+  - include: _if_statement__%%name%%
+  - include: _with_or_while_statement__%%name%%
+  - include: _do_statement__%%name%%
+  - include: _for_statement__%%name%%
   - include: switch_statement
   - include: try_statement
   - include: goto_statement
-  - include: %%terminationStatement%%
+  - include: _termination_statement__%%name%%
   - include: debugger_statement
-  - include: labelled_statement
+  - include: _labelled_statement__%%name%%
   - match: ';'
     pop: true
   - match: '{{otherwise}}'
     set: %%expressionStatement%%
 
-# TODO: any statement that "set"s to the "statement" context must be in here, and instead "set" to %%name%%
+_if_statement__%%name%%:
+  - match: '{{b_before}}if{{b_after}}'
+    scope: keyword.control.js
+    set: _if_statement_want_parenthesis__%%name%%
+
+_if_statement_want_parenthesis__%%name%%:
+  mixin: want_token
+  match: '\('
+  goto: '[_if_statement_possible_exit__%%name%%, expression_until_parenthesis]'
+
+_if_statement_possible_exit__%%name%%:
+  - match: '{{non_token}}'
+  %%~possibleExit%%
+  - match: '{{otherwise}}'
+    set: [_optional_else_statement__%%name%%, %%name%%]
+
+_optional_else_statement__%%name%%:
+  - match: '{{non_token}}'
+  - match: '{{b_before}}else{{b_after}}'
+    scope: keyword.control.js
+    set: %%name%%
+  - match: '{{otherwise}}'
+    pop: true
+
+_with_or_while_statement__%%name%%:
+  - match: '{{b_before}}(?:while|with){{b_after}}'
+    scope: keyword.control.js
+    set: _with_or_while_statement_want_parenthesis__%%name%%
+
+_with_or_while_statement_want_parenthesis__%%name%%:
+  mixin: want_token
+  match: '\('
+  goto: '[%%name%%, expression_until_parenthesis]'
+
+_do_statement__%%name%%:
+  - match: '{{b_before}}do{{b_after}}'
+    scope: keyword.control.js
+    set: _do_statement_possible_exit__%%name%%
+
+_do_statement_possible_exit__%%name%%:
+  - match: '{{non_token}}'
+  %%~possibleExit%%
+  - match: '{{otherwise}}'
+    set: [_do_while, %%name%%]
+
+_for_statement__%%name%%:
+  - match: '{{b_before}}for{{b_after}}'
+    scope: keyword.control.js
+    set: _for_statement_want_parenthesis__%%name%%
+
+_for_statement_want_parenthesis__%%name%%:
+  mixin: want_token
+  match: '\('
+  goto: '_for_statement_first_section__%%name%%'
+
+_for_statement_first_section__%%name%%:
+  - match: '{{non_token}}'
+  - match: '\)'
+    set: %%name%%
+  - match: '{{b_before}}(?:var|let|const){{b_after}}'
+    scope: storage.type.js
+    set: [_for_statement_interpret_binding__%%name%%, variable_binding_for_for_statement]
+  - match: ';'
+    set: [%%name%%, expression_until_parenthesis, expression_until_for_statement_third_section]
+  - match: '{{otherwise}}'
+    set: [_for_statement_interpret_expression__%%name%%, _for_statement_first_expression]
+
+_for_statement_interpret_expression__%%name%%:
+  - match: '\)'
+    set: %%name%%
+  - match: ';'
+    set: [%%name%%, expression_until_parenthesis, expression_until_for_statement_third_section]
+  - match: '{{b_before}}(?:of|in){{b_after}}'
+    scope: keyword.operator.js
+    set: [%%name%%, expression_until_parenthesis]
+
+_for_statement_interpret_binding__%%name%%:
+  - match: '\)'
+    set: %%name%%
+  - match: '='
+    scope: keyword.operator.js
+    set: [_for_statement_variable_binding_continuation__%%name%%, expression_until_for_binding]
+  - match: ','
+    set: [_for_statement_variable_binding_continuation__%%name%%, variable_binding_for_for_statement]
+  - match: ';'
+    set: [%%name%%, expression_until_parenthesis, expression_until_for_statement_third_section]
+  - match: '{{b_before}}(?:of|in){{b_after}}'
+    scope: keyword.operator.js
+    set: [%%name%%, expression_until_parenthesis]
+  - include: otherwise_invalid
+
+_for_statement_variable_binding_continuation__%%name%%:
+  - match: '\)'
+    set: %%name%%
+  - match: '='
+    scope: keyword.operator.js
+    push: expression_until_for_binding
+  - match: ','
+    push: variable_binding_for_for_statement
+  - match: ';'
+    set: [%%name%%, expression_until_parenthesis, expression_until_for_statement_third_section]
+  - include: otherwise_invalid
+
+_termination_statement__%%name%%:
+  - match: '{{b_before}}(?:return|throw){{b_after}}'
+    scope: keyword.control.js
+    set: %%expressionStatement%%
+
+_labelled_statement__%%name%%: # this doesn't extend through new lines
+  - match: '({{reserved_word}}){{to_token}}:'
+    captures:
+      1: invalid.illegal.js
+    set: %%name%%
+  - match: '({{ident}}){{to_token}}:'
+    captures:
+      1: entity.name.section.js
+    set: %%name%%

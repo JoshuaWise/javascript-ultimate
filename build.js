@@ -9,7 +9,7 @@ const getMixin = (name) => {
 	return mixins.find(mixin => mixin.name === name);
 };
 
-const walk = (obj, fn) => {
+const walkMixins = (obj, fn) => {
 	for (let key in obj) {
 		if (obj[key].hasOwnProperty('mixin')) {
 			fn(obj[key], key, obj);
@@ -17,9 +17,9 @@ const walk = (obj, fn) => {
 	}
 };
 
-glob('./*.sublime-syntax.source').forEach(filename => {
+const processMixins = filename => {
 	const file = yaml.safeLoad(fs.readFileSync(filename).toString());
-	walk(file.contexts, (def, key, obj) => {
+	walkMixins(file.contexts, (def, key, obj) => {
 		const mixin = getMixin(def.mixin);
 		def.name = key;
 		delete def.mixin;
@@ -30,4 +30,7 @@ glob('./*.sublime-syntax.source').forEach(filename => {
 		}
 	});
 	fs.writeFileSync(filename.replace(/\.source$/g, ''), '%YAML 1.2\n---\n' + JSON.stringify(file, null, '    '));
-});
+};
+
+glob('./*.sublime-syntax.source').forEach(processMixins);
+glob('./*.sublime-syntax').forEach(processMixins);

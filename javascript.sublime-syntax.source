@@ -213,8 +213,8 @@ contexts:
 
 
 
-  statement_in_block: {mixin: statement, terminationStatement: termination_statement_in_block, expressionStatement: expression_until_end_of_statement_or_block}
-  statement: {mixin: statement, terminationStatement: termination_statement, expressionStatement: expression_until_end_of_statement}
+  statement_in_block: {mixin: statement, expressionStatement: expression_until_end_of_statement_or_block, possibleExit: {match: '(?=\})', pop: true}}
+  statement: {mixin: statement, expressionStatement: expression_until_end_of_statement}
 
 
 
@@ -290,107 +290,6 @@ contexts:
       set: expression_until_variable_binding
     - match: ','
       set: _variable_binding
-
-  if_statement:
-    - match: '{{b_before}}if{{b_after}}'
-      scope: keyword.control.js
-      set: _if_statement_want_parenthesis
-
-  _if_statement_want_parenthesis:
-    mixin: want_token
-    match: '\('
-    goto: '[_optional_else_statement, statement, expression_until_parenthesis]'
-
-  _optional_else_statement:
-    - match: '{{non_token}}'
-    - match: '{{b_before}}else{{b_after}}'
-      scope: keyword.control.js
-      set: statement
-    - match: '{{otherwise}}'
-      pop: true
-
-  with_or_while_statement:
-    - match: '{{b_before}}(?:while|with){{b_after}}'
-      scope: keyword.control.js
-      set: _with_or_while_statement_want_parenthesis
-
-  _with_or_while_statement_want_parenthesis:
-    mixin: want_token
-    match: '\('
-    goto: '[statement, expression_until_parenthesis]'
-
-  do_statement:
-    - match: '{{b_before}}do{{b_after}}'
-      scope: keyword.control.js
-      set: [_do_while, statement]
-
-  _do_while:
-    - match: '{{b_before}}while{{b_after}}'
-      scope: keyword.control.js
-      set: _do_while_want_parenthesis
-
-  _do_while_want_parenthesis:
-    mixin: want_token
-    match: '\('
-    goto: 'expression_until_parenthesis'
-
-  for_statement:
-    - match: '{{b_before}}for{{b_after}}'
-      scope: keyword.control.js
-      set: _for_statement_want_parenthesis
-
-  _for_statement_want_parenthesis:
-    mixin: want_token
-    match: '\('
-    goto: '_for_statement_first_section'
-
-  _for_statement_first_section:
-    - match: '{{non_token}}'
-    - match: '\)'
-      set: statement
-    - match: '{{b_before}}(?:var|let|const){{b_after}}'
-      scope: storage.type.js
-      set: [_for_statement_interpret_binding, variable_binding_for_for_statement]
-    - match: ';'
-      set: [statement, expression_until_parenthesis, expression_until_for_statement_third_section]
-    - match: '{{otherwise}}'
-      set: [_for_statement_interpret_expression, _for_statement_first_expression]
-
-  _for_statement_interpret_expression:
-    - match: '\)'
-      set: statement
-    - match: ';'
-      set: [statement, expression_until_parenthesis, expression_until_for_statement_third_section]
-    - match: '{{b_before}}(?:of|in){{b_after}}'
-      scope: keyword.operator.js
-      set: [statement, expression_until_parenthesis]
-
-  _for_statement_interpret_binding:
-    - match: '\)'
-      set: statement
-    - match: '='
-      scope: keyword.operator.js
-      set: [_for_statement_variable_binding_continuation, expression_until_for_binding]
-    - match: ','
-      set: [_for_statement_variable_binding_continuation, variable_binding_for_for_statement]
-    - match: ';'
-      set: [statement, expression_until_parenthesis, expression_until_for_statement_third_section]
-    - match: '{{b_before}}(?:of|in){{b_after}}'
-      scope: keyword.operator.js
-      set: [statement, expression_until_parenthesis]
-    - include: otherwise_invalid
-
-  _for_statement_variable_binding_continuation:
-    - match: '\)'
-      set: statement
-    - match: '='
-      scope: keyword.operator.js
-      push: expression_until_for_binding
-    - match: ','
-      push: variable_binding_for_for_statement
-    - match: ';'
-      set: [statement, expression_until_parenthesis, expression_until_for_statement_third_section]
-    - include: otherwise_invalid
 
   switch_statement:
     - match: '{{b_before}}switch{{b_after}}'
@@ -498,15 +397,15 @@ contexts:
       scope: keyword.control.js
       set: end_of_statement
 
-  labelled_statement: # this doesn't extend through new lines
-    - match: '({{reserved_word}}){{to_token}}:'
-      captures:
-        1: invalid.illegal.js
-      pop: true
-    - match: '({{ident}}){{to_token}}:'
-      captures:
-        1: entity.name.section.js
-      pop: true
+  _do_while:
+    - match: '{{b_before}}while{{b_after}}'
+      scope: keyword.control.js
+      set: _do_while_want_parenthesis
+
+  _do_while_want_parenthesis:
+    mixin: want_token
+    match: '\('
+    goto: 'expression_until_parenthesis'
 
 
 
