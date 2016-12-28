@@ -324,7 +324,7 @@
                 "match": "\\$\\{",
                 "scope": "variable.language.js",
                 "set": [
-                    "_template_literal_contents",
+                    "_template_literal_contents_continue",
                     "expression_until_end_of_template_interpolation"
                 ]
             },
@@ -332,6 +332,12 @@
                 "match": "`",
                 "scope": "punctuation.definition.string.end.js",
                 "pop": true
+            }
+        ],
+        "_template_literal_contents_continue": [
+            {
+                "match": "{{otherwise}}",
+                "set": "_template_literal_contents"
             }
         ],
         "regular_expression_literal": [
@@ -3373,7 +3379,7 @@
             {
                 "match": "\\}",
                 "pop": true,
-                "scope": "variable.language.js"
+                "scope": "string.quoted.template.js variable.language.js"
             },
             {
                 "include": "_secondary_parts__expression_until_end_of_template_interpolation"
@@ -3446,7 +3452,7 @@
             {
                 "match": "\\}",
                 "pop": true,
-                "scope": "variable.language.js"
+                "scope": "string.quoted.template.js variable.language.js"
             },
             {
                 "match": "{{b_before}}constructor{{b_after}}",

@@ -92,7 +92,7 @@ contexts:
   expression_until_square_bracket: {mixin: expression, exitMatch: '\]'}
   expression_until_colon: {mixin: expression, exitMatch: ':'}
   expression_until_curly_bracket_ahead_or_colon: {mixin: expression, exitMatch: ':|(?=\})'}
-  expression_until_end_of_template_interpolation: {mixin: expression, exitMatch: '\}', exitExtra: 'scope: variable.language.js'}
+  expression_until_end_of_template_interpolation: {mixin: expression, exitMatch: '\}', exitExtra: 'scope: string.quoted.template.js variable.language.js'}
   expression_until_comma_or_curly_bracket: {mixin: expression, exitMatch: '[,}]'}
   expression_until_comma_or_square_bracket_ahead: {mixin: expression, exitMatch: '(?=[,\]])'}
   expression_until_parameter_binding_list: {mixin: expression, exitMatch: '(?=\))', overrideSecondary: {match: '(?=,)', pop: true}}
@@ -262,10 +262,14 @@ contexts:
     - include: _string_escape_sequences
     - match: '\$\{'
       scope: variable.language.js
-      set: [_template_literal_contents, expression_until_end_of_template_interpolation]
+      set: [_template_literal_contents_continue, expression_until_end_of_template_interpolation]
     - match: '`'
       scope: punctuation.definition.string.end.js
       pop: true
+
+  _template_literal_contents_continue:
+    - match: '{{otherwise}}'
+      set: _template_literal_contents
 
   regular_expression_literal:
     - match: '/'
