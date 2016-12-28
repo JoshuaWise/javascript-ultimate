@@ -9,4 +9,6 @@
         pop: true
   - match: '%%match%%'
     set: %%goto%%
+  - match: '%%exitMatch%%'
+    pop: true
   - include: otherwise_invalid

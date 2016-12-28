@@ -1,5 +1,5 @@
 %%name%%:
-  - match: '{{ident}}(?={{to_token}}(?:%%identTail%%))' # this doesn't extend through new lines
+  - match: '{{ident}}(?={{to_token}}(?:%%identTail%%))' # TODO: this doesn't extend through new lines, but it should
     scope: entity.other.js
     pop: true
   - match: '\['

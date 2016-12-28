@@ -137,7 +137,6 @@ contexts:
 
 
 
-  end_of_statement: [{match: '{{statement_terminator}}', pop: true}, {include: otherwise_invalid}]
   otherwise_invalid: [{match: '{{token}}', scope: invalid.illegal.js}]
 
   need_comma_or_closing_curly_bracket: [{match: '[,}]', pop: true}, {include: otherwise_invalid}]
@@ -153,17 +152,8 @@ contexts:
 
 
 
-  statement_in_block: {mixin: statement, expressionStatementExit: ';|(?=\})', possibleExit: {match: '(?=\})', pop: true}}
-  statement: {mixin: statement, expressionStatementExit: ';'}
-
-
-
-
-
-
-
-
-
+  statement_in_block: {mixin: statement, statementExit: ';|(?=\})', possibleExit: {match: '(?=\})', pop: true}}
+  statement: {mixin: statement, statementExit: ';'}
 
   block_statement:
     - match: '\{'
@@ -173,21 +163,6 @@ contexts:
           pop: true
         - match: '{{otherwise}}'
           push: statement_in_block
-
-  switch_statement:
-    - match: '{{b_before}}switch{{b_after}}'
-      scope: keyword.control.js
-      set: _switch_statement_want_parenthesis
-
-  _switch_statement_want_parenthesis:
-    mixin: want_token
-    match: '\('
-    goto: '[_switch_statement_want_curly_bracket, expression_until_parenthesis]'
-
-  _switch_statement_want_curly_bracket:
-    mixin: want_token
-    match: '\{'
-    goto: '_switch_statement_block'
 
   _switch_statement_block:
     - match: '{{non_token}}'
@@ -212,75 +187,6 @@ contexts:
         - include: otherwise_invalid
     - match: '{{otherwise}}'
       push: statement_in_block
-
-  try_statement:
-    - match: '{{b_before}}try{{b_after}}'
-      scope: keyword.control.js
-      set: _try_statement_want_curly_bracket
-
-  _try_statement_want_curly_bracket:
-    mixin: want_token
-    match: '(?=\{)'
-    goto: '[_catch_or_finally_statement, block_statement]'
-
-  _catch_or_finally_statement:
-    - include: _finally_statement
-    - match: '{{b_before}}catch{{b_after}}'
-      scope: keyword.control.js
-      set: _catch_statement_want_parenthesis
-
-  _catch_statement_want_parenthesis:
-    mixin: want_token
-    match: '\('
-    goto: '[_catch_statement_want_curly_bracket, parameter_binding_until_parenthesis]'
-
-  _catch_statement_want_curly_bracket:
-    mixin: want_token
-    match: '(?=\{)'
-    goto: '[_optional_finally_statement, block_statement]'
-
-  _optional_finally_statement:
-    - match: '{{non_token}}'
-    - include: _finally_statement
-    - match: '{{otherwise}}'
-      pop: true
-
-  _finally_statement:
-    - match: '{{b_before}}finally{{b_after}}'
-      scope: keyword.control.js
-      set: _finally_statement_want_curly_bracket
-
-  _finally_statement_want_curly_bracket:
-    mixin: want_token
-    match: '(?=\{)'
-    goto: 'block_statement'
-
-  goto_statement:
-    - match: '{{b_before}}(?:break|continue){{b_after}}'
-      scope: keyword.control.js
-      set:
-        - match: '{{reserved_word}}'
-          scope: invalid.illegal.js
-          set: end_of_statement
-        - match: '{{ident}}'
-          scope: entity.name.section.js
-          set: end_of_statement
-        - include: end_of_statement
-
-  debugger_statement:
-    - match: '{{b_before}}debugger{{b_after}}'
-      scope: keyword.control.js
-      set: end_of_statement
-
-  _do_while:
-    - match: '{{b_before}}while{{b_after}}'
-      scope: keyword.control.js
-      set: _do_while_want_parenthesis
-
-  _do_while_want_parenthesis:
-    mixin: want_token
-    match: '\('
-    goto: 'expression_until_parenthesis'
 
 
 
@@ -476,7 +382,7 @@ contexts:
       captures: {1: storage.type.js, 2: keyword.operator.js}
       set: [block_statement, parameter_binding_list, _function_declaration_name]
 
-  _function_declaration_name: # this doesn't extend through new lines
+  _function_declaration_name: # TODO: this doesn't extend through new lines, but it should
     - match: '({{reserved_word}}){{to_token}}\('
       captures: {1: invalid.illegal.js}
       pop: true
