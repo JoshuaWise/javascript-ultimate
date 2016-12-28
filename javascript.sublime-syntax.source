@@ -141,7 +141,7 @@ contexts:
   otherwise_invalid: [{match: '{{token}}', scope: invalid.illegal.js}]
 
   need_comma_or_closing_curly_bracket: [{match: '[,}]', pop: true}, {include: otherwise_invalid}]
-  need_block_statement_or_comma_or_closing_curly_bracket_ahead: [{match: '(?=[,}])', pop: true}, {include: block_statement}, {include: otherwise_invalid}]
+  need_comma_or_closing_curly_bracket_ahead_or_block_statement: [{match: '(?=[,}])', pop: true}, {include: block_statement}, {include: otherwise_invalid}]
   need_opening_parenthesis_ahead_or_comma_or_closing_curly_bracket: [{match: '[,}]|(?=\()', pop: true}, {include: otherwise_invalid}]
 
 
@@ -526,7 +526,7 @@ contexts:
           scope: invalid.illegal.js
           pop: true
         - match: '\('
-          set: [need_comma_or_closing_curly_bracket, need_block_statement_or_comma_or_closing_curly_bracket_ahead, parameter_binding_list]
+          set: [need_comma_or_closing_curly_bracket, need_comma_or_closing_curly_bracket_ahead_or_block_statement, parameter_binding_list]
         - match: ':'
           set: expression_until_comma_or_curly_bracket
         - include: otherwise_invalid
