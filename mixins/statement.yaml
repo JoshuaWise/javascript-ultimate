@@ -6,7 +6,7 @@
   # - include: import_statement
   # - include: export_statement
   - include: _variable_statement__%%name%%
-  - include: function_declaration
+  - include: _function_declaration__%%name%%
   # - include: class_declaration
   - include: _if_statement__%%name%%
   - include: _with_or_while_statement__%%name%%
@@ -77,6 +77,37 @@ _variable_statement_continue__%%name%%:
     set: _expression_until_variable_binding__%%name%%
   - match: ','
     set: _variable_statement_want_binding__%%name%%
+
+_function_declaration__%%name%%:
+  - match: '{{b_before}}(function)(?:(\*)|{{b_after}})'
+    captures: {1: storage.type.js, 2: keyword.operator.js}
+    set: _function_declaration_want_name__%%name%%
+
+_function_declaration_want_name__%%name%%:
+  mixin: want_token
+  match: '(?={{ident}})(?!{{reserved_word}})'
+  exitMatch: '%%statementExit%%'
+  goto: '[_function_declaration_want_parenthesis__%%name%%, _function_declaration_name__%%name%%]'
+
+_function_declaration_name__%%name%%:
+  - match: '{{reserved_word}}'
+    scope: invalid.illegal.js
+    pop: true
+  - match: '{{ident}}'
+    scope: entity.name.function.js
+    pop: true
+
+_function_declaration_want_parenthesis__%%name%%:
+  mixin: want_token
+  match: '\('
+  exitMatch: '%%statementExit%%'
+  goto: '[_function_declaration_want_curly_bracket__%%name%%, parameter_binding_list]'
+
+_function_declaration_want_curly_bracket__%%name%%:
+  mixin: want_token
+  match: '(?=\{)'
+  exitMatch: '%%statementExit%%'
+  goto: 'block_statement'
 
 _if_statement__%%name%%:
   - match: '{{b_before}}if{{b_after}}'

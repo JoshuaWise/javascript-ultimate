@@ -376,21 +376,6 @@ contexts:
     - match: '{{otherwise}}'
       pop: true
 
-  # TODO: Make this less aggresive at displaying errors
-  function_declaration:
-    - match: '{{b_before}}(function)(?:(\*)|{{b_after}})'
-      captures: {1: storage.type.js, 2: keyword.operator.js}
-      set: [block_statement, parameter_binding_list, _function_declaration_name]
-
-  _function_declaration_name: # TODO: this doesn't extend through new lines, but it should
-    - match: '({{reserved_word}}){{to_token}}\('
-      captures: {1: invalid.illegal.js}
-      pop: true
-    - match: '({{ident}}){{to_token}}\('
-      captures: {1: entity.name.function.js}
-      pop: true
-    - include: otherwise_invalid
-
   array_literal:
     - match: '\['
       set: expression_until_square_bracket_with_spread_or_comma_anywhere
