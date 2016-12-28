@@ -188,7 +188,7 @@ contexts:
     - match: '{{otherwise}}'
       push: statement_in_block
 
-  _class_block:
+  _class_block: # TODO
     - match: '{{non_token}}'
     - match: '\}'
       pop: true
