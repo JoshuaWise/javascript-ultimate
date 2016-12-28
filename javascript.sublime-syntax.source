@@ -188,6 +188,12 @@ contexts:
     - match: '{{otherwise}}'
       push: statement_in_block
 
+  _class_block:
+    - match: '{{non_token}}'
+    - match: '\}'
+      pop: true
+    - include: otherwise_invalid
+
 
 
 

@@ -7,7 +7,7 @@
   # - include: export_statement
   - include: _variable_statement__%%name%%
   - include: _function_declaration__%%name%%
-  # - include: class_declaration
+  - include: _class_declaration__%%name%%
   - include: _if_statement__%%name%%
   - include: _with_or_while_statement__%%name%%
   - include: _do_statement__%%name%%
@@ -38,7 +38,8 @@ _variable_statement__%%name%%:
 
 _variable_statement_want_binding__%%name%%:
   mixin: want_token
-  match: '(?!{{reserved_word}})(?=\{|\[|{{ident}})'
+  match: '(?=\{|\[|{{ident}})'
+  overrideNewline: {match: '(?={{statement_keyword}})', pop: true}
   exitMatch: '%%statementExit%%'
   goto: '[_variable_initializer__%%name%%, variable_binding]'
 
@@ -85,11 +86,12 @@ _function_declaration__%%name%%:
 
 _function_declaration_want_name__%%name%%:
   mixin: want_token
-  match: '(?={{ident}})(?!{{reserved_word}})'
+  match: '(?={{ident}})'
+  overrideNewline: {match: '(?={{statement_keyword}})', pop: true}
   exitMatch: '%%statementExit%%'
-  goto: '[_function_declaration_want_parenthesis__%%name%%, _function_declaration_name__%%name%%]'
+  goto: '[_function_declaration_want_parenthesis__%%name%%, _declaration_name__%%name%%]'
 
-_function_declaration_name__%%name%%:
+_declaration_name__%%name%%:
   - match: '{{reserved_word}}'
     scope: invalid.illegal.js
     pop: true
@@ -108,6 +110,46 @@ _function_declaration_want_curly_bracket__%%name%%:
   match: '(?=\{)'
   exitMatch: '%%statementExit%%'
   goto: 'block_statement'
+
+_class_declaration__%%name%%:
+  - match: '{{b_before}}class{{b_after}}'
+    scope: storage.type.js
+    set: _class_declaration_want_name__%%name%%
+
+_class_declaration_want_name__%%name%%:
+  mixin: want_token
+  match: '(?={{ident}})'
+  overrideNewline: {match: '(?={{statement_keyword}})', pop: true}
+  exitMatch: '%%statementExit%%'
+  goto: '[_class_declaration_want_curly_bracket_or_extends__%%name%%, _declaration_name__%%name%%]'
+
+_class_declaration_want_curly_bracket_or_extends__%%name%%:
+  mixin: want_token
+  match: '(?=\{|{{b_before}}extends{{b_after}})'
+  overrideFirstLine: {match: '{{b_before}}(?:extend|exten|exte|ext|ex|e){{to_token}}{{b_after}}'}
+  exitMatch: '%%statementExit%%'
+  goto: '_class_declaration_curly_bracket_or_extends__%%name%%'
+
+_class_declaration_curly_bracket_or_extends__%%name%%:
+  - match: '\{'
+    set: _class_block
+  - match: '{{b_before}}extends{{b_after}}'
+    scope: storage.modifier.js
+    set: _class_declaration_want_inheritance__%%name%%
+
+_class_declaration_want_inheritance__%%name%%:
+  mixin: want_token
+  match: '(?={{ident}})'
+  overrideNewline: {match: '(?={{statement_keyword}})', pop: true}
+  override: {match: '\{', scope: invalid.illegal.js, set: _class_block}
+  exitMatch: '%%statementExit%%'
+  goto: '[_class_declaration_want_curly_bracket__%%name%%, _declaration_name__%%name%%]'
+
+_class_declaration_want_curly_bracket__%%name%%:
+  mixin: want_token
+  match: '\{'
+  exitMatch: '%%statementExit%%'
+  goto: '_class_block'
 
 _if_statement__%%name%%:
   - match: '{{b_before}}if{{b_after}}'
