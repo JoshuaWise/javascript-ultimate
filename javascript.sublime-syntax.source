@@ -104,11 +104,6 @@ contexts:
   expression_until_for_binding: {mixin: expression, exitMatch: '(?=[,;)])', override: {match: '{{b_before}}(?:of|in){{b_after}}', scope: invalid.illegal.js}}
   _for_statement_first_expression: {mixin: expression, exitMatch: '(?=[;)]|{{b_before}}(?:of|in){{b_after}})'}
 
-  expression_until_end_of_statement: {mixin: open_ended_expression, exitMatch: ';', beforeAnything: "{match: '{{space}}*+{{statement_terminator}}', pop: true}"}
-  expression_until_end_of_statement_or_block: {mixin: open_ended_expression, exitMatch: ';|(?=\})', beforeAnything: "{match: '{{space}}*+{{statement_terminator}}', pop: true}"}
-  expression_until_variable_binding: {mixin: open_ended_expression, exitMatch: ';', beforeAnything: '""', alternatively: {match: ',', set: _variable_statement_want_binding}}
-  expression_until_variable_binding_or_end_of_block: {mixin: open_ended_expression, exitMatch: ';|(?=\})', beforeAnything: '""', alternatively: {match: ',', set: _variable_statement_want_binding}}
-
 
 
 
@@ -157,8 +152,8 @@ contexts:
 
 
 
-  statement_in_block: {mixin: statement, expressionStatement: expression_until_end_of_statement_or_block, possibleExit: {match: '(?=\})', pop: true}}
-  statement: {mixin: statement, expressionStatement: expression_until_end_of_statement}
+  statement_in_block: {mixin: statement, expressionStatementExit: ';|(?=\})', possibleExit: {match: '(?=\})', pop: true}}
+  statement: {mixin: statement, expressionStatementExit: ';'}
 
 
 
@@ -177,51 +172,6 @@ contexts:
           pop: true
         - match: '{{otherwise}}'
           push: statement_in_block
-
-  variable_statement:
-    - match: '{{b_before}}(?:var|let|const){{b_after}}'
-      scope: storage.type.js
-      set: _variable_statement_want_binding
-
-  _variable_statement_want_binding:
-    mixin: want_token
-    match: '(?!{{reserved_word}})(?=\{|\[|{{ident}})'
-    goto: '[_variable_initializer, variable_binding]'
-
-  _variable_initializer:
-    - match: '(?<=[}\]])'
-      set:
-        - match: '{{line_terminator}}'
-          set: _variable_initializer_likely_candidates
-        - include: _variable_initializer_likely_candidates
-        - include: otherwise_invalid
-    - match: '{{otherwise}}'
-      set: _variable_statement_want_continue
-
-  _variable_initializer_likely_candidates:
-    - match: '='
-      scope: keyword.operator.js
-      set: expression_until_variable_binding
-    - match: ';'
-      scope: invalid.illegal.js
-      pop: true
-    - match: ','
-      scope: invalid.illegal.js
-      set: _variable_statement_want_binding
-
-  _variable_statement_want_continue:
-    mixin: want_token
-    match: '(?=[;=,])'
-    goto: '_variable_statement_continue'
-
-  _variable_statement_continue:
-    - match: ';'
-      pop: true
-    - match: '='
-      scope: keyword.operator.js
-      set: expression_until_variable_binding
-    - match: ','
-      set: _variable_statement_want_binding
 
   switch_statement:
     - match: '{{b_before}}switch{{b_after}}'
@@ -313,16 +263,6 @@ contexts:
           scope: entity.name.section.js
           set: end_of_statement
         - include: end_of_statement
-
-  termination_statement:
-    - match: '{{b_before}}(?:return|throw){{b_after}}'
-      scope: keyword.control.js
-      set: expression_until_end_of_statement
-
-  termination_statement_in_block:
-    - match: '{{b_before}}(?:return|throw){{b_after}}'
-      scope: keyword.control.js
-      set: expression_until_end_of_statement_or_block
 
   debugger_statement:
     - match: '{{b_before}}debugger{{b_after}}'

@@ -5,7 +5,7 @@
   # TODO:
   # - include: import_statement
   # - include: export_statement
-  - include: variable_statement
+  - include: _variable_statement__%%name%%
   - include: function_declaration
   # - include: class_declaration
   - include: _if_statement__%%name%%
@@ -21,7 +21,55 @@
   - match: ';'
     pop: true
   - match: '{{otherwise}}'
-    set: %%expressionStatement%%
+    set: _expression_until_end_of_statement__%%name%%
+
+_expression_until_end_of_statement__%%name%%: {mixin: open_ended_expression, exitMatch: '%%expressionStatementExit%%', beforeAnything: "{match: '{{space}}*+{{statement_terminator}}', pop: true}"}
+_expression_until_variable_binding__%%name%%: {mixin: open_ended_expression, exitMatch: '%%expressionStatementExit%%', beforeAnything: '""', alternatively: {match: ',', set: _variable_statement_want_binding__%%name%%}}
+
+_variable_statement__%%name%%:
+  - match: '{{b_before}}(?:var|let|const){{b_after}}'
+    scope: storage.type.js
+    set: _variable_statement_want_binding__%%name%%
+
+_variable_statement_want_binding__%%name%%:
+  mixin: want_token
+  match: '(?!{{reserved_word}})(?=\{|\[|{{ident}})'
+  goto: '[_variable_initializer__%%name%%, variable_binding]'
+
+_variable_initializer__%%name%%:
+  - match: '(?<=[}\]])'
+    set:
+      - match: '{{line_terminator}}'
+        set: _variable_initializer_likely_candidates__%%name%%
+      - include: _variable_initializer_likely_candidates__%%name%%
+      - include: otherwise_invalid
+  - match: '{{otherwise}}'
+    set: _variable_statement_want_continue__%%name%%
+
+_variable_initializer_likely_candidates__%%name%%:
+  - match: '='
+    scope: keyword.operator.js
+    set: _expression_until_variable_binding__%%name%%
+  - match: ';'
+    scope: invalid.illegal.js
+    pop: true
+  - match: ','
+    scope: invalid.illegal.js
+    set: _variable_statement_want_binding__%%name%%
+
+_variable_statement_want_continue__%%name%%:
+  mixin: want_token
+  match: '(?=[;=,])'
+  goto: '_variable_statement_continue__%%name%%'
+
+_variable_statement_continue__%%name%%:
+  - match: ';'
+    pop: true
+  - match: '='
+    scope: keyword.operator.js
+    set: _expression_until_variable_binding__%%name%%
+  - match: ','
+    set: _variable_statement_want_binding__%%name%%
 
 _if_statement__%%name%%:
   - match: '{{b_before}}if{{b_after}}'
@@ -129,7 +177,7 @@ _for_statement_variable_binding_continuation__%%name%%:
 _termination_statement__%%name%%:
   - match: '{{b_before}}(?:return|throw){{b_after}}'
     scope: keyword.control.js
-    set: %%expressionStatement%%
+    set: _expression_until_end_of_statement__%%name%%
 
 _labelled_statement__%%name%%: # this doesn't extend through new lines
   - match: '({{reserved_word}}){{to_token}}:'
