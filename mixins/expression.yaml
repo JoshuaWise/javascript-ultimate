@@ -54,20 +54,23 @@ _new_keyword__%%name%%:
         pop: true
       - match: '\.'
         scope: keyword.operator.js
-        set:
-          - match: '{{space}}++'
-          - match: '(?=%%exitMatch%%)'
-            pop: true
-          - match: '{{b_before}}target{{b_after}}'
-            scope: support.class.js
-            pop: true
-          - match: '{{b_before}}(?:t|ta|tar|targ|targe){{b_after}}'
-            pop: true
-          - match: '{{ident}}'
-            scope: invalid.illegal.js
-            pop: true
-          - include: otherwise_invalid
+        set: _new_target__%%name%%
       - include: _class_name_shallow__%%name%%
+
+_new_target__%%name%%:
+  - match: '{{space}}++'
+  - match: '(?=%%exitMatch%%)'
+    pop: true
+  %%~overrideNewTarget%%
+  - match: '{{b_before}}target{{b_after}}'
+    scope: support.class.js
+    pop: true
+  - match: '{{b_before}}(?:t|ta|tar|targ|targe){{b_after}}'
+    pop: true
+  - match: '{{ident}}'
+    scope: invalid.illegal.js
+    pop: true
+  - include: otherwise_invalid
 
 _class_name_shallow__%%name%%:
   - match: '{{space}}++'
@@ -89,18 +92,21 @@ _class_name_deep__%%name%%:
     pop: true
   - match: '\.'
     scope: support.class.js
-    push:
-      - match: '{{space}}++'
-      - match: '(?=%%exitMatch%%)'
-        pop: true
-      - match: '{{ident}}'
-        scope: support.class.js
-        pop: true
-      - include: otherwise_invalid
+    set: _class_name_deep_dot_reference__%%name%%
   - match: '\['
     push: expression_until_square_bracket
   - match: '{{otherwise}}'
     pop: true
+
+_class_name_deep_dot_reference__%%name%%:
+  - match: '{{space}}++'
+  - match: '(?=%%exitMatch%%)'
+    pop: true
+  %%~overrideClassDotReference%%
+  - match: '{{ident}}'
+    scope: support.class.js
+    set: _class_name_deep__%%name%%
+  - include: otherwise_invalid
 
 # Known bug:
 # A dot_reference or square_bracket_reference chained from this can have a

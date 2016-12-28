@@ -24,7 +24,7 @@
     set: _expression_until_end_of_statement__%%name%%
 
 _expression_until_end_of_statement__%%name%%: {mixin: open_ended_expression, exitMatch: '%%statementExit%%', beforeAnything: "{match: '{{space}}*+{{statement_terminator}}', pop: true}"}
-_expression_until_variable_binding__%%name%%: {mixin: open_ended_expression, exitMatch: '%%statementExit%%', beforeAnything: '""', alternatively: {match: ',', set: _variable_statement_want_binding__%%name%%}}
+_expression_until_variable_binding__%%name%%: {mixin: open_ended_expression, exitMatch: '%%statementExit%%', beforeAnything: '""', alternatively: {match: ',', set: _variable_statement_want_binding__%%name%%}, alternativelyLookahead: {match: '(?=,)', pop: true}}
 _end_of_statement__%%name%%:
   - match: '{{statement_terminator}}'
     pop: true

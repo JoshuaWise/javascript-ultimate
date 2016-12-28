@@ -8,14 +8,14 @@
         - match: '^(?={{to_token}}{{statement_keyword}})'
           pop: true
         - include: _primary__%%name%%
-    %%~alternatively%%
+    %%~alternativelyLookahead%%
   overridePrimaryOrBlockStatement:
     - match: '{{line_terminator}}'
       set:
         - match: '^(?={{to_token}}{{statement_keyword}})'
           pop: true
         - include: _primary_or_block_statement__%%name%%
-    %%~alternatively%%
+    %%~alternativelyLookahead%%
   catchSecondary:
     - match: '^(?={{to_token}}{{statement_keyword}})'
       pop: true
@@ -37,3 +37,17 @@
           pop: true
         - include: _dot_reference_contents__%%name%%
     %%~alternatively%%
+  overrideClassDotReference:
+    - match: '{{line_terminator}}'
+      set:
+        - match: '^(?={{to_token}}{{statement_keyword}})'
+          pop: true
+        - include: _class_name_deep_dot_reference__%%name%%
+    %%~alternativelyLookahead%%
+  overrideNewTarget:
+    - match: '{{line_terminator}}'
+      set:
+        - match: '^(?={{to_token}}{{statement_keyword}})'
+          pop: true
+        - include: _new_target__%%name%%
+    %%~alternativelyLookahead%%
