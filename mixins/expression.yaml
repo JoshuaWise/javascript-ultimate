@@ -13,8 +13,7 @@ _primary_parts__%%name%%:
   - include: array_literal
   - include: object_literal
   - include: _function_expression__%%name%%
-  # TODO:
-  # - include: _class_expression__%%name%%
+  - include: _class_expression__%%name%%
   - include: constant_or_variable
   - include: _new_keyword__%%name%%
   - include: _prefix_operators__%%name%%
@@ -184,6 +183,67 @@ _function_expression_curly_bracket__%%name%%:
   %%~overrideFunctionCurlyBracket%%
   - match: '(?=\{)'
     set: block_statement
+  - include: otherwise_invalid
+
+_class_expression__%%name%%:
+  - match: '{{b_before}}class{{b_after}}'
+    scope: storage.type.js
+    set: _class_expression_name__%%name%%
+
+_class_expression_name__%%name%%:
+  - match: '{{space}}++'
+  - match: '(?=%%exitMatch%%)'
+    pop: true
+  %%~overrideClassName%%
+  - match: '{{b_before}}extends{{b_after}}'
+    scope: storage.modifier.js
+    set: _class_expression_inheritance__%%name%%
+  - match: '{{reserved_word}}'
+    scope: invalid.illegal.js
+    set: _class_expression_curly_bracket_or_extends__%%name%%
+  - match: '{{ident}}'
+    scope: entity.name.function.js
+    set: _class_expression_curly_bracket_or_extends__%%name%%
+  - match: '\{'
+    set: _class_block
+  - include: otherwise_invalid
+
+_class_expression_curly_bracket_or_extends__%%name%%:
+  - match: '{{space}}++'
+  - match: '(?=%%exitMatch%%)'
+    pop: true
+  %%~overrideClassCurlyBracketOrExtends%%
+  - match: '{{b_before}}extends{{b_after}}'
+    scope: storage.modifier.js
+    set: _class_expression_inheritance__%%name%%
+  - match: '{{b_before}}(?:extend|exten|exte|ext|ex|e){{to_token}}{{b_after}}'
+  - match: '\{'
+    set: _class_block
+  - include: otherwise_invalid
+
+_class_expression_inheritance__%%name%%:
+  - match: '{{space}}++'
+  - match: '(?=%%exitMatch%%)'
+    pop: true
+  %%~overrideClassInheritance%%
+  - match: '{{reserved_word}}'
+    scope: invalid.illegal.js
+    set: _class_expression_curly_bracket__%%name%%
+  - match: '{{ident}}'
+    scope: entity.name.function.js
+    set: _class_expression_curly_bracket__%%name%%
+  - match: '\{'
+    scope: invalid.illegal.js
+    set: _class_block
+  - include: otherwise_invalid
+
+_class_expression_curly_bracket__%%name%%:
+  - match: '{{space}}++'
+  - match: '(?=%%exitMatch%%)'
+    pop: true
+  %%~overrideClassCurlyBracket%%
+  - match: '\{'
+    set: _class_block
   - include: otherwise_invalid
 
 _arrow_function_expression__%%name%%:

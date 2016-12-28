@@ -72,3 +72,31 @@
           pop: true
         - include: _function_expression_curly_bracket__%%name%%
     %%~alternativelyLookahead%%
+  overrideClassName:
+    - match: '{{line_terminator}}'
+      set:
+        - match: '^(?={{to_token}}{{statement_keyword}})'
+          pop: true
+        - include: _class_expression_name__%%name%%
+    %%~alternativelyLookahead%%
+  overrideClassCurlyBracketOrExtends:
+    - match: '{{line_terminator}}'
+      set:
+        - match: '^(?={{to_token}}{{statement_keyword}})'
+          pop: true
+        - include: _class_expression_curly_bracket_or_extends__%%name%%
+    %%~alternativelyLookahead%%
+  overrideClassCurlyBracket:
+    - match: '{{line_terminator}}'
+      set:
+        - match: '^(?={{to_token}}{{statement_keyword}})'
+          pop: true
+        - include: _class_expression_curly_bracket__%%name%%
+    %%~alternativelyLookahead%%
+  overrideClassInheritance:
+    - match: '{{line_terminator}}'
+      set:
+        - match: '^(?={{to_token}}{{statement_keyword}})'
+          pop: true
+        - include: _class_expression_inheritance__%%name%%
+    %%~alternativelyLookahead%%
