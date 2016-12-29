@@ -129,7 +129,7 @@ contexts:
   property_name_requires_parenthesis_for_method: {mixin: property_name, identTail: '\(', identScope: 'entity.function.js', override: {match: '{{b_before}}constructor(?={{to_token}}\()', scope: support.class.js, pop: true}}
   property_name_requires_colon: {mixin: property_name, identTail: ':', identScope: 'entity.other.js'}
 
-  method_definition_in_class:
+  method_definition_in_class: # TODO: make this less aggressive
     mixin: method_definition
     exitMatch: '[;}]'
     overrideBefore:
