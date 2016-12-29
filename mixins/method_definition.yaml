@@ -25,7 +25,6 @@ _main__%%name%%:
 
 _continue__%%name%%:
   %%exit%%
-  %%~altExit%%
   - match: '{{otherwise}}'
     push: _finish_method__%%name%%
 
@@ -40,7 +39,6 @@ _finish_method__%%name%%:
   - match: '{{non_token}}'
   - match: '%%exitMatch%%'
     pop: true
-  %%~altExit%%
   - match: '\('
     set: [_exit_method__%%name%%, _finish_method_block__%%name%%, parameter_binding_list]
   - include: otherwise_invalid
@@ -49,7 +47,6 @@ _finish_getter__%%name%%:
   - match: '{{non_token}}'
   - match: '%%exitMatch%%'
     pop: true
-  %%~altExit%%
   - match: '\('
     set: [_exit_method__%%name%%, _finish_method_block__%%name%%, need_closing_parenthesis]
   - include: otherwise_invalid
@@ -58,7 +55,6 @@ _finish_setter__%%name%%:
   - match: '{{non_token}}'
   - match: '%%exitMatch%%'
     pop: true
-  %%~altExit%%
   - match: '\('
     set: [_exit_method__%%name%%, _finish_method_block__%%name%%, parameter_binding_until_parenthesis_with_initializer]
   - include: otherwise_invalid
@@ -67,7 +63,6 @@ _finish_method_block__%%name%%:
   - match: '{{non_token}}'
   - match: '(?=%%exitMatch%%)'
     pop: true
-  %%~altExit%%
   - include: block_statement
   - include: otherwise_invalid
 
@@ -75,5 +70,4 @@ _exit_method__%%name%%:
   - match: '{{non_token}}'
   - match: '%%exitMatch%%'
     pop: true
-  %%~altExit%%
   - include: otherwise_invalid

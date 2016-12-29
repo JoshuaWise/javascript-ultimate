@@ -147,9 +147,6 @@ contexts:
         pop: true
       - match: '(?<=;)'
         set: method_definition_in_class
-    # altExit:
-    #   - match: '(?={{ident}}|\*)'
-    #     pop: true
 
   method_definition_in_object_literal:
     mixin: method_definition
