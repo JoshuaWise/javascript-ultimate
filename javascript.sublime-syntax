@@ -110,22 +110,19 @@
                 "scope": "invalid.illegal.js"
             }
         ],
-        "need_comma_or_closing_curly_bracket": [
+        "need_closing_parenthesis": [
             {
-                "match": "[,}]",
+                "match": "\\)",
                 "pop": true
             },
             {
                 "include": "otherwise_invalid"
             }
         ],
-        "need_comma_or_closing_curly_bracket_ahead_or_block_statement": [
+        "need_comma_or_closing_curly_bracket": [
             {
-                "match": "(?=[,}])",
+                "match": "[,}]",
                 "pop": true
-            },
-            {
-                "include": "block_statement"
             },
             {
                 "include": "otherwise_invalid"
@@ -208,14 +205,7 @@
         ],
         "_class_block": [
             {
-                "match": "{{non_token}}"
-            },
-            {
-                "match": "\\}",
-                "pop": true
-            },
-            {
-                "include": "otherwise_invalid"
+                "include": "method_definition_in_class"
             }
         ],
         "parenthesized_expression": [
@@ -543,105 +533,7 @@
         "object_literal": [
             {
                 "match": "\\{",
-                "set": [
-                    "_object_literal_continue",
-                    "_object_literal_value",
-                    "_object_literal_pattern"
-                ]
-            }
-        ],
-        "_object_literal_pattern": [
-            {
-                "match": "{{non_token}}"
-            },
-            {
-                "match": "\\}",
-                "pop": true
-            },
-            {
-                "match": "(\\*)|{{b_before}}(get|set){{b_after}}",
-                "captures": {
-                    "1": "keyword.operator.js",
-                    "2": "storage.type.js"
-                },
-                "set": [
-                    {
-                        "match": "{{ident}}",
-                        "scope": "entity.function.js",
-                        "set": "need_opening_parenthesis_ahead_or_comma_or_closing_curly_bracket"
-                    },
-                    {
-                        "include": "property_name_parenthesis_only"
-                    },
-                    {
-                        "include": "need_comma_or_closing_curly_bracket"
-                    }
-                ]
-            },
-            {
-                "match": "{{ident}}{{property_assignment_for_function}}",
-                "scope": "entity.function.js",
-                "pop": true
-            },
-            {
-                "include": "property_name_possible_parenthesis"
-            },
-            {
-                "match": "{{reserved_word}}",
-                "scope": "invalid.illegal.js",
-                "set": "need_comma_or_closing_curly_bracket"
-            },
-            {
-                "match": "{{ident}}",
-                "scope": "entity.other.js",
-                "set": "need_comma_or_closing_curly_bracket"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_object_literal_value": [
-            {
-                "match": "(?<=[,}])",
-                "pop": true
-            },
-            {
-                "match": "{{otherwise}}",
-                "set": [
-                    {
-                        "match": "[,}]",
-                        "scope": "invalid.illegal.js",
-                        "pop": true
-                    },
-                    {
-                        "match": "\\(",
-                        "set": [
-                            "need_comma_or_closing_curly_bracket",
-                            "need_comma_or_closing_curly_bracket_ahead_or_block_statement",
-                            "parameter_binding_list"
-                        ]
-                    },
-                    {
-                        "match": ":",
-                        "set": "expression_until_comma_or_curly_bracket"
-                    },
-                    {
-                        "include": "otherwise_invalid"
-                    }
-                ]
-            }
-        ],
-        "_object_literal_continue": [
-            {
-                "match": "(?<=,)",
-                "push": [
-                    "_object_literal_value",
-                    "_object_literal_pattern"
-                ]
-            },
-            {
-                "match": "(?<=\\})",
-                "pop": true
+                "set": "method_definition_in_object_literal"
             }
         ],
         "_arrow_operator": [
@@ -673,7 +565,7 @@
                 "pop": true
             },
             {
-                "include": "property_name"
+                "include": "property_name_requires_colon"
             },
             {
                 "match": "{{reserved_word}}",
@@ -11672,6 +11564,60 @@
                 "include": "otherwise_invalid"
             }
         ],
+        "parameter_binding_until_parenthesis_with_initializer": [
+            {
+                "match": "{{otherwise}}",
+                "set": [
+                    "_after__parameter_binding_until_parenthesis_with_initializer",
+                    "__parameter_binding_until_parenthesis_with_initializer"
+                ]
+            }
+        ],
+        "__parameter_binding_until_parenthesis_with_initializer": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "include": "object_destructuring"
+            },
+            {
+                "include": "array_destructuring"
+            },
+            {
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "variable.language.js",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_after__parameter_binding_until_parenthesis_with_initializer": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "=",
+                "scope": "keyword.operator.js",
+                "push": "expression_until_parenthesis_ahead_no_comma"
+            },
+            {
+                "match": "\\)",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
         "parameter_binding_for_object_destructuring": [
             {
                 "match": "{{otherwise}}",
@@ -11966,7 +11912,51 @@
                 "include": "otherwise_invalid"
             }
         ],
-        "property_name": [
+        "property_name_for_method": [
+            {
+                "match": "{{b_before}}constructor(?={{to_token}}\\()",
+                "scope": "support.class.js",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}(?={{to_token}}(?:))",
+                "scope": "entity.function.js",
+                "pop": true
+            },
+            {
+                "match": "\\[",
+                "set": "expression_until_square_bracket"
+            },
+            {
+                "include": "numeric_literal"
+            },
+            {
+                "include": "string_literal"
+            }
+        ],
+        "property_name_requires_parenthesis_for_method": [
+            {
+                "match": "{{b_before}}constructor(?={{to_token}}\\()",
+                "scope": "support.class.js",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}(?={{to_token}}(?:\\())",
+                "scope": "entity.function.js",
+                "pop": true
+            },
+            {
+                "match": "\\[",
+                "set": "expression_until_square_bracket"
+            },
+            {
+                "include": "numeric_literal"
+            },
+            {
+                "include": "string_literal"
+            }
+        ],
+        "property_name_requires_colon": [
             {
                 "match": "{{ident}}(?={{to_token}}(?::))",
                 "scope": "entity.other.js",
@@ -11983,38 +11973,400 @@
                 "include": "string_literal"
             }
         ],
-        "property_name_possible_parenthesis": [
+        "method_definition_in_class": [
             {
-                "match": "{{ident}}(?={{to_token}}(?:[:(]))",
-                "scope": "entity.other.js",
-                "pop": true
-            },
-            {
-                "match": "\\[",
-                "set": "expression_until_square_bracket"
-            },
-            {
-                "include": "numeric_literal"
-            },
-            {
-                "include": "string_literal"
+                "match": "{{otherwise}}",
+                "set": [
+                    "_continue__method_definition_in_class",
+                    "_main__method_definition_in_class"
+                ]
             }
         ],
-        "property_name_parenthesis_only": [
+        "_parts__method_definition_in_class": [
             {
-                "match": "{{ident}}(?={{to_token}}(?:\\())",
+                "match": "[;}]",
+                "pop": true
+            },
+            {
+                "match": "\\*",
+                "scope": "keyword.operator.js",
+                "set": [
+                    "_finish_method__method_definition_in_class",
+                    "_need_property_name_for_method__method_definition_in_class"
+                ]
+            },
+            {
+                "match": "{{b_before}}get{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "_finish_getter__method_definition_in_class",
+                    "_need_property_name_for_method__method_definition_in_class"
+                ]
+            },
+            {
+                "match": "{{b_before}}set{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "_finish_setter__method_definition_in_class",
+                    "_need_property_name_for_method__method_definition_in_class"
+                ]
+            },
+            {
+                "include": "property_name_requires_parenthesis_for_method"
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "entity.function.js",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_main__method_definition_in_class": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "{{b_before}}static{{b_after}}",
+                "scope": "storage.modifier.js",
+                "set": [
+                    {
+                        "match": "{{non_token}}"
+                    },
+                    {
+                        "include": "_parts__method_definition_in_class"
+                    }
+                ]
+            },
+            {
+                "include": "_parts__method_definition_in_class"
+            }
+        ],
+        "_continue__method_definition_in_class": [
+            {
+                "match": "(?<=\\})",
+                "pop": true
+            },
+            {
+                "match": "(?<=;)",
+                "set": "method_definition_in_class"
+            },
+            {
+                "match": "{{otherwise}}",
+                "push": "_finish_method__method_definition_in_class"
+            }
+        ],
+        "_need_property_name_for_method__method_definition_in_class": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "(?=[;}])",
+                "pop": true
+            },
+            {
+                "include": "property_name_for_method"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_finish_method__method_definition_in_class": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "[;}]",
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "set": [
+                    "_exit_method__method_definition_in_class",
+                    "_finish_method_block__method_definition_in_class",
+                    "parameter_binding_list"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_finish_getter__method_definition_in_class": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "[;}]",
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "set": [
+                    "_exit_method__method_definition_in_class",
+                    "_finish_method_block__method_definition_in_class",
+                    "need_closing_parenthesis"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_finish_setter__method_definition_in_class": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "[;}]",
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "set": [
+                    "_exit_method__method_definition_in_class",
+                    "_finish_method_block__method_definition_in_class",
+                    "parameter_binding_until_parenthesis_with_initializer"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_finish_method_block__method_definition_in_class": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "(?=[;}])",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_exit_method__method_definition_in_class": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "[;}]",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "method_definition_in_object_literal": [
+            {
+                "match": "{{otherwise}}",
+                "set": [
+                    "_continue__method_definition_in_object_literal",
+                    "_main__method_definition_in_object_literal"
+                ]
+            }
+        ],
+        "_parts__method_definition_in_object_literal": [
+            {
+                "match": "[,}]",
+                "pop": true
+            },
+            {
+                "match": "\\*",
+                "scope": "keyword.operator.js",
+                "set": [
+                    "_finish_method__method_definition_in_object_literal",
+                    "_need_property_name_for_method__method_definition_in_object_literal"
+                ]
+            },
+            {
+                "match": "{{b_before}}get{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "_finish_getter__method_definition_in_object_literal",
+                    "_need_property_name_for_method__method_definition_in_object_literal"
+                ]
+            },
+            {
+                "match": "{{b_before}}set{{b_after}}",
+                "scope": "storage.type.js",
+                "set": [
+                    "_finish_setter__method_definition_in_object_literal",
+                    "_need_property_name_for_method__method_definition_in_object_literal"
+                ]
+            },
+            {
+                "include": "property_name_requires_parenthesis_for_method"
+            },
+            {
+                "match": "{{ident}}{{property_assignment_for_function}}",
+                "scope": "entity.function.js",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}(?={{to_token}}:)",
                 "scope": "entity.other.js",
                 "pop": true
             },
             {
-                "match": "\\[",
-                "set": "expression_until_square_bracket"
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "set": "need_comma_or_closing_curly_bracket"
             },
             {
-                "include": "numeric_literal"
+                "match": "{{ident}}",
+                "scope": "entity.other.js",
+                "set": "need_comma_or_closing_curly_bracket"
             },
             {
-                "include": "string_literal"
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_main__method_definition_in_object_literal": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": ",",
+                "scope": "invalid.illegal.js"
+            },
+            {
+                "include": "_parts__method_definition_in_object_literal"
+            }
+        ],
+        "_continue__method_definition_in_object_literal": [
+            {
+                "match": "(?<=\\})",
+                "pop": true
+            },
+            {
+                "match": "(?<=,)",
+                "set": "method_definition_in_object_literal"
+            },
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "\\}",
+                "scope": "invalid.illegal.js",
+                "pop": true
+            },
+            {
+                "match": ",",
+                "scope": "invalid.illegal.js",
+                "set": "method_definition_in_object_literal"
+            },
+            {
+                "match": "{{to_token}}:",
+                "push": "expression_until_comma_or_curly_bracket"
+            },
+            {
+                "match": "{{otherwise}}",
+                "push": "_finish_method__method_definition_in_object_literal"
+            }
+        ],
+        "_need_property_name_for_method__method_definition_in_object_literal": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "(?=[,}])",
+                "pop": true
+            },
+            {
+                "include": "property_name_for_method"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_finish_method__method_definition_in_object_literal": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "[,}]",
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "set": [
+                    "_exit_method__method_definition_in_object_literal",
+                    "_finish_method_block__method_definition_in_object_literal",
+                    "parameter_binding_list"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_finish_getter__method_definition_in_object_literal": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "[,}]",
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "set": [
+                    "_exit_method__method_definition_in_object_literal",
+                    "_finish_method_block__method_definition_in_object_literal",
+                    "need_closing_parenthesis"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_finish_setter__method_definition_in_object_literal": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "[,}]",
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "set": [
+                    "_exit_method__method_definition_in_object_literal",
+                    "_finish_method_block__method_definition_in_object_literal",
+                    "parameter_binding_until_parenthesis_with_initializer"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_finish_method_block__method_definition_in_object_literal": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "(?=[,}])",
+                "pop": true
+            },
+            {
+                "include": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_exit_method__method_definition_in_object_literal": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "[,}]",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "statement_in_block": [

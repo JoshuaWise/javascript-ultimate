@@ -118,15 +118,72 @@ contexts:
   destructuring_spread_for_parameter_binding_list: {mixin: destructuring_spread, exitMatch: '\)', initializer: expression_until_parenthesis_ahead_no_comma}
 
   parameter_binding_until_parenthesis: {mixin: parameter_binding, exitMatch: '\)', identExtra: 'scope: variable.language.js'}
+  parameter_binding_until_parenthesis_with_initializer: {mixin: parameter_binding, exitMatch: '\)', overrideAfter: {match: '=', scope: keyword.operator.js, push: expression_until_parenthesis_ahead_no_comma}, identExtra: 'scope: variable.language.js'}
   parameter_binding_for_object_destructuring: {mixin: parameter_binding, exitMatch: '[,}]', overrideAfter: {match: '=', scope: keyword.operator.js, set: expression_until_comma_or_curly_bracket}, identExtra: 'scope: variable.language.js'}
   parameter_binding_for_array_destructuring: {mixin: parameter_binding, exitMatch: '\]', overrideAfter: [{match: '=', scope: keyword.operator.js, push: expression_until_comma_or_square_bracket_ahead}, {match: ',', push: __parameter_binding_for_array_destructuring}], overrideBefore: [{match: ',++'}, {include: destructuring_spread_for_array_destructuring}], identExtra: 'scope: variable.language.js'}
   parameter_binding_list: {mixin: parameter_binding, exitMatch: '\)', overrideAfter: [{match: ',', set: parameter_binding_list}, {match: '=', scope: keyword.operator.js, push: expression_until_parameter_binding_list}], overrideBefore: {include: destructuring_spread_for_parameter_binding_list}, identExtra: 'scope: variable.language.js'}
   variable_binding_for_for_statement: {mixin: parameter_binding, exitMatch: '(?=[,;)]|{{b_before}}(?:of|in){{b_after}})', overrideAfter: {match: '(?==)', scope: keyword.operator.js, pop: true}, overrideIdent: {match: '{{ident}}{{assignment_for_function}}', scope: entity.function.js, pop: true}}
   variable_binding: {mixin: parameter_binding, exitMatch: '[^\s\S]', catchAfter: {match: '{{otherwise}}', pop: true}, overrideIdent: {match: '{{ident}}{{assignment_for_function}}', scope: entity.function.js, pop: true}}
 
-  property_name: {mixin: property_name, identTail: ':'}
-  property_name_possible_parenthesis: {mixin: property_name, identTail: '[:(]'}
-  property_name_parenthesis_only: {mixin: property_name, identTail: '\('}
+  property_name_for_method: {mixin: property_name, identScope: 'entity.function.js', override: {match: '{{b_before}}constructor(?={{to_token}}\()', scope: support.class.js, pop: true}}
+  property_name_requires_parenthesis_for_method: {mixin: property_name, identTail: '\(', identScope: 'entity.function.js', override: {match: '{{b_before}}constructor(?={{to_token}}\()', scope: support.class.js, pop: true}}
+  property_name_requires_colon: {mixin: property_name, identTail: ':', identScope: 'entity.other.js'}
+
+  method_definition_in_class:
+    mixin: method_definition
+    exitMatch: '[;}]'
+    overrideBefore:
+      - match: '{{b_before}}static{{b_after}}'
+        scope: storage.modifier.js
+        set:
+          - match: '{{non_token}}'
+          - include: _parts__method_definition_in_class
+    overrideAfter:
+      - match: '{{ident}}'
+        scope: entity.function.js
+        pop: true
+    exit:
+      - match: '(?<=\})'
+        pop: true
+      - match: '(?<=;)'
+        set: method_definition_in_class
+    # altExit:
+    #   - match: '(?={{ident}}|\*)'
+    #     pop: true
+
+  method_definition_in_object_literal:
+    mixin: method_definition
+    exitMatch: '[,}]'
+    overrideBefore:
+      - match: ','
+        scope: invalid.illegal.js
+    overrideAfter:
+      - match: '{{ident}}{{property_assignment_for_function}}'
+        scope: entity.function.js
+        pop: true
+      - match: '{{ident}}(?={{to_token}}:)'
+        scope: entity.other.js
+        pop: true
+      - match: '{{reserved_word}}'
+        scope: invalid.illegal.js
+        set: need_comma_or_closing_curly_bracket
+      - match: '{{ident}}'
+        scope: entity.other.js
+        set: need_comma_or_closing_curly_bracket
+    exit:
+      - match: '(?<=\})'
+        pop: true
+      - match: '(?<=,)'
+        set: method_definition_in_object_literal
+      - match: '{{non_token}}'
+      - match: '\}'
+        scope: invalid.illegal.js
+        pop: true
+      - match: ','
+        scope: invalid.illegal.js
+        set: method_definition_in_object_literal
+      - match: '{{to_token}}:'
+        push: expression_until_comma_or_curly_bracket
 
 
 
@@ -139,8 +196,8 @@ contexts:
 
   otherwise_invalid: [{match: '{{token}}', scope: invalid.illegal.js}]
 
+  need_closing_parenthesis: [{match: '\)', pop: true}, {include: otherwise_invalid}]
   need_comma_or_closing_curly_bracket: [{match: '[,}]', pop: true}, {include: otherwise_invalid}]
-  need_comma_or_closing_curly_bracket_ahead_or_block_statement: [{match: '(?=[,}])', pop: true}, {include: block_statement}, {include: otherwise_invalid}]
   need_opening_parenthesis_ahead_or_comma_or_closing_curly_bracket: [{match: '[,}]|(?=\()', pop: true}, {include: otherwise_invalid}]
 
 
@@ -188,11 +245,8 @@ contexts:
     - match: '{{otherwise}}'
       push: statement_in_block
 
-  _class_block: # TODO
-    - match: '{{non_token}}'
-    - match: '\}'
-      pop: true
-    - include: otherwise_invalid
+  _class_block:
+    - include: method_definition_in_class
 
 
 
@@ -392,51 +446,7 @@ contexts:
 
   object_literal:
     - match: '\{'
-      set: [_object_literal_continue, _object_literal_value, _object_literal_pattern]
-
-  _object_literal_pattern:
-    - match: '{{non_token}}'
-    - match: '\}'
-      pop: true
-    - match: '(\*)|{{b_before}}(get|set){{b_after}}'
-      captures: {1: keyword.operator.js, 2: storage.type.js}
-      set:
-        - match: '{{ident}}'
-          scope: entity.function.js
-          set: need_opening_parenthesis_ahead_or_comma_or_closing_curly_bracket
-        - include: property_name_parenthesis_only
-        - include: need_comma_or_closing_curly_bracket
-    - match: '{{ident}}{{property_assignment_for_function}}'
-      scope: entity.function.js
-      pop: true
-    - include: property_name_possible_parenthesis
-    - match: '{{reserved_word}}'
-      scope: invalid.illegal.js
-      set: need_comma_or_closing_curly_bracket
-    - match: '{{ident}}'
-      scope: entity.other.js
-      set: need_comma_or_closing_curly_bracket
-    - include: otherwise_invalid
-
-  _object_literal_value:
-    - match: '(?<=[,}])'
-      pop: true
-    - match: '{{otherwise}}'
-      set:
-        - match: '[,}]'
-          scope: invalid.illegal.js
-          pop: true
-        - match: '\('
-          set: [need_comma_or_closing_curly_bracket, need_comma_or_closing_curly_bracket_ahead_or_block_statement, parameter_binding_list]
-        - match: ':'
-          set: expression_until_comma_or_curly_bracket
-        - include: otherwise_invalid
-
-  _object_literal_continue:
-    - match: '(?<=,)'
-      push: [_object_literal_value, _object_literal_pattern]
-    - match: '(?<=\})'
-      pop: true
+      set: method_definition_in_object_literal
 
 
 
@@ -472,7 +482,7 @@ contexts:
   _object_destructuring_pattern:
     - match: '\}'
       pop: true
-    - include: property_name
+    - include: property_name_requires_colon
     - match: '{{reserved_word}}'
       scope: invalid.illegal.js
       set: _after__parameter_binding_for_object_destructuring

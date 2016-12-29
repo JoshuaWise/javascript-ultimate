@@ -1,6 +1,7 @@
 %%name%%:
-  - match: '{{ident}}(?={{to_token}}(?:%%identTail%%))'
-    scope: entity.other.js
+  %%~override%%
+  - match: '{{ident}}(?={{to_token}}(?:%%~identTail%%))'
+    scope: %%identScope%%
     pop: true
   - match: '\['
     set: expression_until_square_bracket
