@@ -67,6 +67,7 @@ _finish_method_block__%%name%%:
   - include: otherwise_invalid
 
 _exit_method__%%name%%:
+  %%~altExit%%
   - match: '{{non_token}}'
   - match: '%%exitMatch%%'
     pop: true

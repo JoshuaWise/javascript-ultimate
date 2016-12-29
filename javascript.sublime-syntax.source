@@ -147,6 +147,9 @@ contexts:
         pop: true
       - match: '(?<=;)'
         set: method_definition_in_class
+    altExit:
+      - match: '{{otherwise}}'
+        set: _main__method_definition_in_class
 
   method_definition_in_object_literal:
     mixin: method_definition

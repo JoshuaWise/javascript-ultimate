@@ -12149,6 +12149,10 @@
         ],
         "_exit_method__method_definition_in_class": [
             {
+                "match": "{{otherwise}}",
+                "set": "_main__method_definition_in_class"
+            },
+            {
                 "match": "{{non_token}}"
             },
             {
