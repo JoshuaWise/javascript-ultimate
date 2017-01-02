@@ -565,7 +565,7 @@ contexts:
     mixin: want_token
     match: '{{b_before}}as{{b_after}}'
     matchExtra: 'scope: keyword.operator.js'
-    goto: _import_all_named_as_ident
+    goto: '_import_all_named_as_ident'
     exitMatch: ';'
 
   _import_all_named_as_ident:
