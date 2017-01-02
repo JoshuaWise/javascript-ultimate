@@ -121,14 +121,7 @@ _prefix_operators__%%name%%:
       - match: '{{b_before}}(?:undefined|Infinity|NaN){{b_after}}'
         scope: invalid.illegal.js
         pop: true
-      # TODO: make this more complete with identifier_reference
-      - match: '({{ident}}){{to_token}}\.{{to_token}}(prototype){{b_after}}'
-        captures:
-          1: support.class.js
-          2: support.constant.js
-        pop: true
-      - match: '{{ident}}'
-        pop: true
+      - include: identifier_reference_simple
       - include: otherwise_invalid
 
 _unary_operators__%%name%%:
