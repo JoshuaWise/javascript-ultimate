@@ -3,16 +3,18 @@
   - match: '{{line_terminator}}'
     set:
       - match: '{{non_token}}'
-      %%~override%%
       %%~overrideNewline%%
+      %%~override%%
       - match: '%%match%%'
         set: %%goto%%
+        %%~matchExtra%%
       - match: '{{otherwise}}'
         pop: true
-  %%~override%%
   %%~overrideFirstLine%%
+  %%~override%%
   - match: '%%match%%'
     set: %%goto%%
+    %%~matchExtra%%
   - match: '%%exitMatch%%'
     pop: true
   - include: otherwise_invalid

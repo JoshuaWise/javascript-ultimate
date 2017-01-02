@@ -38,7 +38,8 @@ variables:
   statement_terminator: '(?:;|{{line_terminator}})'
   ident: '(?:{{b_before}}[{{ident_start}}][{{ident_part}}]*+{{b_after}})'
   reserved_word: (?:{{b_before}}(?:{{keyword}}|{{future_reserved_word}}|null|true|false){{b_after}})
-  statement_keyword: (?:import|export|var|let|const|if|with|while|do|for|switch|try|catch|finally|break|continue|case|return|throw|debugger)
+  statement_keyword: (?:{{b_before}}(?:import|export|var|let|const|if|with|while|do|for|switch|try|catch|finally|break|continue|case|return|throw|debugger){{b_after}})
+  statement_keyword_all: (?:{{statement_keyword}}|{{b_before}}(?:function|class|true|false|null|undefined|Infinity|NaN|this|arguments|super|new|yield|typeof|void|delete|await){{b_after}})
   shebang: '^#!/usr/bin/env node(?:{{space}}[^{{line_terminator_chars}}]*+)?+(?={{line_terminator}}|$)'
   arrow_function_with_parenthesis: '\((?={{to_token}}(?:(?:{{ident}}|\{|\[|\.\.\.)[^)]*+)?+\){{to_token}}=>)'
   arrow_function_with_reserved_word: '{{reserved_word}}(?={{to_token}}=>)'
@@ -77,7 +78,7 @@ contexts:
       set:
       - match: '{{non_token}}'
       - match: '{{otherwise}}'
-        push: statement
+        push: statement_top_level
 
 
 
@@ -161,7 +162,7 @@ contexts:
       - match: '{{ident}}{{property_assignment_for_function}}'
         scope: entity.function.js
         pop: true
-      - match: '{{ident}}(?={{to_token}}:)'
+      - match: '{{ident}}(?={{to_token}}:)' # this doesn't extend through new lines
         scope: entity.other.js
         pop: true
       - match: '{{reserved_word}}'
@@ -182,7 +183,7 @@ contexts:
       - match: ','
         scope: invalid.illegal.js
         set: method_definition_in_object_literal
-      - match: '{{to_token}}:'
+      - match: '{{to_token}}:' # this doesn't extend through new lines
         push: expression_until_comma_or_curly_bracket
 
 
@@ -209,8 +210,9 @@ contexts:
 
 
 
-  statement_in_block: {mixin: statement, statementExit: ';|(?=\})', possibleExit: {match: '(?=\})', pop: true}}
-  statement: {mixin: statement, statementExit: ';'}
+  statement_in_block: {mixin: statement, statementExit: ';|(?=\})', self: 'statement_in_block', possibleExit: {match: '(?=\})', pop: true}}
+  statement_top_level: {mixin: statement, statementExit: ';', self: 'statement', override: [{include: import_statement}, {include: export_statement}]}
+  statement: {mixin: statement, statementExit: ';', self: 'statement'}
 
   block_statement:
     - match: '\{'
@@ -508,3 +510,128 @@ contexts:
       push: [_object_destructuring_value, _object_destructuring_pattern]
     - match: '(?<=\})'
       pop: true
+
+
+
+
+
+
+
+
+
+
+  import_statement:
+    - match: '{{b_before}}import{{b_after}}'
+      scope: storage.type.js
+      set: _import_statement_core
+
+  _import_statement_core:
+    mixin: want_token
+    match: '(?=[''''"])'
+    goto: '_import_location'
+    exitMatch: ';'
+    overrideNewline: {match: '(?={{statement_keyword_all}})', pop: true}
+    override:
+      - match: '{{reserved_word}}'
+        scope: invalid.illegal.js
+        set: _import_statement_optional_addition
+      - match: '{{ident}}'
+        scope: variable.language.js
+        set: _import_statement_optional_addition
+      - include: _import_all_named
+      - include: _import_named_block
+
+  _import_statement_optional_addition:
+    mixin: want_token
+    match: ','
+    goto: '_import_statement_addition'
+    exitMatch: ';'
+    override:
+      - match: '{{b_before}}(?=(?:from|fro|fr|f){{b_after}})'
+        set: _import_from
+
+  _import_statement_addition:
+    mixin: want_token
+    match: '(?=\*)'
+    goto: '_import_all_named'
+    exitMatch: ';'
+    override: {include: _import_named_block}
+
+  _import_all_named:
+    - match: '\*'
+      scope: keyword.operator.js
+      set: _import_all_named_as
+
+  _import_all_named_as:
+    mixin: want_token
+    match: '{{b_before}}as{{b_after}}'
+    matchExtra: 'scope: keyword.operator.js'
+    goto: _import_all_named_as_ident
+    exitMatch: ';'
+
+  _import_all_named_as_ident:
+    mixin: want_token
+    match: '{{ident}}'
+    matchExtra: 'scope: variable.language.js'
+    goto: '_import_from'
+    exitMatch: ';'
+    overrideNewline: {match: '(?={{statement_keyword_all}})', pop: true}
+    override:
+      - match: '{{reserved_word}}'
+        scope: invalid.illegal.js
+        set: _import_from
+
+  _import_named_block:
+    - match: '\{'
+      set: _import_named_item
+
+  _import_named_item:
+    - match: '\}'
+      set: _import_from
+    - match: '({{ident}}){{to_token}}(as){{b_after}}' # this doesn't extend through new lines
+      captures: {1: entity.other.js, 2: keyword.operator.js}
+      set:
+        - match: '\}'
+          set: _import_from
+        - match: ','
+          scope: invalid.illegal.js
+          set: _import_named_item
+        - match: '{{reserved_word}}'
+          scope: invalid.illegal.js
+          set: _import_named_continue
+        - match: '{{ident}}'
+          scope: variable.language.js
+          set: _import_named_continue
+        - include: otherwise_invalid
+    - match: '{{reserved_word}}'
+      scope: invalid.illegal.js
+      set: _import_named_continue
+    - match: '{{ident}}'
+      scope: variable.language.js
+      set: _import_named_continue
+    - include: otherwise_invalid
+
+  _import_named_continue:
+    - match: ','
+      set: _import_named_item
+    - match: '\}'
+      set: _import_from
+    - include: otherwise_invalid
+
+  _import_from:
+    mixin: want_token
+    match: '{{b_before}}from{{b_after}}'
+    matchExtra: 'scope: keyword.operator.js'
+    goto: '_import_location'
+    exitMatch: ';'
+    override: {match: '{{b_before}}(?:fro|fr|f){{to_token}}{{b_after}}'}
+
+  _import_location:
+    mixin: want_token
+    match: '(?=[''''"])'
+    goto: '[_end_of_statement__statement, string_literal]'
+    exitMatch: ';'
+
+  export_statement:
+    - match: '{{b_before}}export{{b_after}}'
+      scope: storage.modifier.js

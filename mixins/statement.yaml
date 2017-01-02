@@ -1,10 +1,8 @@
 %%name%%:
   - match: '{{non_token}}'
   %%~possibleExit%%
+  %%~override%%
   - include: block_statement
-  # TODO:
-  # - include: import_statement
-  # - include: export_statement
   - include: _variable_statement__%%name%%
   - include: _function_declaration__%%name%%
   - include: _class_declaration__%%name%%
@@ -39,7 +37,7 @@ _variable_statement__%%name%%:
 _variable_statement_want_binding__%%name%%:
   mixin: want_token
   match: '(?=\{|\[|{{ident}})'
-  overrideNewline: {match: '(?={{statement_keyword}})', pop: true}
+  overrideNewline: {match: '(?={{statement_keyword_all}})', pop: true}
   exitMatch: '%%statementExit%%'
   goto: '[_variable_initializer__%%name%%, variable_binding]'
 
@@ -87,7 +85,7 @@ _function_declaration__%%name%%:
 _function_declaration_want_name__%%name%%:
   mixin: want_token
   match: '(?={{ident}})'
-  overrideNewline: {match: '(?={{statement_keyword}})', pop: true}
+  overrideNewline: {match: '(?={{statement_keyword_all}})', pop: true}
   exitMatch: '%%statementExit%%'
   goto: '[_function_declaration_want_parenthesis__%%name%%, _declaration_name__%%name%%]'
 
@@ -119,7 +117,7 @@ _class_declaration__%%name%%:
 _class_declaration_want_name__%%name%%:
   mixin: want_token
   match: '(?={{ident}})'
-  overrideNewline: {match: '(?={{statement_keyword}})', pop: true}
+  overrideNewline: {match: '(?={{statement_keyword_all}})', pop: true}
   exitMatch: '%%statementExit%%'
   goto: '[_class_declaration_want_curly_bracket_or_extends__%%name%%, _declaration_name__%%name%%]'
 
@@ -140,7 +138,7 @@ _class_declaration_curly_bracket_or_extends__%%name%%:
 _class_declaration_want_inheritance__%%name%%:
   mixin: want_token
   match: '(?={{ident}})'
-  overrideNewline: {match: '(?={{statement_keyword}})', pop: true}
+  overrideNewline: {match: '(?={{statement_keyword_all}})', pop: true}
   override: {match: '\{', scope: invalid.illegal.js, set: _class_block}
   exitMatch: '%%statementExit%%'
   goto: '[_class_declaration_want_curly_bracket__%%name%%, _declaration_name__%%name%%]'
@@ -166,13 +164,13 @@ _if_statement_possible_exit__%%name%%:
   - match: '{{non_token}}'
   %%~possibleExit%%
   - match: '{{otherwise}}'
-    set: [_optional_else_statement__%%name%%, %%name%%]
+    set: [_optional_else_statement__%%name%%, %%self%%]
 
 _optional_else_statement__%%name%%:
   - match: '{{non_token}}'
   - match: '{{b_before}}else{{b_after}}'
     scope: keyword.control.js
-    set: %%name%%
+    set: %%self%%
   - match: '{{otherwise}}'
     pop: true
 
@@ -185,7 +183,7 @@ _with_or_while_statement_want_parenthesis__%%name%%:
   mixin: want_token
   match: '\('
   exitMatch: '%%statementExit%%'
-  goto: '[%%name%%, expression_until_parenthesis]'
+  goto: '[%%self%%, expression_until_parenthesis]'
 
 _do_statement__%%name%%:
   - match: '{{b_before}}do{{b_after}}'
@@ -196,7 +194,7 @@ _do_statement_possible_exit__%%name%%:
   - match: '{{non_token}}'
   %%~possibleExit%%
   - match: '{{otherwise}}'
-    set: [_do_while, %%name%%]
+    set: [_do_while, %%self%%]
 
 _do_while:
   - match: '{{b_before}}while{{b_after}}'
@@ -223,49 +221,49 @@ _for_statement_want_parenthesis__%%name%%:
 _for_statement_first_section__%%name%%:
   - match: '{{non_token}}'
   - match: '\)'
-    set: %%name%%
+    set: %%self%%
   - match: '{{b_before}}(?:var|let|const){{b_after}}'
     scope: storage.type.js
     set: [_for_statement_interpret_binding__%%name%%, variable_binding_for_for_statement]
   - match: ';'
-    set: [%%name%%, expression_until_parenthesis, expression_until_for_statement_third_section]
+    set: [%%self%%, expression_until_parenthesis, expression_until_for_statement_third_section]
   - match: '{{otherwise}}'
     set: [_for_statement_interpret_expression__%%name%%, _for_statement_first_expression]
 
 _for_statement_interpret_expression__%%name%%:
   - match: '\)'
-    set: %%name%%
+    set: %%self%%
   - match: ';'
-    set: [%%name%%, expression_until_parenthesis, expression_until_for_statement_third_section]
+    set: [%%self%%, expression_until_parenthesis, expression_until_for_statement_third_section]
   - match: '{{b_before}}(?:of|in){{b_after}}'
     scope: keyword.operator.js
-    set: [%%name%%, expression_until_parenthesis]
+    set: [%%self%%, expression_until_parenthesis]
 
 _for_statement_interpret_binding__%%name%%:
   - match: '\)'
-    set: %%name%%
+    set: %%self%%
   - match: '='
     scope: keyword.operator.js
     set: [_for_statement_variable_binding_continuation__%%name%%, expression_until_for_binding]
   - match: ','
     set: [_for_statement_variable_binding_continuation__%%name%%, variable_binding_for_for_statement]
   - match: ';'
-    set: [%%name%%, expression_until_parenthesis, expression_until_for_statement_third_section]
+    set: [%%self%%, expression_until_parenthesis, expression_until_for_statement_third_section]
   - match: '{{b_before}}(?:of|in){{b_after}}'
     scope: keyword.operator.js
-    set: [%%name%%, expression_until_parenthesis]
+    set: [%%self%%, expression_until_parenthesis]
   - include: otherwise_invalid
 
 _for_statement_variable_binding_continuation__%%name%%:
   - match: '\)'
-    set: %%name%%
+    set: %%self%%
   - match: '='
     scope: keyword.operator.js
     push: expression_until_for_binding
   - match: ','
     push: variable_binding_for_for_statement
   - match: ';'
-    set: [%%name%%, expression_until_parenthesis, expression_until_for_statement_third_section]
+    set: [%%self%%, expression_until_parenthesis, expression_until_for_statement_third_section]
   - include: otherwise_invalid
 
 _switch_statement__%%name%%:
@@ -357,8 +355,8 @@ _labelled_statement__%%name%%: # this doesn't extend through new lines
   - match: '({{reserved_word}}){{to_token}}:'
     captures:
       1: invalid.illegal.js
-    set: %%name%%
+    set: %%self%%
   - match: '({{ident}}){{to_token}}:'
     captures:
       1: entity.name.section.js
-    set: %%name%%
+    set: %%self%%
