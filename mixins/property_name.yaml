@@ -1,5 +1,4 @@
 %%name%%:
-  %%~override%%
   - match: '{{ident}}(?={{to_token}}(?:%%~identTail%%))' # this doesn't extend through new lines
     scope: %%identScope%%
     pop: true

@@ -404,7 +404,7 @@
                 "meta_content_scope": "string.regexp.js string.regexp.characterclass.js"
             },
             {
-                "match": "\\\\(?:[bfnrtv]|{{common_regexp_escape_sequences}})",
+                "match": "\\\\(?:[dDsSwWfnrtvb]|{{common_regexp_escape_sequences}})",
                 "scope": "constant.character.escape.js regexp-operator.js"
             },
             {
@@ -412,7 +412,7 @@
                 "scope": "constant.character.escape.js"
             },
             {
-                "match": "\\\\(?:0[0-9]++|[wWdDsSB]|c[0-9_])?+",
+                "match": "\\\\(?:0[0-9]++|B|c[0-9_])?+",
                 "scope": "invalid.illegal.js"
             },
             {
@@ -1250,7 +1250,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement__expression_until_parenthesis",
                     "_arrow_operator"
@@ -1922,7 +1921,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement__expression_until_square_bracket",
                     "_arrow_operator"
@@ -2594,7 +2592,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement__expression_until_colon",
                     "_arrow_operator"
@@ -3266,7 +3263,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement__expression_until_curly_bracket_ahead_or_colon",
                     "_arrow_operator"
@@ -3938,7 +3934,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement__expression_until_end_of_template_interpolation",
                     "_arrow_operator"
@@ -4612,7 +4607,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement__expression_until_comma_or_curly_bracket",
                     "_arrow_operator"
@@ -5284,7 +5278,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement__expression_until_comma_or_square_bracket_ahead",
                     "_arrow_operator"
@@ -5956,7 +5949,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement__expression_until_parameter_binding_list",
                     "_arrow_operator"
@@ -6642,7 +6634,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement__expression_until_parenthesis_with_spread",
                     "_arrow_operator"
@@ -7318,7 +7309,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement__expression_until_parenthesis_no_comma",
                     "_arrow_operator"
@@ -7994,7 +7984,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement__expression_until_parenthesis_ahead_no_comma",
                     "_arrow_operator"
@@ -8686,7 +8675,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement__expression_until_square_bracket_with_spread_or_comma_anywhere",
                     "_arrow_operator"
@@ -9358,7 +9346,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement__expression_until_square_bracket_ahead_no_comma",
                     "_arrow_operator"
@@ -10034,7 +10021,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement__expression_until_for_statement_third_section",
                     "_arrow_operator"
@@ -10714,7 +10700,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement__expression_until_for_binding",
                     "_arrow_operator"
@@ -11390,7 +11375,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement___for_statement_first_expression",
                     "_arrow_operator"
@@ -12066,11 +12050,6 @@
         ],
         "property_name_for_method": [
             {
-                "match": "{{b_before}}constructor(?={{to_token}}\\()",
-                "scope": "support.class.js",
-                "pop": true
-            },
-            {
                 "match": "{{ident}}(?={{to_token}}(?:))",
                 "scope": "entity.function.js",
                 "pop": true
@@ -12087,11 +12066,6 @@
             }
         ],
         "property_name_requires_parenthesis_for_method": [
-            {
-                "match": "{{b_before}}constructor(?={{to_token}}\\()",
-                "scope": "support.class.js",
-                "pop": true
-            },
             {
                 "match": "{{ident}}(?={{to_token}}(?:\\())",
                 "scope": "entity.function.js",
@@ -12373,7 +12347,6 @@
             },
             {
                 "match": "{{ident}}",
-                "scope": "entity.other.js",
                 "set": "need_comma_or_closing_curly_bracket"
             },
             {
@@ -16967,7 +16940,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement___expression_until_end_of_statement__statement_in_block",
                     "_arrow_operator"
@@ -17866,7 +17838,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement___expression_until_variable_binding__statement_in_block",
                     "_arrow_operator"
@@ -18729,7 +18700,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement___expression_until_end_of_statement__statement_top_level",
                     "_arrow_operator"
@@ -19628,7 +19598,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement___expression_until_variable_binding__statement_top_level",
                     "_arrow_operator"
@@ -20491,7 +20460,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement___expression_until_end_of_statement__statement",
                     "_arrow_operator"
@@ -21390,7 +21358,6 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
-                "scope": "variable.language.js",
                 "set": [
                     "_primary_or_block_statement___expression_until_variable_binding__statement",
                     "_arrow_operator"

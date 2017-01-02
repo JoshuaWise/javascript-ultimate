@@ -125,8 +125,8 @@ contexts:
   variable_binding_for_for_statement: {mixin: parameter_binding, exitMatch: '(?=[,;)]|{{b_before}}(?:of|in){{b_after}})', overrideAfter: {match: '(?==)', scope: keyword.operator.js, pop: true}, overrideIdent: {match: '{{ident}}{{assignment_for_function}}', scope: entity.function.js, pop: true}}
   variable_binding: {mixin: parameter_binding, exitMatch: '[^\s\S]', catchAfter: {match: '{{otherwise}}', pop: true}, overrideIdent: {match: '{{ident}}{{assignment_for_function}}', scope: entity.function.js, pop: true}}
 
-  property_name_for_method: {mixin: property_name, identScope: 'entity.function.js', override: {match: '{{b_before}}constructor(?={{to_token}}\()', scope: support.class.js, pop: true}}
-  property_name_requires_parenthesis_for_method: {mixin: property_name, identTail: '\(', identScope: 'entity.function.js', override: {match: '{{b_before}}constructor(?={{to_token}}\()', scope: support.class.js, pop: true}}
+  property_name_for_method: {mixin: property_name, identScope: 'entity.function.js'}
+  property_name_requires_parenthesis_for_method: {mixin: property_name, identTail: '\(', identScope: 'entity.function.js'}
   property_name_requires_colon: {mixin: property_name, identTail: ':', identScope: 'entity.other.js'}
 
   method_definition_in_class:
@@ -168,7 +168,7 @@ contexts:
         scope: invalid.illegal.js
         set: need_comma_or_closing_curly_bracket
       - match: '{{ident}}'
-        scope: entity.other.js
+        # scope: entity.other.js # optional
         set: need_comma_or_closing_curly_bracket
     exit:
       - match: '(?<=\})'
@@ -366,11 +366,11 @@ contexts:
   _regular_expression_literal_class:
     - meta_include_prototype: false
     - meta_content_scope: string.regexp.js string.regexp.characterclass.js
-    - match: '\\(?:[bfnrtv]|{{common_regexp_escape_sequences}})'
+    - match: '\\(?:[dDsSwWfnrtvb]|{{common_regexp_escape_sequences}})'
       scope: constant.character.escape.js regexp-operator.js
     - match: '\\(?:-|{{common_regexp_operators}})'
       scope: constant.character.escape.js
-    - match: '\\(?:0[0-9]++|[wWdDsSB]|c[0-9_])?+' # "\c[0-9_]" actually does work in the tested implementations, but it's not in the spec
+    - match: '\\(?:0[0-9]++|B|c[0-9_])?+' # "\c[0-9_]" actually does work in the tested implementations, but it's not in the spec
       scope: invalid.illegal.js
     - match: '(?={{line_terminator}})'
       pop: true
@@ -535,7 +535,7 @@ contexts:
         scope: invalid.illegal.js
         set: _import_statement_optional_addition
       - match: '{{ident}}'
-        scope: variable.language.js
+        scope: variable.language.js # optional
         set: _import_statement_optional_addition
       - include: _import_all_named
       - include: _import_named_block
@@ -571,7 +571,7 @@ contexts:
   _import_all_named_as_ident:
     mixin: want_token
     match: '{{ident}}'
-    matchExtra: 'scope: variable.language.js'
+    matchExtra: 'scope: variable.language.js' # optional
     goto: '_import_from'
     exitMatch: ';'
     overrideNewline: {match: '(?={{statement_keyword_all}})', pop: true}
@@ -599,14 +599,14 @@ contexts:
           scope: invalid.illegal.js
           set: _import_named_continue
         - match: '{{ident}}'
-          scope: variable.language.js
+          scope: variable.language.js # optional
           set: _import_named_continue
         - include: otherwise_invalid
     - match: '{{reserved_word}}'
       scope: invalid.illegal.js
       set: _import_named_continue
     - match: '{{ident}}'
-      scope: variable.language.js
+      scope: variable.language.js # optional
       set: _import_named_continue
     - include: otherwise_invalid
 

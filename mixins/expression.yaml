@@ -253,7 +253,7 @@ _arrow_function_expression__%%name%%:
     scope: invalid.illegal.js
     set: [_primary_or_block_statement__%%name%%, _arrow_operator]
   - match: '{{arrow_function_with_ident}}'
-    scope: variable.language.js
+    # scope: variable.language.js # optional
     set: [_primary_or_block_statement__%%name%%, _arrow_operator]
 
 
