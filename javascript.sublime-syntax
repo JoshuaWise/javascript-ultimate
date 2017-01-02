@@ -704,7 +704,69 @@
         "export_statement": [
             {
                 "match": "{{b_before}}export{{b_after}}",
-                "scope": "storage.modifier.js"
+                "scope": "storage.modifier.js",
+                "set": "_export_statement_core"
+            }
+        ],
+        "_export_clause": [
+            {
+                "match": "\\}",
+                "pop": true
+            },
+            {
+                "match": "({{reserved_word}}){{to_token}}(as){{b_after}}",
+                "captures": {
+                    "1": "invalid.illegal.js",
+                    "2": "keyword.operator.js"
+                },
+                "set": "_export_clause_as"
+            },
+            {
+                "match": "{{ident}}{{to_token}}(as){{b_after}}",
+                "captures": {
+                    "1": "keyword.operator.js"
+                },
+                "set": "_export_clause_as"
+            },
+            {
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "set": "_export_clause_continue"
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "entity.other.js",
+                "set": "_export_clause_continue"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_export_clause_as": [
+            {
+                "match": "\\}",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "entity.other.js",
+                "set": "_export_clause_continue"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_export_clause_continue": [
+            {
+                "match": ",",
+                "set": "_export_clause"
+            },
+            {
+                "match": "\\}",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
             }
         ],
         "expression_until_parenthesis": [
@@ -12904,7 +12966,16 @@
             {
                 "match": "{{b_before}}(?:return|throw){{b_after}}",
                 "scope": "keyword.control.js",
-                "set": "_expression_until_end_of_statement__statement_in_block"
+                "set": [
+                    {
+                        "match": "{{space}}*+{{statement_terminator}}",
+                        "pop": true
+                    },
+                    {
+                        "match": "{{otherwise}}",
+                        "set": "_expression_until_end_of_statement__statement_in_block"
+                    }
+                ]
             }
         ],
         "_debugger_statement__statement_in_block": [
@@ -13354,7 +13425,16 @@
             {
                 "match": "{{b_before}}(?:return|throw){{b_after}}",
                 "scope": "keyword.control.js",
-                "set": "_expression_until_end_of_statement__statement_top_level"
+                "set": [
+                    {
+                        "match": "{{space}}*+{{statement_terminator}}",
+                        "pop": true
+                    },
+                    {
+                        "match": "{{otherwise}}",
+                        "set": "_expression_until_end_of_statement__statement_top_level"
+                    }
+                ]
             }
         ],
         "_debugger_statement__statement_top_level": [
@@ -13798,7 +13878,16 @@
             {
                 "match": "{{b_before}}(?:return|throw){{b_after}}",
                 "scope": "keyword.control.js",
-                "set": "_expression_until_end_of_statement__statement"
+                "set": [
+                    {
+                        "match": "{{space}}*+{{statement_terminator}}",
+                        "pop": true
+                    },
+                    {
+                        "match": "{{otherwise}}",
+                        "set": "_expression_until_end_of_statement__statement"
+                    }
+                ]
             }
         ],
         "_debugger_statement__statement": [
@@ -14120,6 +14209,84 @@
                 "set": [
                     "_end_of_statement__statement",
                     "string_literal"
+                ]
+            },
+            {
+                "match": ";",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_export_statement_core": [
+            {
+                "match": "{{space}}++"
+            },
+            {
+                "match": "{{line_terminator}}",
+                "set": [
+                    {
+                        "match": "{{non_token}}"
+                    },
+                    {
+                        "match": "{{b_before}}(?=(?:var|let|const){{b_after}})",
+                        "set": "_variable_statement__statement"
+                    },
+                    {
+                        "match": "{{b_before}}(?=class{{b_after}})",
+                        "set": "_class_declaration__statement"
+                    },
+                    {
+                        "match": "{{b_before}}(?=function{{b_after}})",
+                        "set": "_function_declaration__statement"
+                    },
+                    {
+                        "match": "{{b_before}}default{{b_after}}",
+                        "scope": "storage.modifier.js",
+                        "set": "_expression_until_end_of_statement__statement"
+                    },
+                    {
+                        "match": "{{b_before}}(?:defaul|defau|defa|def|de|d|cons|con|co|clas|cla|cl|c|functio|functi|funct|func|fun|fu|f|va|v|le|l){{to_token}}{{b_after}}"
+                    },
+                    {
+                        "match": "\\{",
+                        "set": [
+                            "_end_of_statement__statement",
+                            "_export_clause"
+                        ]
+                    },
+                    {
+                        "match": "{{otherwise}}",
+                        "pop": true
+                    }
+                ]
+            },
+            {
+                "match": "{{b_before}}(?=(?:var|let|const){{b_after}})",
+                "set": "_variable_statement__statement"
+            },
+            {
+                "match": "{{b_before}}(?=class{{b_after}})",
+                "set": "_class_declaration__statement"
+            },
+            {
+                "match": "{{b_before}}(?=function{{b_after}})",
+                "set": "_function_declaration__statement"
+            },
+            {
+                "match": "{{b_before}}default{{b_after}}",
+                "scope": "storage.modifier.js",
+                "set": "_expression_until_end_of_statement__statement"
+            },
+            {
+                "match": "{{b_before}}(?:defaul|defau|defa|def|de|d|cons|con|co|clas|cla|cl|c|functio|functi|funct|func|fun|fu|f|va|v|le|l){{to_token}}{{b_after}}"
+            },
+            {
+                "match": "\\{",
+                "set": [
+                    "_end_of_statement__statement",
+                    "_export_clause"
                 ]
             },
             {
@@ -16177,10 +16344,6 @@
         ],
         "_expression_until_end_of_statement__statement_in_block": [
             {
-                "match": "{{space}}*+{{statement_terminator}}",
-                "pop": true
-            },
-            {
                 "match": "{{otherwise}}",
                 "set": [
                     "_secondary___expression_until_end_of_statement__statement_in_block",
@@ -16349,7 +16512,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -16438,7 +16601,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -16547,7 +16710,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -16585,7 +16748,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -16616,7 +16779,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -16651,7 +16814,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -16694,7 +16857,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -16730,7 +16893,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -16769,7 +16932,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -16836,7 +16999,7 @@
         ],
         "_secondary___expression_until_end_of_statement__statement_in_block": [
             {
-                "match": "^(?={{to_token}}{{statement_keyword}})",
+                "match": "^(?={{to_token}}{{statement_keyword_all}})",
                 "pop": true
             },
             {
@@ -16941,7 +17104,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -17212,7 +17375,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -17305,7 +17468,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -17418,7 +17581,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -17460,7 +17623,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -17495,7 +17658,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -17534,7 +17697,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -17581,7 +17744,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -17621,7 +17784,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -17664,7 +17827,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -17735,7 +17898,7 @@
         ],
         "_secondary___expression_until_variable_binding__statement_in_block": [
             {
-                "match": "^(?={{to_token}}{{statement_keyword}})",
+                "match": "^(?={{to_token}}{{statement_keyword_all}})",
                 "pop": true
             },
             {
@@ -17848,7 +18011,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -17942,10 +18105,6 @@
             }
         ],
         "_expression_until_end_of_statement__statement_top_level": [
-            {
-                "match": "{{space}}*+{{statement_terminator}}",
-                "pop": true
-            },
             {
                 "match": "{{otherwise}}",
                 "set": [
@@ -18115,7 +18274,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -18204,7 +18363,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -18313,7 +18472,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -18351,7 +18510,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -18382,7 +18541,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -18417,7 +18576,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -18460,7 +18619,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -18496,7 +18655,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -18535,7 +18694,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -18602,7 +18761,7 @@
         ],
         "_secondary___expression_until_end_of_statement__statement_top_level": [
             {
-                "match": "^(?={{to_token}}{{statement_keyword}})",
+                "match": "^(?={{to_token}}{{statement_keyword_all}})",
                 "pop": true
             },
             {
@@ -18707,7 +18866,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -18978,7 +19137,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -19071,7 +19230,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -19184,7 +19343,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -19226,7 +19385,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -19261,7 +19420,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -19300,7 +19459,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -19347,7 +19506,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -19387,7 +19546,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -19430,7 +19589,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -19501,7 +19660,7 @@
         ],
         "_secondary___expression_until_variable_binding__statement_top_level": [
             {
-                "match": "^(?={{to_token}}{{statement_keyword}})",
+                "match": "^(?={{to_token}}{{statement_keyword_all}})",
                 "pop": true
             },
             {
@@ -19614,7 +19773,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -19708,10 +19867,6 @@
             }
         ],
         "_expression_until_end_of_statement__statement": [
-            {
-                "match": "{{space}}*+{{statement_terminator}}",
-                "pop": true
-            },
             {
                 "match": "{{otherwise}}",
                 "set": [
@@ -19881,7 +20036,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -19970,7 +20125,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -20079,7 +20234,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -20117,7 +20272,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -20148,7 +20303,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -20183,7 +20338,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -20226,7 +20381,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -20262,7 +20417,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -20301,7 +20456,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -20368,7 +20523,7 @@
         ],
         "_secondary___expression_until_end_of_statement__statement": [
             {
-                "match": "^(?={{to_token}}{{statement_keyword}})",
+                "match": "^(?={{to_token}}{{statement_keyword_all}})",
                 "pop": true
             },
             {
@@ -20473,7 +20628,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -20744,7 +20899,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -20837,7 +20992,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -20950,7 +21105,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -20992,7 +21147,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -21027,7 +21182,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -21066,7 +21221,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -21113,7 +21268,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -21153,7 +21308,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -21196,7 +21351,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {
@@ -21267,7 +21422,7 @@
         ],
         "_secondary___expression_until_variable_binding__statement": [
             {
-                "match": "^(?={{to_token}}{{statement_keyword}})",
+                "match": "^(?={{to_token}}{{statement_keyword_all}})",
                 "pop": true
             },
             {
@@ -21380,7 +21535,7 @@
                 "match": "{{line_terminator}}",
                 "set": [
                     {
-                        "match": "^(?={{to_token}}{{statement_keyword}})",
+                        "match": "^(?={{to_token}}{{statement_keyword_all}})",
                         "pop": true
                     },
                     {

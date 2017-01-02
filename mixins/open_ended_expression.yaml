@@ -1,7 +1,6 @@
 %%name%%:
   mixin: expression
   exitMatch: '%%exitMatch%%'
-  beforeAnything: %%beforeAnything%%
   overridePrimary:
     - match: '{{line_terminator}}'
       set:
@@ -17,7 +16,7 @@
         - include: _primary_or_block_statement__%%name%%
     %%~alternativelyLookahead%%
   catchSecondary:
-    - match: '^(?={{to_token}}{{statement_keyword}})'
+    - match: '^(?={{to_token}}{{statement_keyword_all}})'
       pop: true
   overrideSecondary:
     - match: '{{line_terminator}}'
@@ -33,70 +32,70 @@
   overrideDotReference:
     - match: '{{line_terminator}}'
       set:
-        - match: '^(?={{to_token}}{{statement_keyword}})'
+        - match: '^(?={{to_token}}{{statement_keyword_all}})'
           pop: true
         - include: _dot_reference_contents__%%name%%
     %%~alternatively%%
   overrideClassDotReference:
     - match: '{{line_terminator}}'
       set:
-        - match: '^(?={{to_token}}{{statement_keyword}})'
+        - match: '^(?={{to_token}}{{statement_keyword_all}})'
           pop: true
         - include: _class_name_deep_dot_reference__%%name%%
     %%~alternativelyLookahead%%
   overrideNewTarget:
     - match: '{{line_terminator}}'
       set:
-        - match: '^(?={{to_token}}{{statement_keyword}})'
+        - match: '^(?={{to_token}}{{statement_keyword_all}})'
           pop: true
         - include: _new_target__%%name%%
     %%~alternativelyLookahead%%
   overrideFunctionName:
     - match: '{{line_terminator}}'
       set:
-        - match: '^(?={{to_token}}{{statement_keyword}})'
+        - match: '^(?={{to_token}}{{statement_keyword_all}})'
           pop: true
         - include: _function_expression_name__%%name%%
     %%~alternativelyLookahead%%
   overrideFunctionParenthesis:
     - match: '{{line_terminator}}'
       set:
-        - match: '^(?={{to_token}}{{statement_keyword}})'
+        - match: '^(?={{to_token}}{{statement_keyword_all}})'
           pop: true
         - include: _function_expression_parenthesis__%%name%%
     %%~alternativelyLookahead%%
   overrideFunctionCurlyBracket:
     - match: '{{line_terminator}}'
       set:
-        - match: '^(?={{to_token}}{{statement_keyword}})'
+        - match: '^(?={{to_token}}{{statement_keyword_all}})'
           pop: true
         - include: _function_expression_curly_bracket__%%name%%
     %%~alternativelyLookahead%%
   overrideClassName:
     - match: '{{line_terminator}}'
       set:
-        - match: '^(?={{to_token}}{{statement_keyword}})'
+        - match: '^(?={{to_token}}{{statement_keyword_all}})'
           pop: true
         - include: _class_expression_name__%%name%%
     %%~alternativelyLookahead%%
   overrideClassCurlyBracketOrExtends:
     - match: '{{line_terminator}}'
       set:
-        - match: '^(?={{to_token}}{{statement_keyword}})'
+        - match: '^(?={{to_token}}{{statement_keyword_all}})'
           pop: true
         - include: _class_expression_curly_bracket_or_extends__%%name%%
     %%~alternativelyLookahead%%
   overrideClassCurlyBracket:
     - match: '{{line_terminator}}'
       set:
-        - match: '^(?={{to_token}}{{statement_keyword}})'
+        - match: '^(?={{to_token}}{{statement_keyword_all}})'
           pop: true
         - include: _class_expression_curly_bracket__%%name%%
     %%~alternativelyLookahead%%
   overrideClassInheritance:
     - match: '{{line_terminator}}'
       set:
-        - match: '^(?={{to_token}}{{statement_keyword}})'
+        - match: '^(?={{to_token}}{{statement_keyword_all}})'
           pop: true
         - include: _class_expression_inheritance__%%name%%
     %%~alternativelyLookahead%%

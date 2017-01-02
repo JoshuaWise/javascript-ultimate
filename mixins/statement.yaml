@@ -21,8 +21,8 @@
   - match: '{{otherwise}}'
     set: _expression_until_end_of_statement__%%name%%
 
-_expression_until_end_of_statement__%%name%%: {mixin: open_ended_expression, exitMatch: '%%statementExit%%', beforeAnything: "{match: '{{space}}*+{{statement_terminator}}', pop: true}"}
-_expression_until_variable_binding__%%name%%: {mixin: open_ended_expression, exitMatch: '%%statementExit%%', beforeAnything: '""', alternatively: {match: ',', set: _variable_statement_want_binding__%%name%%}, alternativelyLookahead: {match: '(?=,)', pop: true}}
+_expression_until_end_of_statement__%%name%%: {mixin: open_ended_expression, exitMatch: '%%statementExit%%'}
+_expression_until_variable_binding__%%name%%: {mixin: open_ended_expression, exitMatch: '%%statementExit%%', alternatively: {match: ',', set: _variable_statement_want_binding__%%name%%}, alternativelyLookahead: {match: '(?=,)', pop: true}}
 _end_of_statement__%%name%%:
   - match: '{{statement_terminator}}'
     pop: true
@@ -344,7 +344,11 @@ _goto_statement__%%name%%:
 _termination_statement__%%name%%:
   - match: '{{b_before}}(?:return|throw){{b_after}}'
     scope: keyword.control.js
-    set: _expression_until_end_of_statement__%%name%%
+    set:
+      - match: '{{space}}*+{{statement_terminator}}'
+        pop: true
+      - match: '{{otherwise}}'
+        set: _expression_until_end_of_statement__%%name%%
 
 _debugger_statement__%%name%%:
   - match: '{{b_before}}debugger{{b_after}}'

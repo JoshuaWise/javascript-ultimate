@@ -37,9 +37,9 @@ variables:
   # High-level JavaScript categories
   statement_terminator: '(?:;|{{line_terminator}})'
   ident: '(?:{{b_before}}[{{ident_start}}][{{ident_part}}]*+{{b_after}})'
-  reserved_word: (?:{{b_before}}(?:{{keyword}}|{{future_reserved_word}}|null|true|false){{b_after}})
-  statement_keyword: (?:{{b_before}}(?:import|export|var|let|const|if|with|while|do|for|switch|try|catch|finally|break|continue|case|return|throw|debugger){{b_after}})
-  statement_keyword_all: (?:{{statement_keyword}}|{{b_before}}(?:function|class|true|false|null|undefined|Infinity|NaN|this|arguments|super|new|yield|typeof|void|delete|await){{b_after}})
+  reserved_word: '(?:{{b_before}}(?:{{keyword}}|{{future_reserved_word}}|null|true|false){{b_after}})'
+  statement_keyword: '(?:{{b_before}}(?:import|export|var|let|const|if|with|while|do|for|switch|try|catch|finally|break|continue|case|return|throw|debugger){{b_after}})'
+  statement_keyword_all: '(?:{{statement_keyword}}|{{b_before}}(?:function|class|true|false|null|undefined|Infinity|NaN|this|arguments|super|new|yield|typeof|void|delete|await){{b_after}})'
   shebang: '^#!/usr/bin/env node(?:{{space}}[^{{line_terminator_chars}}]*+)?+(?={{line_terminator}}|$)'
   arrow_function_with_parenthesis: '\((?={{to_token}}(?:(?:{{ident}}|\{|\[|\.\.\.)[^)]*+)?+\){{to_token}}=>)'
   arrow_function_with_reserved_word: '{{reserved_word}}(?={{to_token}}=>)'
@@ -105,7 +105,6 @@ contexts:
   expression_until_for_statement_third_section: {mixin: expression, exitMatch: ';|(?=\))'}
   expression_until_for_binding: {mixin: expression, exitMatch: '(?=[,;)])', override: {match: '{{b_before}}(?:of|in){{b_after}}', scope: invalid.illegal.js}}
   _for_statement_first_expression: {mixin: expression, exitMatch: '(?=[;)]|{{b_before}}(?:of|in){{b_after}})'}
-
 
 
 
@@ -635,4 +634,54 @@ contexts:
   export_statement:
     - match: '{{b_before}}export{{b_after}}'
       scope: storage.modifier.js
-      # TODO
+      set: _export_statement_core
+
+  _export_statement_core:
+    mixin: want_token
+    match: '\{'
+    goto: '[_end_of_statement__statement, _export_clause]'
+    exitMatch: ';'
+    override:
+      - match: '{{b_before}}(?=(?:var|let|const){{b_after}})'
+        set: _variable_statement__statement
+      - match: '{{b_before}}(?=class{{b_after}})'
+        set: _class_declaration__statement
+      - match: '{{b_before}}(?=function{{b_after}})'
+        set: _function_declaration__statement
+      - match: '{{b_before}}default{{b_after}}'
+        scope: storage.modifier.js
+        set: _expression_until_end_of_statement__statement
+      - match: '{{b_before}}(?:defaul|defau|defa|def|de|d|cons|con|co|clas|cla|cl|c|functio|functi|funct|func|fun|fu|f|va|v|le|l){{to_token}}{{b_after}}'
+
+  _export_clause:
+    - match: '\}'
+      pop: true
+    - match: '({{reserved_word}}){{to_token}}(as){{b_after}}' # this doesn't extend through new lines
+      captures: {1: invalid.illegal.js, 2: keyword.operator.js}
+      set: _export_clause_as
+    - match: '{{ident}}{{to_token}}(as){{b_after}}' # this doesn't extend through new lines
+      captures: {1: keyword.operator.js}
+      set: _export_clause_as
+    - match: '{{reserved_word}}'
+      scope: invalid.illegal.js
+      set: _export_clause_continue
+    - match: '{{ident}}'
+      scope: entity.other.js
+      set: _export_clause_continue
+    - include: otherwise_invalid
+
+  _export_clause_as:
+    - match: '\}'
+      pop: true
+    - match: '{{ident}}'
+      scope: entity.other.js
+      set: _export_clause_continue
+    - include: otherwise_invalid
+
+  _export_clause_continue:
+    - match: ','
+      set: _export_clause
+    - match: '\}'
+      pop: true
+    - include: otherwise_invalid
+
