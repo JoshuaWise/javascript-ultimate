@@ -1,6 +1,5 @@
 {
   "name": "javascript-ultimate",
-  "version": "0.1.0",
   "description": "A superior JavaScript syntax for Sublime Text.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
