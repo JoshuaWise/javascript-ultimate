@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import sys
-import os.path as path
 import sublime
 
 userSettings = None
@@ -26,15 +24,6 @@ def plugin_unloaded():
 def disable_js_package():
     global userSettings
     disabled = userSettings.get("ignored_packages", [])
-    pathJSON = path.join("Packages", packageName, "json.sublime-syntax")
-    pathJS = path.join("Packages", packageName, "javascript.dom.sublime-syntax")
-    for window in sublime.windows():
-        for view in window.views():
-            syntax = path.basename(view.settings().get('syntax'))
-            if (syntax == "JSON.tmLanguage") or (syntax == "JSON.sublime-syntax"):
-                view.set_syntax_file(pathJSON)
-            elif (syntax == "JavaScript.tmLanguage") or (syntax == "JavaScript.sublime-syntax"):
-                view.set_syntax_file(pathJS)
     if not "JavaScript" in disabled:
         disabled.append("JavaScript")
         userSettings.set("ignored_packages", disabled)
@@ -43,21 +32,8 @@ def disable_js_package():
 def enable_js_package():
     global userSettings
     disabled = userSettings.get("ignored_packages", [])
-    pathJSON = path.join("Packages", "JavaScript", "JSON.sublime-syntax")
-    pathJS = path.join("Packages", "JavaScript", "JavaScript.sublime-syntax")
     if "JavaScript" in disabled:
         while "JavaScript" in disabled:
             disabled.remove("JavaScript")
         userSettings.set("ignored_packages", disabled)
         sublime.save_settings("Preferences.sublime-settings")
-    for window in sublime.windows():
-        for view in window.views():
-            syntaxPath = view.settings().get('syntax')
-            syntaxPackage = path.split(path.dirname(syntaxPath))[-1]
-            if syntaxPackage == packageName:
-                syntax = path.basename(syntaxPath)
-                if "json" in syntax:
-                    view.set_syntax_file(pathJSON)
-                elif "JavaScript" in syntax:
-                    view.set_syntax_file(pathJS)
-
