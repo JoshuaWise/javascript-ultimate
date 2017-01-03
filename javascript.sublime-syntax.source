@@ -157,6 +157,9 @@ contexts:
     overrideBefore:
       - match: ','
         scope: invalid.illegal.js
+      - match: '\.\.\.'
+        scope: keyword.operator.js
+        set: expression_until_comma_or_curly_bracket
       - match: '{{ident}}{{property_assignment_for_function}}'
         scope: entity.name.function.js
         pop: true
