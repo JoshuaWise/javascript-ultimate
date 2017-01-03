@@ -26,7 +26,7 @@
         "space": "[{{space_chars}}]",
         "line_terminator": "(?:\\x{000d}\\x{000a}|[{{line_terminator_chars}}])",
         "non_token": "[{{space_chars}}{{line_terminator_chars}}]++",
-        "to_token": "[{{space_chars}}{{line_terminator_chars}}]*+",
+        "to_token": "{{space}}*+",
         "token": "[^{{space_chars}}{{line_terminator_chars}}]",
         "b_before": "(?<![{{ident_part}}])",
         "b_after": "(?![{{ident_part}}])",
@@ -13275,7 +13275,7 @@
                 "scope": "keyword.control.js",
                 "set": [
                     {
-                        "match": "{{space}}*+{{statement_terminator}}",
+                        "match": "{{to_token}}{{statement_terminator}}",
                         "pop": true
                     },
                     {
@@ -13734,7 +13734,7 @@
                 "scope": "keyword.control.js",
                 "set": [
                     {
-                        "match": "{{space}}*+{{statement_terminator}}",
+                        "match": "{{to_token}}{{statement_terminator}}",
                         "pop": true
                     },
                     {
@@ -14187,7 +14187,7 @@
                 "scope": "keyword.control.js",
                 "set": [
                     {
-                        "match": "{{space}}*+{{statement_terminator}}",
+                        "match": "{{to_token}}{{statement_terminator}}",
                         "pop": true
                     },
                     {

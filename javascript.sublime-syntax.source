@@ -28,7 +28,7 @@ variables:
   space: '[{{space_chars}}]'
   line_terminator: '(?:\x{000d}\x{000a}|[{{line_terminator_chars}}])'
   non_token: '[{{space_chars}}{{line_terminator_chars}}]++'
-  to_token: '[{{space_chars}}{{line_terminator_chars}}]*+' # skip to next token
+  to_token: '{{space}}*+' # skip to next token on the same line
   token: '[^{{space_chars}}{{line_terminator_chars}}]'
   b_before: '(?<![{{ident_part}}])' # word-break before
   b_after: '(?![{{ident_part}}])' # word-break after

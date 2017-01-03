@@ -345,7 +345,7 @@ _termination_statement__%%name%%:
   - match: '{{b_before}}(?:return|throw){{b_after}}'
     scope: keyword.control.js
     set:
-      - match: '{{space}}*+{{statement_terminator}}'
+      - match: '{{to_token}}{{statement_terminator}}'
         pop: true
       - match: '{{otherwise}}'
         set: _expression_until_end_of_statement__%%name%%
