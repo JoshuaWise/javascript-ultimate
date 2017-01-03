@@ -10,12 +10,13 @@ _identifier__%%name%%:
     scope: invalid.illegal.js
     pop: true
   - match: '{{ident}}'
-    scope: variable.language.js
+    %%~identExtra%%
     pop: true
   - include: otherwise_invalid
 
 _end__%%name%%:
-  - match: '(?=%%exitMatch%%)'
+  - match: '%%exitMatch%%'
+    %%~exitExtra%%
     pop: true
   - match: '='
     scope: keyword.operator.js

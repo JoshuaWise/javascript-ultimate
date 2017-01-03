@@ -1,0 +1,59 @@
+%%name%%:
+  - match: '\{'
+    # scope: storage.modifier.js # optional
+    set: [_object_destructuring_continue__%%name%%, _object_destructuring_value__%%name%%, _object_destructuring_pattern__%%name%%]
+
+_destructuring_spread__%%name%%:
+  mixin: destructuring_spread
+  exitMatch: '\}'
+  initializer: expression_until_curly_bracket_ahead_no_comma
+  identExtra: '%%~identExtra%%'
+  # exitExtra: 'scope: storage.modifier.js' # optional
+
+_parameter_binding__%%name%%:
+  mixin: parameter_binding
+  exitMatch: '\}'
+  # exitExtra: 'scope: storage.modifier.js' # optional
+  destructuring: '%%destructuring%%'
+  overrideAfter:
+    - match: '='
+      scope: keyword.operator.js
+      set: expression_until_comma_or_curly_bracket
+    - match: ','
+      pop: true
+  overrideBefore:
+    - match: '(?=,)'
+      pop: true
+  identExtra: '%%~identExtra%%'
+
+_object_destructuring_pattern__%%name%%:
+  - match: '\}'
+    # scope: storage.modifier.js # optional
+    pop: true
+  - include: _destructuring_spread__%%name%%
+  - include: property_name_requires_colon
+  - match: '{{reserved_word}}'
+    scope: invalid.illegal.js
+    set: _after___parameter_binding__%%name%%
+  - match: '{{ident}}'
+    %%~identExtra%%
+    set: _after___parameter_binding__%%name%%
+  - include: otherwise_invalid
+
+_object_destructuring_value__%%name%%:
+  - match: '(?<=[,}])'
+    pop: true
+  - match: '{{otherwise}}'
+    set:
+      - match: '[,}]'
+        scope: invalid.illegal.js
+        pop: true
+      - match: ':'
+        set: _parameter_binding__%%name%%
+      - include: otherwise_invalid
+
+_object_destructuring_continue__%%name%%:
+  - match: '(?<=,)'
+    push: [_object_destructuring_value__%%name%%, _object_destructuring_pattern__%%name%%]
+  - match: '(?<=\})'
+    pop: true

@@ -138,7 +138,7 @@ _class_declaration_curly_bracket_or_extends__%%name%%:
 _class_declaration_want_inheritance__%%name%%:
   mixin: want_token
   match: '(?={{ident}})'
-  overrideNewline: {match: '(?={{statement_keyword_all}}|{{ident}}{{to_token}}(?!%statementExit%)[^{{{line_terminator_chars}}])', pop: true}
+  overrideNewline: {match: '(?={{statement_keyword_all}}|{{ident}}{{to_token}}(?!%%statementExit%%)[^{{{line_terminator_chars}}])', pop: true}
   override: {match: '\{', scope: invalid.illegal.js, set: _class_block}
   exitMatch: '%%statementExit%%'
   goto: '[_class_declaration_want_curly_bracket__%%name%%, _declaration_name__%%name%%]'

@@ -103,6 +103,7 @@ contexts:
   expression_until_parenthesis_ahead_no_comma: {mixin: expression, exitMatch: '(?=\))', overrideSecondary: {match: ',', scope: invalid.illegal.js}}
   expression_until_square_bracket_with_spread_or_comma_anywhere: {mixin: expression, exitMatch: '\]', overridePrimary: [{match: ',++'}, {match: '\.\.\.', scope: keyword.operator.js, set: _primary__expression_until_comma_or_square_bracket_ahead}]}
   expression_until_square_bracket_ahead_no_comma: {mixin: expression, exitMatch: '(?=\])', overrideSecondary: {match: ',', scope: invalid.illegal.js}}
+  expression_until_curly_bracket_ahead_no_comma: {mixin: expression, exitMatch: '(?=\})', overrideSecondary: {match: ',', scope: invalid.illegal.js}}
   expression_until_for_statement_third_section: {mixin: expression, exitMatch: ';|(?=\))'}
   expression_until_for_binding: {mixin: expression, exitMatch: '(?=[,;)])', override: {match: '{{b_before}}(?:of|in){{b_after}}', scope: invalid.illegal.js}}
   _for_statement_first_expression: {mixin: expression, exitMatch: '(?=[;)]|{{b_before}}(?:of|in){{b_after}})'}
@@ -116,16 +117,13 @@ contexts:
 
 
 
-  destructuring_spread_for_array_destructuring: {mixin: destructuring_spread, exitMatch: '\]', initializer: expression_until_square_bracket_ahead_no_comma}
-  destructuring_spread_for_parameter_binding_list: {mixin: destructuring_spread, exitMatch: '\)', initializer: expression_until_parenthesis_ahead_no_comma}
+  destructuring_spread_for_parameter_binding_list: {mixin: destructuring_spread, exitMatch: '(?=\))', initializer: expression_until_parenthesis_ahead_no_comma, identExtra: 'scope: variable.language.js'}
 
-  parameter_binding_until_parenthesis: {mixin: parameter_binding, exitMatch: '\)', identExtra: 'scope: variable.language.js'}
-  parameter_binding_until_parenthesis_with_initializer: {mixin: parameter_binding, exitMatch: '\)', overrideAfter: {match: '=', scope: keyword.operator.js, push: expression_until_parenthesis_ahead_no_comma}, identExtra: 'scope: variable.language.js'}
-  parameter_binding_for_object_destructuring: {mixin: parameter_binding, exitMatch: '[,}]', overrideAfter: {match: '=', scope: keyword.operator.js, set: expression_until_comma_or_curly_bracket}, identExtra: 'scope: variable.language.js'}
-  parameter_binding_for_array_destructuring: {mixin: parameter_binding, exitMatch: '\]', overrideAfter: [{match: '=', scope: keyword.operator.js, push: expression_until_comma_or_square_bracket_ahead}, {match: ',', push: __parameter_binding_for_array_destructuring}], overrideBefore: [{match: ',++'}, {include: destructuring_spread_for_array_destructuring}], identExtra: 'scope: variable.language.js'}
-  parameter_binding_list: {mixin: parameter_binding, exitMatch: '\)', overrideAfter: [{match: ',', set: parameter_binding_list}, {match: '=', scope: keyword.operator.js, push: expression_until_parameter_binding_list}], overrideBefore: {include: destructuring_spread_for_parameter_binding_list}, identExtra: 'scope: variable.language.js'}
-  variable_binding_for_for_statement: {mixin: parameter_binding, exitMatch: '(?=[,;)]|{{b_before}}(?:of|in){{b_after}})', overrideAfter: {match: '(?==)', scope: keyword.operator.js, pop: true}, overrideIdent: {match: '{{ident}}{{assignment_for_function}}', scope: entity.name.function.js, pop: true}}
-  variable_binding: {mixin: parameter_binding, exitMatch: '[^\s\S]', catchAfter: {match: '{{otherwise}}', pop: true}, overrideIdent: {match: '{{ident}}{{assignment_for_function}}', scope: entity.name.function.js, pop: true}}
+  parameter_binding_until_parenthesis: {mixin: parameter_binding, exitMatch: '\)', identExtra: 'scope: variable.language.js', destructuring: destructuring_for_parameter}
+  parameter_binding_until_parenthesis_with_initializer: {mixin: parameter_binding, exitMatch: '\)', overrideAfter: {match: '=', scope: keyword.operator.js, push: expression_until_parenthesis_ahead_no_comma}, identExtra: 'scope: variable.language.js', destructuring: destructuring_for_parameter}
+  parameter_binding_list: {mixin: parameter_binding, exitMatch: '\)', overrideAfter: [{match: ',', set: parameter_binding_list}, {match: '=', scope: keyword.operator.js, push: expression_until_parameter_binding_list}], overrideBefore: {include: destructuring_spread_for_parameter_binding_list}, identExtra: 'scope: variable.language.js', destructuring: destructuring_for_parameter}
+  variable_binding_for_for_statement: {mixin: parameter_binding, exitMatch: '(?=[,;)]|{{b_before}}(?:of|in){{b_after}})', overrideAfter: {match: '(?==)', scope: keyword.operator.js, pop: true}, overrideIdent: {match: '{{ident}}{{assignment_for_function}}', scope: entity.name.function.js, pop: true}, destructuring: destructuring_for_variable}
+  variable_binding: {mixin: parameter_binding, exitMatch: '[^\s\S]', catchAfter: {match: '{{otherwise}}', pop: true}, overrideIdent: {match: '{{ident}}{{assignment_for_function}}', scope: entity.name.function.js, pop: true}, destructuring: destructuring_for_variable}
 
   property_name_for_method: {mixin: property_name, identScope: 'entity.name.function.js'}
   property_name_requires_parenthesis_for_method: {mixin: property_name, identTail: '\(', identScope: 'entity.name.function.js'}
@@ -467,43 +465,31 @@ contexts:
 
 
 
-  object_destructuring:
-    - match: '\{'
-      set: [_object_destructuring_continue, _object_destructuring_value, _object_destructuring_pattern]
+  object_destructuring_for_parameter:
+    mixin: object_destructuring
+    identExtra: 'scope: variable.language.js'
+    destructuring: destructuring_for_parameter
 
-  array_destructuring:
-    - match: '\['
-      set: parameter_binding_for_array_destructuring
+  object_destructuring_for_variable:
+    mixin: object_destructuring
+    destructuring: destructuring_for_variable
 
-  _object_destructuring_pattern:
-    - match: '\}'
-      pop: true
-    - include: property_name_requires_colon
-    - match: '{{reserved_word}}'
-      scope: invalid.illegal.js
-      set: _after__parameter_binding_for_object_destructuring
-    - match: '{{ident}}'
-      scope: variable.language.js
-      set: _after__parameter_binding_for_object_destructuring
-    - include: otherwise_invalid
+  array_destructuring_for_parameter:
+    mixin: array_destructuring
+    identExtra: 'scope: variable.language.js'
+    destructuring: destructuring_for_parameter
 
-  _object_destructuring_value:
-    - match: '(?<=[,}])'
-      pop: true
-    - match: '{{otherwise}}'
-      set:
-        - match: '[,}]'
-          scope: invalid.illegal.js
-          pop: true
-        - match: ':'
-          set: parameter_binding_for_object_destructuring
-        - include: otherwise_invalid
+  array_destructuring_for_variable:
+    mixin: array_destructuring
+    destructuring: destructuring_for_variable
 
-  _object_destructuring_continue:
-    - match: '(?<=,)'
-      push: [_object_destructuring_value, _object_destructuring_pattern]
-    - match: '(?<=\})'
-      pop: true
+  destructuring_for_parameter:
+    - include: object_destructuring_for_parameter
+    - include: array_destructuring_for_parameter
+
+  destructuring_for_variable:
+    - include: object_destructuring_for_variable
+    - include: array_destructuring_for_variable
 
 
 
@@ -530,7 +516,7 @@ contexts:
         scope: invalid.illegal.js
         set: _import_statement_optional_addition
       - match: '{{ident}}'
-        scope: variable.language.js # optional
+        # scope: variable.language.js # optional
         set: _import_statement_optional_addition
       - include: _import_all_named
       - include: _import_named_block
@@ -566,7 +552,7 @@ contexts:
   _import_all_named_as_ident:
     mixin: want_token
     match: '{{ident}}'
-    matchExtra: 'scope: variable.language.js' # optional
+    # matchExtra: 'scope: variable.language.js' # optional
     goto: '_import_from'
     exitMatch: ';'
     overrideNewline: {match: '(?={{statement_keyword_all}}|{{ident}}{{to_token}}[^;f{{line_terminator_chars}}])', pop: true}
@@ -577,15 +563,18 @@ contexts:
 
   _import_named_block:
     - match: '\{'
+      # scope: storage.modifier.js # optional
       set: _import_named_item
 
   _import_named_item:
     - match: '\}'
+      # scope: storage.modifier.js # optional
       set: _import_from
     - match: '({{ident}}){{to_token}}(as){{b_after}}' # this doesn't extend through new lines
       captures: {1: entity.name.property.js, 2: keyword.operator.js}
       set:
         - match: '\}'
+          # scope: storage.modifier.js # optional
           set: _import_from
         - match: ','
           scope: invalid.illegal.js
@@ -594,14 +583,14 @@ contexts:
           scope: invalid.illegal.js
           set: _import_named_continue
         - match: '{{ident}}'
-          scope: variable.language.js # optional
+          # scope: variable.language.js # optional
           set: _import_named_continue
         - include: otherwise_invalid
     - match: '{{reserved_word}}'
       scope: invalid.illegal.js
       set: _import_named_continue
     - match: '{{ident}}'
-      scope: variable.language.js # optional
+      # scope: variable.language.js # optional
       set: _import_named_continue
     - include: otherwise_invalid
 
@@ -609,6 +598,7 @@ contexts:
     - match: ','
       set: _import_named_item
     - match: '\}'
+      # scope: storage.modifier.js # optional
       set: _import_from
     - include: otherwise_invalid
 

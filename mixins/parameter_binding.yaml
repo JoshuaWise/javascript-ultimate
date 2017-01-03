@@ -7,8 +7,7 @@ __%%name%%:
   %%~overrideBefore%%
   - match: '(?=%%exitMatch%%)'
     pop: true
-  - include: object_destructuring
-  - include: array_destructuring
+  - include: %%destructuring%%
   - match: '{{reserved_word}}'
     scope: invalid.illegal.js
     pop: true
@@ -23,5 +22,6 @@ _after__%%name%%:
   - match: '{{some_space}}'
   %%~overrideAfter%%
   - match: '%%exitMatch%%'
+    %%~exitExtra%%
     pop: true
   - include: otherwise_invalid
