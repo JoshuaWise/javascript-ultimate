@@ -1,6 +1,6 @@
 %YAML 1.2
 ---
-name: JavaScript Test
+name: #####{include} name#####
 file_extensions: [js, htc]
 first_line_match: '{{shebang}}'
 scope: source.js
