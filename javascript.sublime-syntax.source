@@ -42,7 +42,7 @@ variables:
   statement_keyword: '(?:{{b_before}}(?:import|export|var|let|const|if|with|while|do|for|switch|try|catch|finally|break|continue|case|return|throw|debugger){{b_after}})'
   statement_keyword_all: '(?:{{statement_keyword}}|{{b_before}}(?:function|class|async|true|false|null|undefined|Infinity|NaN|this|arguments|super|new|yield|typeof|void|delete|await){{b_after}})'
   shebang: '^#!/usr/bin/env node(?:{{space}}[^{{line_terminator_chars}}]*+)?+(?={{line_terminator}}|$)'
-  arrow_function_with_parenthesis: '(?:{{b_before}}(async){{to_token}})?+\((?={{to_token}}(?:(?:{{ident}}|\{|\[|\.\.\.)[^)]*+)?+\){{to_token}}=>)'
+  arrow_function_with_parenthesis: '(?:{{b_before}}(async){{to_token}})?+\((?={{to_token}}(?:(?:{{ident}}(?={{to_token}}[,)=])|\{|\[|\.\.\.)[^)]*+)?+\){{to_token}}=>)'
   arrow_function_with_reserved_word: '(?:{{b_before}}(async){{some_space}})?+({{reserved_word}})(?={{to_token}}=>)'
   arrow_function_with_ident: '(?:{{b_before}}(async){{some_space}})?+({{ident}})(?={{to_token}}=>)'
   assignment_for_function: '(?={{to_token}}={{to_token}}(?:(?:async{{some_space}})?+function\*?+{{to_token}}\(|{{arrow_function_with_parenthesis}}|{{arrow_function_with_reserved_word}}|{{arrow_function_with_ident}}))'
