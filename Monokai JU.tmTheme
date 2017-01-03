@@ -173,6 +173,20 @@
 				<string></string>
 			</dict>
 		</dict>
+		<!-- Custom -->
+		<dict>
+			<key>name</key>
+			<string>Bitwise</string>
+			<key>scope</key>
+			<string>keyword.operator.bitwise</string>
+			<key>settings</key>
+			<dict>
+				<key>fontStyle</key>
+				<string></string>
+				<key>foreground</key>
+				<string>#6483F2</string>
+			</dict>
+		</dict>
 		<dict>
 			<key>name</key>
 			<string>Keyword</string>
@@ -182,20 +196,6 @@
 			<dict>
 				<key>foreground</key>
 				<string>#F92672</string>
-			</dict>
-		</dict>
-		<!-- Custom -->
-		<dict>
-			<key>name</key>
-			<string>Bitwise</string>
-			<key>scope</key>
-			<string>bitwise-operator</string>
-			<key>settings</key>
-			<dict>
-				<key>fontStyle</key>
-				<string></string>
-				<key>foreground</key>
-				<string>#6483F2</string>
 			</dict>
 		</dict>
 		<dict>

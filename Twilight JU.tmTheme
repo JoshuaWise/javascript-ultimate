@@ -62,6 +62,20 @@
 				<string>#9B703F</string>
 			</dict>
 		</dict>
+		<!-- Custom -->
+		<dict>
+			<key>name</key>
+			<string>Bitwise</string>
+			<key>scope</key>
+			<string>keyword.operator.bitwise</string>
+			<key>settings</key>
+			<dict>
+				<key>fontStyle</key>
+				<string></string>
+				<key>foreground</key>
+				<string>#00AAAA</string>
+			</dict>
+		</dict>
 		<dict>
 			<key>name</key>
 			<string>Keyword</string>
@@ -73,20 +87,6 @@
 				<string></string>
 				<key>foreground</key>
 				<string>#CDA869</string>
-			</dict>
-		</dict>
-		<!-- Custom -->
-		<dict>
-			<key>name</key>
-			<string>Bitwise</string>
-			<key>scope</key>
-			<string>bitwise-operator</string>
-			<key>settings</key>
-			<dict>
-				<key>fontStyle</key>
-				<string></string>
-				<key>foreground</key>
-				<string>#00AAAA</string>
 			</dict>
 		</dict>
 		<dict>

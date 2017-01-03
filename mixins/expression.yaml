@@ -138,7 +138,7 @@ _unary_operators__%%name%%:
     scope: keyword.operator.js
     set: _primary__%%name%%
   - match: '~'
-    scope: bitwise-operator.js
+    scope: keyword.operator.bitwise.js
     set: _primary__%%name%%
 
 _function_expression__%%name%%:
@@ -286,7 +286,7 @@ _instanceof_keyword__%%name%%:
 
 _binary_operators__%%name%%:
   - match: '>>>?+=?+|<<=?+|&=|\^=|\|='
-    scope: bitwise-operator.js
+    scope: keyword.operator.bitwise.js
     set: [_secondary__%%name%%, _primary__%%name%%]
   - match: '\*\*|-=|\+=|===?+|!==?+|<=|>=|&&|\|\||\*=?+|/=|%='
     scope: keyword.operator.js
@@ -295,7 +295,7 @@ _binary_operators__%%name%%:
     scope: keyword.operator.js
     set: [_secondary__%%name%%, _primary__%%name%%]
   - match: '&|\^|~|\|'
-    scope: bitwise-operator.js
+    scope: keyword.operator.bitwise.js
     set: [_secondary__%%name%%, _primary__%%name%%]
   - match: ','
     set: [_secondary__%%name%%, _primary__%%name%%]

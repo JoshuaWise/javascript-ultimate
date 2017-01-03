@@ -1008,7 +1008,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary__expression_until_parenthesis"
             }
         ],
@@ -1264,7 +1264,7 @@
         "_binary_operators__expression_until_parenthesis": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_parenthesis",
                     "_primary__expression_until_parenthesis"
@@ -1288,7 +1288,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_parenthesis",
                     "_primary__expression_until_parenthesis"
@@ -1670,7 +1670,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary__expression_until_square_bracket"
             }
         ],
@@ -1926,7 +1926,7 @@
         "_binary_operators__expression_until_square_bracket": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_square_bracket",
                     "_primary__expression_until_square_bracket"
@@ -1950,7 +1950,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_square_bracket",
                     "_primary__expression_until_square_bracket"
@@ -2332,7 +2332,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary__expression_until_colon"
             }
         ],
@@ -2588,7 +2588,7 @@
         "_binary_operators__expression_until_colon": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_colon",
                     "_primary__expression_until_colon"
@@ -2612,7 +2612,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_colon",
                     "_primary__expression_until_colon"
@@ -2994,7 +2994,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary__expression_until_curly_bracket_ahead_or_colon"
             }
         ],
@@ -3250,7 +3250,7 @@
         "_binary_operators__expression_until_curly_bracket_ahead_or_colon": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_curly_bracket_ahead_or_colon",
                     "_primary__expression_until_curly_bracket_ahead_or_colon"
@@ -3274,7 +3274,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_curly_bracket_ahead_or_colon",
                     "_primary__expression_until_curly_bracket_ahead_or_colon"
@@ -3656,7 +3656,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary__expression_until_end_of_template_interpolation"
             }
         ],
@@ -3913,7 +3913,7 @@
         "_binary_operators__expression_until_end_of_template_interpolation": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_end_of_template_interpolation",
                     "_primary__expression_until_end_of_template_interpolation"
@@ -3937,7 +3937,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_end_of_template_interpolation",
                     "_primary__expression_until_end_of_template_interpolation"
@@ -4320,7 +4320,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary__expression_until_comma_or_curly_bracket"
             }
         ],
@@ -4576,7 +4576,7 @@
         "_binary_operators__expression_until_comma_or_curly_bracket": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_comma_or_curly_bracket",
                     "_primary__expression_until_comma_or_curly_bracket"
@@ -4600,7 +4600,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_comma_or_curly_bracket",
                     "_primary__expression_until_comma_or_curly_bracket"
@@ -4982,7 +4982,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary__expression_until_comma_or_square_bracket_ahead"
             }
         ],
@@ -5238,7 +5238,7 @@
         "_binary_operators__expression_until_comma_or_square_bracket_ahead": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_comma_or_square_bracket_ahead",
                     "_primary__expression_until_comma_or_square_bracket_ahead"
@@ -5262,7 +5262,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_comma_or_square_bracket_ahead",
                     "_primary__expression_until_comma_or_square_bracket_ahead"
@@ -5644,7 +5644,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary__expression_until_parameter_binding_list"
             }
         ],
@@ -5904,7 +5904,7 @@
         "_binary_operators__expression_until_parameter_binding_list": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_parameter_binding_list",
                     "_primary__expression_until_parameter_binding_list"
@@ -5928,7 +5928,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_parameter_binding_list",
                     "_primary__expression_until_parameter_binding_list"
@@ -6320,7 +6320,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary__expression_until_parenthesis_with_spread"
             }
         ],
@@ -6580,7 +6580,7 @@
         "_binary_operators__expression_until_parenthesis_with_spread": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_parenthesis_with_spread",
                     "_primary__expression_until_parenthesis_with_spread"
@@ -6604,7 +6604,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_parenthesis_with_spread",
                     "_primary__expression_until_parenthesis_with_spread"
@@ -6986,7 +6986,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary__expression_until_parenthesis_no_comma"
             }
         ],
@@ -7246,7 +7246,7 @@
         "_binary_operators__expression_until_parenthesis_no_comma": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_parenthesis_no_comma",
                     "_primary__expression_until_parenthesis_no_comma"
@@ -7270,7 +7270,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_parenthesis_no_comma",
                     "_primary__expression_until_parenthesis_no_comma"
@@ -7652,7 +7652,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary__expression_until_parenthesis_ahead_no_comma"
             }
         ],
@@ -7912,7 +7912,7 @@
         "_binary_operators__expression_until_parenthesis_ahead_no_comma": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_parenthesis_ahead_no_comma",
                     "_primary__expression_until_parenthesis_ahead_no_comma"
@@ -7936,7 +7936,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_parenthesis_ahead_no_comma",
                     "_primary__expression_until_parenthesis_ahead_no_comma"
@@ -8334,7 +8334,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary__expression_until_square_bracket_with_spread_or_comma_anywhere"
             }
         ],
@@ -8590,7 +8590,7 @@
         "_binary_operators__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_square_bracket_with_spread_or_comma_anywhere",
                     "_primary__expression_until_square_bracket_with_spread_or_comma_anywhere"
@@ -8614,7 +8614,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_square_bracket_with_spread_or_comma_anywhere",
                     "_primary__expression_until_square_bracket_with_spread_or_comma_anywhere"
@@ -8996,7 +8996,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary__expression_until_square_bracket_ahead_no_comma"
             }
         ],
@@ -9256,7 +9256,7 @@
         "_binary_operators__expression_until_square_bracket_ahead_no_comma": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_square_bracket_ahead_no_comma",
                     "_primary__expression_until_square_bracket_ahead_no_comma"
@@ -9280,7 +9280,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_square_bracket_ahead_no_comma",
                     "_primary__expression_until_square_bracket_ahead_no_comma"
@@ -9662,7 +9662,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary__expression_until_for_statement_third_section"
             }
         ],
@@ -9918,7 +9918,7 @@
         "_binary_operators__expression_until_for_statement_third_section": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_for_statement_third_section",
                     "_primary__expression_until_for_statement_third_section"
@@ -9942,7 +9942,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_for_statement_third_section",
                     "_primary__expression_until_for_statement_third_section"
@@ -10332,7 +10332,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary__expression_until_for_binding"
             }
         ],
@@ -10592,7 +10592,7 @@
         "_binary_operators__expression_until_for_binding": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_for_binding",
                     "_primary__expression_until_for_binding"
@@ -10616,7 +10616,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary__expression_until_for_binding",
                     "_primary__expression_until_for_binding"
@@ -10998,7 +10998,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary___for_statement_first_expression"
             }
         ],
@@ -11254,7 +11254,7 @@
         "_binary_operators___for_statement_first_expression": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary___for_statement_first_expression",
                     "_primary___for_statement_first_expression"
@@ -11278,7 +11278,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary___for_statement_first_expression",
                     "_primary___for_statement_first_expression"
@@ -16543,7 +16543,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary___expression_until_end_of_statement__statement_in_block"
             }
         ],
@@ -16906,7 +16906,7 @@
         "_binary_operators___expression_until_end_of_statement__statement_in_block": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary___expression_until_end_of_statement__statement_in_block",
                     "_primary___expression_until_end_of_statement__statement_in_block"
@@ -16930,7 +16930,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary___expression_until_end_of_statement__statement_in_block",
                     "_primary___expression_until_end_of_statement__statement_in_block"
@@ -17404,7 +17404,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary___expression_until_variable_binding__statement_in_block"
             }
         ],
@@ -17803,7 +17803,7 @@
         "_binary_operators___expression_until_variable_binding__statement_in_block": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary___expression_until_variable_binding__statement_in_block",
                     "_primary___expression_until_variable_binding__statement_in_block"
@@ -17827,7 +17827,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary___expression_until_variable_binding__statement_in_block",
                     "_primary___expression_until_variable_binding__statement_in_block"
@@ -18285,7 +18285,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary___expression_until_end_of_statement__statement_top_level"
             }
         ],
@@ -18648,7 +18648,7 @@
         "_binary_operators___expression_until_end_of_statement__statement_top_level": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary___expression_until_end_of_statement__statement_top_level",
                     "_primary___expression_until_end_of_statement__statement_top_level"
@@ -18672,7 +18672,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary___expression_until_end_of_statement__statement_top_level",
                     "_primary___expression_until_end_of_statement__statement_top_level"
@@ -19146,7 +19146,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary___expression_until_variable_binding__statement_top_level"
             }
         ],
@@ -19545,7 +19545,7 @@
         "_binary_operators___expression_until_variable_binding__statement_top_level": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary___expression_until_variable_binding__statement_top_level",
                     "_primary___expression_until_variable_binding__statement_top_level"
@@ -19569,7 +19569,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary___expression_until_variable_binding__statement_top_level",
                     "_primary___expression_until_variable_binding__statement_top_level"
@@ -20027,7 +20027,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary___expression_until_end_of_statement__statement"
             }
         ],
@@ -20390,7 +20390,7 @@
         "_binary_operators___expression_until_end_of_statement__statement": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary___expression_until_end_of_statement__statement",
                     "_primary___expression_until_end_of_statement__statement"
@@ -20414,7 +20414,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary___expression_until_end_of_statement__statement",
                     "_primary___expression_until_end_of_statement__statement"
@@ -20888,7 +20888,7 @@
             },
             {
                 "match": "~",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": "_primary___expression_until_variable_binding__statement"
             }
         ],
@@ -21287,7 +21287,7 @@
         "_binary_operators___expression_until_variable_binding__statement": [
             {
                 "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary___expression_until_variable_binding__statement",
                     "_primary___expression_until_variable_binding__statement"
@@ -21311,7 +21311,7 @@
             },
             {
                 "match": "&|\\^|~|\\|",
-                "scope": "bitwise-operator.js",
+                "scope": "keyword.operator.bitwise.js",
                 "set": [
                     "_secondary___expression_until_variable_binding__statement",
                     "_primary___expression_until_variable_binding__statement"

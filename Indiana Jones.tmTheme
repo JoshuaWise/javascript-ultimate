@@ -131,6 +131,19 @@ Released under the MIT License <http://opensource.org/licenses/MIT>
 		</dict>
 		<dict>
 			<key>name</key>
+			<string>Bitwise</string>
+			<key>scope</key>
+			<string>keyword.operator.bitwise</string>
+			<key>settings</key>
+			<dict>
+				<key>fontStyle</key>
+				<string>bold</string>
+				<key>foreground</key>
+				<string>#435b93</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
 			<string>Keyword</string>
 			<key>scope</key>
 			<string>keyword, markup.changed, keyword.other.important.css</string>
@@ -140,19 +153,6 @@ Released under the MIT License <http://opensource.org/licenses/MIT>
 				<string></string>
 				<key>foreground</key>
 				<string>#ff9a47</string><!-- FC803D --><!-- ff9a47 --><!-- ffa347 -->
-			</dict>
-		</dict>
-		<dict>
-			<key>name</key>
-			<string>Bitwise</string>
-			<key>scope</key>
-			<string>bitwise-operator</string>
-			<key>settings</key>
-			<dict>
-				<key>fontStyle</key>
-				<string>bold</string>
-				<key>foreground</key>
-				<string>#435b93</string>
 			</dict>
 		</dict>
 		<dict>

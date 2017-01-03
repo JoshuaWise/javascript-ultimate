@@ -105,6 +105,19 @@
 		</dict>
 		<dict>
 			<key>name</key>
+			<string>Bitwise</string>
+			<key>scope</key>
+			<string>keyword.operator.bitwise, keyword.other.important.css</string>
+			<key>settings</key>
+			<dict>
+				<key>fontStyle</key>
+				<string></string>
+				<key>foreground</key>
+				<string>#8833DD</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
 			<string>Keyword</string>
 			<key>scope</key>
 			<string>keyword, entity.other.attribute-name.pseudo-element.css, entity.other.attribute-name.pseudo-element.stylus, entity.other.attribute-name.pseudo-class.css, entity.other.attribute-name.pseudo-class.stylus, entity.other.attribute-name.pseudo-class.scss, source.sass entity.other.attribute-name.tag.pseudo-class, source.css keyword.control.at-rule, source.scss meta.at-rule</string>
@@ -114,19 +127,6 @@
 				<string></string>
 				<key>foreground</key>
 				<string>#DE8630</string>
-			</dict>
-		</dict>
-		<dict>
-			<key>name</key>
-			<string>Bitwise</string>
-			<key>scope</key>
-			<string>bitwise-operator, keyword.other.important.css</string>
-			<key>settings</key>
-			<dict>
-				<key>fontStyle</key>
-				<string></string>
-				<key>foreground</key>
-				<string>#8833DD</string>
 			</dict>
 		</dict>
 		<dict>
