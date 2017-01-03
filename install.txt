@@ -1,6 +1,6 @@
 JavaScript Ultimate is now installed!
 
-If you have "Better JavaScript" installed, you need to uninstall that immediately,
+If you have "JavaScriptNext" or "Better JavaScript" installed, you need to uninstall that immediately,
 or things won't work properly.
 
 Regardless, you need to restart Sublime Text to finish installation.
