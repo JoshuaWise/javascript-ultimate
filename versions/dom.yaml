@@ -1,4 +1,4 @@
-name: JavaScript Test (DOM)
+name: JavaScript (DOM)
 
 library_identifier_reference:
   - match: '{{b_before}}(?>Audio(?>Context)?|Blob|C(?>omment|SS|ustomEvent)|D(?>ocumentFragment|OM(?>Error|Parser))|Event|F(?>ile(?>Reader)?|ormData)|Image(?>Data)?|L10n|M(?>ediaSource|utationObserver)|Notification|O(?>fflineAudioContext|ption)|Path2D|Range|SharedWorker|Text(?>Decoder|Encoder)?|URL|W(?>ebSocket|orker)|XMLHttpRequest){{b_after}}'

@@ -1,7 +1,7 @@
 %YAML 1.2
 ---
 {
-    "name": "JavaScript Test (DOM)",
+    "name": "JavaScript (DOM)",
     "file_extensions": [
         "js",
         "htc"

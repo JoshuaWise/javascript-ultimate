@@ -4,7 +4,8 @@
 Although Sublime Text's built-in JavaScript language definition have made *significant* improvements recently, it's still not perfect. JavaScript Ultimate aims to be a perfectly accurate (to-the-spec) language definition for JavaScript.
 
 Here are some of the improvements that it makes:
-* Complete and accurate ES2016 support
+* More accurate to the JavaScript specification
+* Complete ES2016 support
 * JavaDoc support
 * Context-awareness (capable of highlighting errors or mistakes in your code)
 
