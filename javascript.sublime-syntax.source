@@ -114,6 +114,7 @@ contexts:
 
 
 
+
   destructuring_spread_for_array_destructuring: {mixin: destructuring_spread, exitMatch: '\]', initializer: expression_until_square_bracket_ahead_no_comma}
   destructuring_spread_for_parameter_binding_list: {mixin: destructuring_spread, exitMatch: '\)', initializer: expression_until_parenthesis_ahead_no_comma}
 
