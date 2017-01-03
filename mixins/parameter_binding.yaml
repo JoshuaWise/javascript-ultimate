@@ -3,7 +3,7 @@
     set: [_after__%%name%%, __%%name%%]
 
 __%%name%%:
-  - match: '{{space}}++'
+  - match: '{{some_space}}'
   %%~overrideBefore%%
   - match: '(?=%%exitMatch%%)'
     pop: true
@@ -20,7 +20,7 @@ __%%name%%:
 
 _after__%%name%%:
   %%~catchAfter%%
-  - match: '{{space}}++'
+  - match: '{{some_space}}'
   %%~overrideAfter%%
   - match: '%%exitMatch%%'
     pop: true

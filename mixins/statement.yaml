@@ -37,7 +37,7 @@ _variable_statement__%%name%%:
 _variable_statement_want_binding__%%name%%:
   mixin: want_token
   match: '(?=\{|\[|{{ident}})'
-  overrideNewline: {match: '(?={{statement_keyword_all}})', pop: true}
+  overrideNewline: {match: '(?={{statement_keyword_all}}|{{ident}}{{to_token}}(?!%%statementExit%%)[^=,{{line_terminator_chars}}])', pop: true}
   exitMatch: '%%statementExit%%'
   goto: '[_variable_initializer__%%name%%, variable_binding]'
 
@@ -78,14 +78,14 @@ _variable_statement_continue__%%name%%:
     set: _variable_statement_want_binding__%%name%%
 
 _function_declaration__%%name%%:
-  - match: '{{b_before}}(function)(?:(\*)|{{b_after}})'
-    captures: {1: storage.type.js, 2: keyword.operator.js}
+  - match: '{{b_before}}(?:(async){{some_space}})?+(function)(?:(\*)|{{b_after}})'
+    captures: {1: storage.modifier.js, 2: storage.type.js, 3: keyword.operator.js}
     set: _function_declaration_want_name__%%name%%
 
 _function_declaration_want_name__%%name%%:
   mixin: want_token
   match: '(?={{ident}})'
-  overrideNewline: {match: '(?={{statement_keyword_all}})', pop: true}
+  overrideNewline: {match: '(?={{statement_keyword_all}}|{{ident}}{{to_token}}(?!%%statementExit%%)[^({{line_terminator_chars}}])', pop: true}
   exitMatch: '%%statementExit%%'
   goto: '[_function_declaration_want_parenthesis__%%name%%, _declaration_name__%%name%%]'
 
@@ -117,7 +117,7 @@ _class_declaration__%%name%%:
 _class_declaration_want_name__%%name%%:
   mixin: want_token
   match: '(?={{ident}})'
-  overrideNewline: {match: '(?={{statement_keyword_all}})', pop: true}
+  overrideNewline: {match: '(?={{statement_keyword_all}}|{{ident}}{{to_token}}(?!%%statementExit%%)[^{e{{line_terminator_chars}}])', pop: true}
   exitMatch: '%%statementExit%%'
   goto: '[_class_declaration_want_curly_bracket_or_extends__%%name%%, _declaration_name__%%name%%]'
 
@@ -138,7 +138,7 @@ _class_declaration_curly_bracket_or_extends__%%name%%:
 _class_declaration_want_inheritance__%%name%%:
   mixin: want_token
   match: '(?={{ident}})'
-  overrideNewline: {match: '(?={{statement_keyword_all}})', pop: true}
+  overrideNewline: {match: '(?={{statement_keyword_all}}|{{ident}}{{to_token}}(?!%statementExit%)[^{{{line_terminator_chars}}])', pop: true}
   override: {match: '\{', scope: invalid.illegal.js, set: _class_block}
   exitMatch: '%%statementExit%%'
   goto: '[_class_declaration_want_curly_bracket__%%name%%, _declaration_name__%%name%%]'

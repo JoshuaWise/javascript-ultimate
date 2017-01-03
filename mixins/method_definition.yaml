@@ -3,15 +3,19 @@
     set: [_continue__%%name%%, _main__%%name%%]
 
 _parts__%%name%%:
+  %%~overrideBefore%%
   - match: '%%exitMatch%%'
     pop: true
   - match: '\*'
     scope: keyword.operator.js
     set: [_finish_method__%%name%%, _need_property_name_for_method__%%name%%]
-  - match: '{{b_before}}get{{b_after}}'
+  - match: '{{b_before}}async{{b_after}}(?={{to_token}}(?!\(|%%exitMatch%%|{{line_terminator}}))'
+    scope: storage.modifier.js
+    set: [_finish_method__%%name%%, _need_property_name_for_method__%%name%%]
+  - match: '{{b_before}}get{{b_after}}(?={{to_token}}(?!\(|%%exitMatch%%|{{line_terminator}}))' # this doesn't extend through new lines
     scope: storage.type.js
     set: [_finish_getter__%%name%%, _need_property_name_for_method__%%name%%]
-  - match: '{{b_before}}set{{b_after}}'
+  - match: '{{b_before}}set{{b_after}}(?={{to_token}}(?!\(|%%exitMatch%%|{{line_terminator}}))' # this doesn't extend through new lines
     scope: storage.type.js
     set: [_finish_setter__%%name%%, _need_property_name_for_method__%%name%%]
   - include: property_name_requires_parenthesis_for_method
@@ -20,7 +24,7 @@ _parts__%%name%%:
 
 _main__%%name%%:
   - match: '{{non_token}}'
-  %%~overrideBefore%%
+  %%~overrideNonRecurring%%
   - include: _parts__%%name%%
 
 _continue__%%name%%:

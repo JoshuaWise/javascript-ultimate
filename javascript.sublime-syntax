@@ -17,8 +17,8 @@
         "ident_part": "{{unicode_id_continue}}\\x{200C}\\x{200D}_$\\\\",
         "space_chars": "\\x{0020}\\x{0009}\\x{000B}\\x{000C}\\x{00A0}\\x{FEFF}\\p{Zs}",
         "line_terminator_chars": "\\x{000a}\\x{000d}\\x{2028}\\x{2029}",
-        "keyword": "(?:break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|function|if|import|in|instanceof|new|return|super|switch|this|throw|try|typeof|var|void|while|with|yield|let|of|static)",
-        "future_reserved_word": "(?:enum|await|implements|interface|package|private|protected|public)",
+        "keyword": "(?:break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|function|if|import|in|instanceof|new|return|super|switch|this|throw|try|typeof|var|void|while|with|yield|let|of|static|await)",
+        "future_reserved_word": "(?:enum|implements|interface|package|private|protected|public)",
         "hex_escape_sequence": "(?:x\\h{2})",
         "unicode_escape_sequence": "(?:u\\h{4}|u\\{\\h++\\})",
         "common_regexp_escape_sequences": "(?:{{hex_escape_sequence}}|{{unicode_escape_sequence}}|c[a-zA-Z]|0(?![0-9])|[1-9][0-9]*+)",
@@ -26,6 +26,7 @@
         "space": "[{{space_chars}}]",
         "line_terminator": "(?:\\x{000d}\\x{000a}|[{{line_terminator_chars}}])",
         "non_token": "[{{space_chars}}{{line_terminator_chars}}]++",
+        "some_space": "{{space}}++",
         "to_token": "{{space}}*+",
         "token": "[^{{space_chars}}{{line_terminator_chars}}]",
         "b_before": "(?<![{{ident_part}}])",
@@ -35,13 +36,13 @@
         "ident": "(?:{{b_before}}[{{ident_start}}][{{ident_part}}]*+{{b_after}})",
         "reserved_word": "(?:{{b_before}}(?:{{keyword}}|{{future_reserved_word}}|null|true|false){{b_after}})",
         "statement_keyword": "(?:{{b_before}}(?:import|export|var|let|const|if|with|while|do|for|switch|try|catch|finally|break|continue|case|return|throw|debugger){{b_after}})",
-        "statement_keyword_all": "(?:{{statement_keyword}}|{{b_before}}(?:function|class|true|false|null|undefined|Infinity|NaN|this|arguments|super|new|yield|typeof|void|delete|await){{b_after}})",
+        "statement_keyword_all": "(?:{{statement_keyword}}|{{b_before}}(?:function|class|async|true|false|null|undefined|Infinity|NaN|this|arguments|super|new|yield|typeof|void|delete|await){{b_after}})",
         "shebang": "^#!/usr/bin/env node(?:{{space}}[^{{line_terminator_chars}}]*+)?+(?={{line_terminator}}|$)",
-        "arrow_function_with_parenthesis": "\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
-        "arrow_function_with_reserved_word": "{{reserved_word}}(?={{to_token}}=>)",
-        "arrow_function_with_ident": "{{ident}}(?={{to_token}}=>)",
-        "assignment_for_function": "(?={{to_token}}={{to_token}}(?:function\\*?+{{to_token}}\\(|{{arrow_function_with_parenthesis}}|{{arrow_function_with_reserved_word}}|{{arrow_function_with_ident}}))",
-        "property_assignment_for_function": "(?={{to_token}}:{{to_token}}(?:function\\*?+{{to_token}}\\(|{{arrow_function_with_parenthesis}}|{{arrow_function_with_reserved_word}}|{{arrow_function_with_ident}}))"
+        "arrow_function_with_parenthesis": "(?:{{b_before}}(async){{to_token}})?+\\((?={{to_token}}(?:(?:{{ident}}|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
+        "arrow_function_with_reserved_word": "(?:{{b_before}}(async){{some_space}})?+({{reserved_word}})(?={{to_token}}=>)",
+        "arrow_function_with_ident": "(?:{{b_before}}(async){{some_space}})?+({{ident}})(?={{to_token}}=>)",
+        "assignment_for_function": "(?={{to_token}}={{to_token}}(?:(?:async{{some_space}})?+function\\*?+{{to_token}}\\(|{{arrow_function_with_parenthesis}}|{{arrow_function_with_reserved_word}}|{{arrow_function_with_ident}}))",
+        "property_assignment_for_function": "(?={{to_token}}:{{to_token}}(?:(?:async{{some_space}})?+function\\*?+{{to_token}}\\(|{{arrow_function_with_parenthesis}}|{{arrow_function_with_reserved_word}}|{{arrow_function_with_ident}}))"
     },
     "contexts": {
         "prototype": [
@@ -482,8 +483,10 @@
         ],
         "_optional_postfix_operator": [
             {
-                "match": "--|\\+\\+",
-                "scope": "keyword.operator.js",
+                "match": "{{to_token}}(--|\\+\\+)",
+                "captures": {
+                    "1": "keyword.operator.js"
+                },
                 "pop": true
             },
             {
@@ -790,7 +793,7 @@
         ],
         "_primary__expression_until_parenthesis": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -811,7 +814,7 @@
         ],
         "_primary_or_block_statement__expression_until_parenthesis": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -840,7 +843,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=\\))",
@@ -859,7 +862,7 @@
         ],
         "_new_target__expression_until_parenthesis": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -885,7 +888,7 @@
         ],
         "_class_name_shallow__expression_until_parenthesis": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -914,7 +917,7 @@
         ],
         "_class_name_deep__expression_until_parenthesis": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -936,7 +939,7 @@
         ],
         "_class_name_deep_dot_reference__expression_until_parenthesis": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -957,7 +960,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=\\))",
@@ -986,7 +989,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=\\))",
@@ -1014,17 +1017,18 @@
         ],
         "_function_expression__expression_until_parenthesis": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name__expression_until_parenthesis"
             }
         ],
         "_function_expression_name__expression_until_parenthesis": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -1050,7 +1054,7 @@
         ],
         "_function_expression_parenthesis__expression_until_parenthesis": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -1069,7 +1073,7 @@
         ],
         "_function_expression_curly_bracket__expression_until_parenthesis": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -1092,7 +1096,7 @@
         ],
         "_class_expression_name__expression_until_parenthesis": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -1123,7 +1127,7 @@
         ],
         "_class_expression_curly_bracket_or_extends__expression_until_parenthesis": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -1147,7 +1151,7 @@
         ],
         "_class_expression_inheritance__expression_until_parenthesis": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -1174,7 +1178,7 @@
         ],
         "_class_expression_curly_bracket__expression_until_parenthesis": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -1191,6 +1195,9 @@
         "_arrow_function_expression__expression_until_parenthesis": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_parenthesis",
                     "_arrow_operator",
@@ -1199,7 +1206,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_parenthesis",
                     "_arrow_operator"
@@ -1207,6 +1217,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_parenthesis",
                     "_arrow_operator"
@@ -1238,7 +1251,7 @@
         ],
         "_secondary__expression_until_parenthesis": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "\\)",
@@ -1310,7 +1323,7 @@
         ],
         "_dot_reference_contents__expression_until_parenthesis": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "\\)",
@@ -1452,7 +1465,7 @@
         ],
         "_primary__expression_until_square_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -1473,7 +1486,7 @@
         ],
         "_primary_or_block_statement__expression_until_square_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -1502,7 +1515,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=\\])",
@@ -1521,7 +1534,7 @@
         ],
         "_new_target__expression_until_square_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -1547,7 +1560,7 @@
         ],
         "_class_name_shallow__expression_until_square_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -1576,7 +1589,7 @@
         ],
         "_class_name_deep__expression_until_square_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -1598,7 +1611,7 @@
         ],
         "_class_name_deep_dot_reference__expression_until_square_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -1619,7 +1632,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=\\])",
@@ -1648,7 +1661,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=\\])",
@@ -1676,17 +1689,18 @@
         ],
         "_function_expression__expression_until_square_bracket": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name__expression_until_square_bracket"
             }
         ],
         "_function_expression_name__expression_until_square_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -1712,7 +1726,7 @@
         ],
         "_function_expression_parenthesis__expression_until_square_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -1731,7 +1745,7 @@
         ],
         "_function_expression_curly_bracket__expression_until_square_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -1754,7 +1768,7 @@
         ],
         "_class_expression_name__expression_until_square_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -1785,7 +1799,7 @@
         ],
         "_class_expression_curly_bracket_or_extends__expression_until_square_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -1809,7 +1823,7 @@
         ],
         "_class_expression_inheritance__expression_until_square_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -1836,7 +1850,7 @@
         ],
         "_class_expression_curly_bracket__expression_until_square_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -1853,6 +1867,9 @@
         "_arrow_function_expression__expression_until_square_bracket": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_square_bracket",
                     "_arrow_operator",
@@ -1861,7 +1878,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_square_bracket",
                     "_arrow_operator"
@@ -1869,6 +1889,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_square_bracket",
                     "_arrow_operator"
@@ -1900,7 +1923,7 @@
         ],
         "_secondary__expression_until_square_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "\\]",
@@ -1972,7 +1995,7 @@
         ],
         "_dot_reference_contents__expression_until_square_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "\\]",
@@ -2114,7 +2137,7 @@
         ],
         "_primary__expression_until_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:)",
@@ -2135,7 +2158,7 @@
         ],
         "_primary_or_block_statement__expression_until_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:)",
@@ -2164,7 +2187,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=:)",
@@ -2183,7 +2206,7 @@
         ],
         "_new_target__expression_until_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:)",
@@ -2209,7 +2232,7 @@
         ],
         "_class_name_shallow__expression_until_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:)",
@@ -2238,7 +2261,7 @@
         ],
         "_class_name_deep__expression_until_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:)",
@@ -2260,7 +2283,7 @@
         ],
         "_class_name_deep_dot_reference__expression_until_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:)",
@@ -2281,7 +2304,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=:)",
@@ -2310,7 +2333,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=:)",
@@ -2338,17 +2361,18 @@
         ],
         "_function_expression__expression_until_colon": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name__expression_until_colon"
             }
         ],
         "_function_expression_name__expression_until_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:)",
@@ -2374,7 +2398,7 @@
         ],
         "_function_expression_parenthesis__expression_until_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:)",
@@ -2393,7 +2417,7 @@
         ],
         "_function_expression_curly_bracket__expression_until_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:)",
@@ -2416,7 +2440,7 @@
         ],
         "_class_expression_name__expression_until_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:)",
@@ -2447,7 +2471,7 @@
         ],
         "_class_expression_curly_bracket_or_extends__expression_until_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:)",
@@ -2471,7 +2495,7 @@
         ],
         "_class_expression_inheritance__expression_until_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:)",
@@ -2498,7 +2522,7 @@
         ],
         "_class_expression_curly_bracket__expression_until_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:)",
@@ -2515,6 +2539,9 @@
         "_arrow_function_expression__expression_until_colon": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_colon",
                     "_arrow_operator",
@@ -2523,7 +2550,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_colon",
                     "_arrow_operator"
@@ -2531,6 +2561,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_colon",
                     "_arrow_operator"
@@ -2562,7 +2595,7 @@
         ],
         "_secondary__expression_until_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ":",
@@ -2634,7 +2667,7 @@
         ],
         "_dot_reference_contents__expression_until_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ":",
@@ -2776,7 +2809,7 @@
         ],
         "_primary__expression_until_curly_bracket_ahead_or_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:|(?=\\}))",
@@ -2797,7 +2830,7 @@
         ],
         "_primary_or_block_statement__expression_until_curly_bracket_ahead_or_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:|(?=\\}))",
@@ -2826,7 +2859,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=:|(?=\\}))",
@@ -2845,7 +2878,7 @@
         ],
         "_new_target__expression_until_curly_bracket_ahead_or_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:|(?=\\}))",
@@ -2871,7 +2904,7 @@
         ],
         "_class_name_shallow__expression_until_curly_bracket_ahead_or_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:|(?=\\}))",
@@ -2900,7 +2933,7 @@
         ],
         "_class_name_deep__expression_until_curly_bracket_ahead_or_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:|(?=\\}))",
@@ -2922,7 +2955,7 @@
         ],
         "_class_name_deep_dot_reference__expression_until_curly_bracket_ahead_or_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:|(?=\\}))",
@@ -2943,7 +2976,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=:|(?=\\}))",
@@ -2972,7 +3005,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=:|(?=\\}))",
@@ -3000,17 +3033,18 @@
         ],
         "_function_expression__expression_until_curly_bracket_ahead_or_colon": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name__expression_until_curly_bracket_ahead_or_colon"
             }
         ],
         "_function_expression_name__expression_until_curly_bracket_ahead_or_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:|(?=\\}))",
@@ -3036,7 +3070,7 @@
         ],
         "_function_expression_parenthesis__expression_until_curly_bracket_ahead_or_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:|(?=\\}))",
@@ -3055,7 +3089,7 @@
         ],
         "_function_expression_curly_bracket__expression_until_curly_bracket_ahead_or_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:|(?=\\}))",
@@ -3078,7 +3112,7 @@
         ],
         "_class_expression_name__expression_until_curly_bracket_ahead_or_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:|(?=\\}))",
@@ -3109,7 +3143,7 @@
         ],
         "_class_expression_curly_bracket_or_extends__expression_until_curly_bracket_ahead_or_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:|(?=\\}))",
@@ -3133,7 +3167,7 @@
         ],
         "_class_expression_inheritance__expression_until_curly_bracket_ahead_or_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:|(?=\\}))",
@@ -3160,7 +3194,7 @@
         ],
         "_class_expression_curly_bracket__expression_until_curly_bracket_ahead_or_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=:|(?=\\}))",
@@ -3177,6 +3211,9 @@
         "_arrow_function_expression__expression_until_curly_bracket_ahead_or_colon": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_curly_bracket_ahead_or_colon",
                     "_arrow_operator",
@@ -3185,7 +3222,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_curly_bracket_ahead_or_colon",
                     "_arrow_operator"
@@ -3193,6 +3233,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_curly_bracket_ahead_or_colon",
                     "_arrow_operator"
@@ -3224,7 +3267,7 @@
         ],
         "_secondary__expression_until_curly_bracket_ahead_or_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ":|(?=\\})",
@@ -3296,7 +3339,7 @@
         ],
         "_dot_reference_contents__expression_until_curly_bracket_ahead_or_colon": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ":|(?=\\})",
@@ -3438,7 +3481,7 @@
         ],
         "_primary__expression_until_end_of_template_interpolation": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\})",
@@ -3459,7 +3502,7 @@
         ],
         "_primary_or_block_statement__expression_until_end_of_template_interpolation": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\})",
@@ -3488,7 +3531,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=\\})",
@@ -3507,7 +3550,7 @@
         ],
         "_new_target__expression_until_end_of_template_interpolation": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\})",
@@ -3533,7 +3576,7 @@
         ],
         "_class_name_shallow__expression_until_end_of_template_interpolation": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\})",
@@ -3562,7 +3605,7 @@
         ],
         "_class_name_deep__expression_until_end_of_template_interpolation": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\})",
@@ -3584,7 +3627,7 @@
         ],
         "_class_name_deep_dot_reference__expression_until_end_of_template_interpolation": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\})",
@@ -3605,7 +3648,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=\\})",
@@ -3634,7 +3677,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=\\})",
@@ -3662,17 +3705,18 @@
         ],
         "_function_expression__expression_until_end_of_template_interpolation": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name__expression_until_end_of_template_interpolation"
             }
         ],
         "_function_expression_name__expression_until_end_of_template_interpolation": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\})",
@@ -3698,7 +3742,7 @@
         ],
         "_function_expression_parenthesis__expression_until_end_of_template_interpolation": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\})",
@@ -3717,7 +3761,7 @@
         ],
         "_function_expression_curly_bracket__expression_until_end_of_template_interpolation": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\})",
@@ -3740,7 +3784,7 @@
         ],
         "_class_expression_name__expression_until_end_of_template_interpolation": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\})",
@@ -3771,7 +3815,7 @@
         ],
         "_class_expression_curly_bracket_or_extends__expression_until_end_of_template_interpolation": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\})",
@@ -3795,7 +3839,7 @@
         ],
         "_class_expression_inheritance__expression_until_end_of_template_interpolation": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\})",
@@ -3822,7 +3866,7 @@
         ],
         "_class_expression_curly_bracket__expression_until_end_of_template_interpolation": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\})",
@@ -3839,6 +3883,9 @@
         "_arrow_function_expression__expression_until_end_of_template_interpolation": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_end_of_template_interpolation",
                     "_arrow_operator",
@@ -3847,7 +3894,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_end_of_template_interpolation",
                     "_arrow_operator"
@@ -3855,6 +3905,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_end_of_template_interpolation",
                     "_arrow_operator"
@@ -3886,7 +3939,7 @@
         ],
         "_secondary__expression_until_end_of_template_interpolation": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "\\}",
@@ -3959,7 +4012,7 @@
         ],
         "_dot_reference_contents__expression_until_end_of_template_interpolation": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "\\}",
@@ -4102,7 +4155,7 @@
         ],
         "_primary__expression_until_comma_or_curly_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[,}])",
@@ -4123,7 +4176,7 @@
         ],
         "_primary_or_block_statement__expression_until_comma_or_curly_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[,}])",
@@ -4152,7 +4205,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=[,}])",
@@ -4171,7 +4224,7 @@
         ],
         "_new_target__expression_until_comma_or_curly_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[,}])",
@@ -4197,7 +4250,7 @@
         ],
         "_class_name_shallow__expression_until_comma_or_curly_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[,}])",
@@ -4226,7 +4279,7 @@
         ],
         "_class_name_deep__expression_until_comma_or_curly_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[,}])",
@@ -4248,7 +4301,7 @@
         ],
         "_class_name_deep_dot_reference__expression_until_comma_or_curly_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[,}])",
@@ -4269,7 +4322,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=[,}])",
@@ -4298,7 +4351,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=[,}])",
@@ -4326,17 +4379,18 @@
         ],
         "_function_expression__expression_until_comma_or_curly_bracket": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name__expression_until_comma_or_curly_bracket"
             }
         ],
         "_function_expression_name__expression_until_comma_or_curly_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[,}])",
@@ -4362,7 +4416,7 @@
         ],
         "_function_expression_parenthesis__expression_until_comma_or_curly_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[,}])",
@@ -4381,7 +4435,7 @@
         ],
         "_function_expression_curly_bracket__expression_until_comma_or_curly_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[,}])",
@@ -4404,7 +4458,7 @@
         ],
         "_class_expression_name__expression_until_comma_or_curly_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[,}])",
@@ -4435,7 +4489,7 @@
         ],
         "_class_expression_curly_bracket_or_extends__expression_until_comma_or_curly_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[,}])",
@@ -4459,7 +4513,7 @@
         ],
         "_class_expression_inheritance__expression_until_comma_or_curly_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[,}])",
@@ -4486,7 +4540,7 @@
         ],
         "_class_expression_curly_bracket__expression_until_comma_or_curly_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[,}])",
@@ -4503,6 +4557,9 @@
         "_arrow_function_expression__expression_until_comma_or_curly_bracket": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_comma_or_curly_bracket",
                     "_arrow_operator",
@@ -4511,7 +4568,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_comma_or_curly_bracket",
                     "_arrow_operator"
@@ -4519,6 +4579,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_comma_or_curly_bracket",
                     "_arrow_operator"
@@ -4550,7 +4613,7 @@
         ],
         "_secondary__expression_until_comma_or_curly_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "[,}]",
@@ -4622,7 +4685,7 @@
         ],
         "_dot_reference_contents__expression_until_comma_or_curly_bracket": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "[,}]",
@@ -4764,7 +4827,7 @@
         ],
         "_primary__expression_until_comma_or_square_bracket_ahead": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,\\]]))",
@@ -4785,7 +4848,7 @@
         ],
         "_primary_or_block_statement__expression_until_comma_or_square_bracket_ahead": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,\\]]))",
@@ -4814,7 +4877,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=(?=[,\\]]))",
@@ -4833,7 +4896,7 @@
         ],
         "_new_target__expression_until_comma_or_square_bracket_ahead": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,\\]]))",
@@ -4859,7 +4922,7 @@
         ],
         "_class_name_shallow__expression_until_comma_or_square_bracket_ahead": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,\\]]))",
@@ -4888,7 +4951,7 @@
         ],
         "_class_name_deep__expression_until_comma_or_square_bracket_ahead": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,\\]]))",
@@ -4910,7 +4973,7 @@
         ],
         "_class_name_deep_dot_reference__expression_until_comma_or_square_bracket_ahead": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,\\]]))",
@@ -4931,7 +4994,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=(?=[,\\]]))",
@@ -4960,7 +5023,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=(?=[,\\]]))",
@@ -4988,17 +5051,18 @@
         ],
         "_function_expression__expression_until_comma_or_square_bracket_ahead": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name__expression_until_comma_or_square_bracket_ahead"
             }
         ],
         "_function_expression_name__expression_until_comma_or_square_bracket_ahead": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,\\]]))",
@@ -5024,7 +5088,7 @@
         ],
         "_function_expression_parenthesis__expression_until_comma_or_square_bracket_ahead": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,\\]]))",
@@ -5043,7 +5107,7 @@
         ],
         "_function_expression_curly_bracket__expression_until_comma_or_square_bracket_ahead": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,\\]]))",
@@ -5066,7 +5130,7 @@
         ],
         "_class_expression_name__expression_until_comma_or_square_bracket_ahead": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,\\]]))",
@@ -5097,7 +5161,7 @@
         ],
         "_class_expression_curly_bracket_or_extends__expression_until_comma_or_square_bracket_ahead": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,\\]]))",
@@ -5121,7 +5185,7 @@
         ],
         "_class_expression_inheritance__expression_until_comma_or_square_bracket_ahead": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,\\]]))",
@@ -5148,7 +5212,7 @@
         ],
         "_class_expression_curly_bracket__expression_until_comma_or_square_bracket_ahead": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,\\]]))",
@@ -5165,6 +5229,9 @@
         "_arrow_function_expression__expression_until_comma_or_square_bracket_ahead": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_comma_or_square_bracket_ahead",
                     "_arrow_operator",
@@ -5173,7 +5240,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_comma_or_square_bracket_ahead",
                     "_arrow_operator"
@@ -5181,6 +5251,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_comma_or_square_bracket_ahead",
                     "_arrow_operator"
@@ -5212,7 +5285,7 @@
         ],
         "_secondary__expression_until_comma_or_square_bracket_ahead": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[,\\]])",
@@ -5284,7 +5357,7 @@
         ],
         "_dot_reference_contents__expression_until_comma_or_square_bracket_ahead": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[,\\]])",
@@ -5426,7 +5499,7 @@
         ],
         "_primary__expression_until_parameter_binding_list": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -5447,7 +5520,7 @@
         ],
         "_primary_or_block_statement__expression_until_parameter_binding_list": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -5476,7 +5549,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=(?=\\)))",
@@ -5495,7 +5568,7 @@
         ],
         "_new_target__expression_until_parameter_binding_list": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -5521,7 +5594,7 @@
         ],
         "_class_name_shallow__expression_until_parameter_binding_list": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -5550,7 +5623,7 @@
         ],
         "_class_name_deep__expression_until_parameter_binding_list": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -5572,7 +5645,7 @@
         ],
         "_class_name_deep_dot_reference__expression_until_parameter_binding_list": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -5593,7 +5666,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=(?=\\)))",
@@ -5622,7 +5695,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=(?=\\)))",
@@ -5650,17 +5723,18 @@
         ],
         "_function_expression__expression_until_parameter_binding_list": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name__expression_until_parameter_binding_list"
             }
         ],
         "_function_expression_name__expression_until_parameter_binding_list": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -5686,7 +5760,7 @@
         ],
         "_function_expression_parenthesis__expression_until_parameter_binding_list": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -5705,7 +5779,7 @@
         ],
         "_function_expression_curly_bracket__expression_until_parameter_binding_list": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -5728,7 +5802,7 @@
         ],
         "_class_expression_name__expression_until_parameter_binding_list": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -5759,7 +5833,7 @@
         ],
         "_class_expression_curly_bracket_or_extends__expression_until_parameter_binding_list": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -5783,7 +5857,7 @@
         ],
         "_class_expression_inheritance__expression_until_parameter_binding_list": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -5810,7 +5884,7 @@
         ],
         "_class_expression_curly_bracket__expression_until_parameter_binding_list": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -5827,6 +5901,9 @@
         "_arrow_function_expression__expression_until_parameter_binding_list": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_parameter_binding_list",
                     "_arrow_operator",
@@ -5835,7 +5912,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_parameter_binding_list",
                     "_arrow_operator"
@@ -5843,6 +5923,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_parameter_binding_list",
                     "_arrow_operator"
@@ -5874,7 +5957,7 @@
         ],
         "_secondary__expression_until_parameter_binding_list": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -5950,7 +6033,7 @@
         ],
         "_dot_reference_contents__expression_until_parameter_binding_list": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6092,7 +6175,7 @@
         ],
         "_primary__expression_until_parenthesis_with_spread": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6118,7 +6201,7 @@
         ],
         "_primary_or_block_statement__expression_until_parenthesis_with_spread": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6152,7 +6235,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=\\))",
@@ -6171,7 +6254,7 @@
         ],
         "_new_target__expression_until_parenthesis_with_spread": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6197,7 +6280,7 @@
         ],
         "_class_name_shallow__expression_until_parenthesis_with_spread": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6226,7 +6309,7 @@
         ],
         "_class_name_deep__expression_until_parenthesis_with_spread": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6248,7 +6331,7 @@
         ],
         "_class_name_deep_dot_reference__expression_until_parenthesis_with_spread": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6269,7 +6352,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=\\))",
@@ -6298,7 +6381,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=\\))",
@@ -6326,17 +6409,18 @@
         ],
         "_function_expression__expression_until_parenthesis_with_spread": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name__expression_until_parenthesis_with_spread"
             }
         ],
         "_function_expression_name__expression_until_parenthesis_with_spread": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6362,7 +6446,7 @@
         ],
         "_function_expression_parenthesis__expression_until_parenthesis_with_spread": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6381,7 +6465,7 @@
         ],
         "_function_expression_curly_bracket__expression_until_parenthesis_with_spread": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6404,7 +6488,7 @@
         ],
         "_class_expression_name__expression_until_parenthesis_with_spread": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6435,7 +6519,7 @@
         ],
         "_class_expression_curly_bracket_or_extends__expression_until_parenthesis_with_spread": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6459,7 +6543,7 @@
         ],
         "_class_expression_inheritance__expression_until_parenthesis_with_spread": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6486,7 +6570,7 @@
         ],
         "_class_expression_curly_bracket__expression_until_parenthesis_with_spread": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6503,6 +6587,9 @@
         "_arrow_function_expression__expression_until_parenthesis_with_spread": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_parenthesis_with_spread",
                     "_arrow_operator",
@@ -6511,7 +6598,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_parenthesis_with_spread",
                     "_arrow_operator"
@@ -6519,6 +6609,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_parenthesis_with_spread",
                     "_arrow_operator"
@@ -6554,7 +6647,7 @@
                 "set": "expression_until_parenthesis_no_comma"
             },
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "\\)",
@@ -6626,7 +6719,7 @@
         ],
         "_dot_reference_contents__expression_until_parenthesis_with_spread": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "\\)",
@@ -6768,7 +6861,7 @@
         ],
         "_primary__expression_until_parenthesis_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6789,7 +6882,7 @@
         ],
         "_primary_or_block_statement__expression_until_parenthesis_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6818,7 +6911,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=\\))",
@@ -6837,7 +6930,7 @@
         ],
         "_new_target__expression_until_parenthesis_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6863,7 +6956,7 @@
         ],
         "_class_name_shallow__expression_until_parenthesis_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6892,7 +6985,7 @@
         ],
         "_class_name_deep__expression_until_parenthesis_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6914,7 +7007,7 @@
         ],
         "_class_name_deep_dot_reference__expression_until_parenthesis_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -6935,7 +7028,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=\\))",
@@ -6964,7 +7057,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=\\))",
@@ -6992,17 +7085,18 @@
         ],
         "_function_expression__expression_until_parenthesis_no_comma": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name__expression_until_parenthesis_no_comma"
             }
         ],
         "_function_expression_name__expression_until_parenthesis_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -7028,7 +7122,7 @@
         ],
         "_function_expression_parenthesis__expression_until_parenthesis_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -7047,7 +7141,7 @@
         ],
         "_function_expression_curly_bracket__expression_until_parenthesis_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -7070,7 +7164,7 @@
         ],
         "_class_expression_name__expression_until_parenthesis_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -7101,7 +7195,7 @@
         ],
         "_class_expression_curly_bracket_or_extends__expression_until_parenthesis_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -7125,7 +7219,7 @@
         ],
         "_class_expression_inheritance__expression_until_parenthesis_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -7152,7 +7246,7 @@
         ],
         "_class_expression_curly_bracket__expression_until_parenthesis_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -7169,6 +7263,9 @@
         "_arrow_function_expression__expression_until_parenthesis_no_comma": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_parenthesis_no_comma",
                     "_arrow_operator",
@@ -7177,7 +7274,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_parenthesis_no_comma",
                     "_arrow_operator"
@@ -7185,6 +7285,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_parenthesis_no_comma",
                     "_arrow_operator"
@@ -7216,7 +7319,7 @@
         ],
         "_secondary__expression_until_parenthesis_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "\\)",
@@ -7292,7 +7395,7 @@
         ],
         "_dot_reference_contents__expression_until_parenthesis_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "\\)",
@@ -7434,7 +7537,7 @@
         ],
         "_primary__expression_until_parenthesis_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -7455,7 +7558,7 @@
         ],
         "_primary_or_block_statement__expression_until_parenthesis_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -7484,7 +7587,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=(?=\\)))",
@@ -7503,7 +7606,7 @@
         ],
         "_new_target__expression_until_parenthesis_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -7529,7 +7632,7 @@
         ],
         "_class_name_shallow__expression_until_parenthesis_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -7558,7 +7661,7 @@
         ],
         "_class_name_deep__expression_until_parenthesis_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -7580,7 +7683,7 @@
         ],
         "_class_name_deep_dot_reference__expression_until_parenthesis_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -7601,7 +7704,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=(?=\\)))",
@@ -7630,7 +7733,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=(?=\\)))",
@@ -7658,17 +7761,18 @@
         ],
         "_function_expression__expression_until_parenthesis_ahead_no_comma": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name__expression_until_parenthesis_ahead_no_comma"
             }
         ],
         "_function_expression_name__expression_until_parenthesis_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -7694,7 +7798,7 @@
         ],
         "_function_expression_parenthesis__expression_until_parenthesis_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -7713,7 +7817,7 @@
         ],
         "_function_expression_curly_bracket__expression_until_parenthesis_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -7736,7 +7840,7 @@
         ],
         "_class_expression_name__expression_until_parenthesis_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -7767,7 +7871,7 @@
         ],
         "_class_expression_curly_bracket_or_extends__expression_until_parenthesis_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -7791,7 +7895,7 @@
         ],
         "_class_expression_inheritance__expression_until_parenthesis_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -7818,7 +7922,7 @@
         ],
         "_class_expression_curly_bracket__expression_until_parenthesis_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\)))",
@@ -7835,6 +7939,9 @@
         "_arrow_function_expression__expression_until_parenthesis_ahead_no_comma": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_parenthesis_ahead_no_comma",
                     "_arrow_operator",
@@ -7843,7 +7950,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_parenthesis_ahead_no_comma",
                     "_arrow_operator"
@@ -7851,6 +7961,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_parenthesis_ahead_no_comma",
                     "_arrow_operator"
@@ -7882,7 +7995,7 @@
         ],
         "_secondary__expression_until_parenthesis_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -7958,7 +8071,7 @@
         ],
         "_dot_reference_contents__expression_until_parenthesis_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -8100,7 +8213,7 @@
         ],
         "_primary__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -8129,7 +8242,7 @@
         ],
         "_primary_or_block_statement__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -8166,7 +8279,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=\\])",
@@ -8185,7 +8298,7 @@
         ],
         "_new_target__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -8211,7 +8324,7 @@
         ],
         "_class_name_shallow__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -8240,7 +8353,7 @@
         ],
         "_class_name_deep__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -8262,7 +8375,7 @@
         ],
         "_class_name_deep_dot_reference__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -8283,7 +8396,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=\\])",
@@ -8312,7 +8425,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=\\])",
@@ -8340,17 +8453,18 @@
         ],
         "_function_expression__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name__expression_until_square_bracket_with_spread_or_comma_anywhere"
             }
         ],
         "_function_expression_name__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -8376,7 +8490,7 @@
         ],
         "_function_expression_parenthesis__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -8395,7 +8509,7 @@
         ],
         "_function_expression_curly_bracket__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -8418,7 +8532,7 @@
         ],
         "_class_expression_name__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -8449,7 +8563,7 @@
         ],
         "_class_expression_curly_bracket_or_extends__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -8473,7 +8587,7 @@
         ],
         "_class_expression_inheritance__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -8500,7 +8614,7 @@
         ],
         "_class_expression_curly_bracket__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -8517,6 +8631,9 @@
         "_arrow_function_expression__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_square_bracket_with_spread_or_comma_anywhere",
                     "_arrow_operator",
@@ -8525,7 +8642,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_square_bracket_with_spread_or_comma_anywhere",
                     "_arrow_operator"
@@ -8533,6 +8653,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_square_bracket_with_spread_or_comma_anywhere",
                     "_arrow_operator"
@@ -8564,7 +8687,7 @@
         ],
         "_secondary__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "\\]",
@@ -8636,7 +8759,7 @@
         ],
         "_dot_reference_contents__expression_until_square_bracket_with_spread_or_comma_anywhere": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "\\]",
@@ -8778,7 +8901,7 @@
         ],
         "_primary__expression_until_square_bracket_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\]))",
@@ -8799,7 +8922,7 @@
         ],
         "_primary_or_block_statement__expression_until_square_bracket_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\]))",
@@ -8828,7 +8951,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=(?=\\]))",
@@ -8847,7 +8970,7 @@
         ],
         "_new_target__expression_until_square_bracket_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\]))",
@@ -8873,7 +8996,7 @@
         ],
         "_class_name_shallow__expression_until_square_bracket_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\]))",
@@ -8902,7 +9025,7 @@
         ],
         "_class_name_deep__expression_until_square_bracket_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\]))",
@@ -8924,7 +9047,7 @@
         ],
         "_class_name_deep_dot_reference__expression_until_square_bracket_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\]))",
@@ -8945,7 +9068,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=(?=\\]))",
@@ -8974,7 +9097,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=(?=\\]))",
@@ -9002,17 +9125,18 @@
         ],
         "_function_expression__expression_until_square_bracket_ahead_no_comma": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name__expression_until_square_bracket_ahead_no_comma"
             }
         ],
         "_function_expression_name__expression_until_square_bracket_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\]))",
@@ -9038,7 +9162,7 @@
         ],
         "_function_expression_parenthesis__expression_until_square_bracket_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\]))",
@@ -9057,7 +9181,7 @@
         ],
         "_function_expression_curly_bracket__expression_until_square_bracket_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\]))",
@@ -9080,7 +9204,7 @@
         ],
         "_class_expression_name__expression_until_square_bracket_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\]))",
@@ -9111,7 +9235,7 @@
         ],
         "_class_expression_curly_bracket_or_extends__expression_until_square_bracket_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\]))",
@@ -9135,7 +9259,7 @@
         ],
         "_class_expression_inheritance__expression_until_square_bracket_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\]))",
@@ -9162,7 +9286,7 @@
         ],
         "_class_expression_curly_bracket__expression_until_square_bracket_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=\\]))",
@@ -9179,6 +9303,9 @@
         "_arrow_function_expression__expression_until_square_bracket_ahead_no_comma": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_square_bracket_ahead_no_comma",
                     "_arrow_operator",
@@ -9187,7 +9314,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_square_bracket_ahead_no_comma",
                     "_arrow_operator"
@@ -9195,6 +9325,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_square_bracket_ahead_no_comma",
                     "_arrow_operator"
@@ -9226,7 +9359,7 @@
         ],
         "_secondary__expression_until_square_bracket_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -9302,7 +9435,7 @@
         ],
         "_dot_reference_contents__expression_until_square_bracket_ahead_no_comma": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\])",
@@ -9444,7 +9577,7 @@
         ],
         "_primary__expression_until_for_statement_third_section": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\)))",
@@ -9465,7 +9598,7 @@
         ],
         "_primary_or_block_statement__expression_until_for_statement_third_section": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\)))",
@@ -9494,7 +9627,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;|(?=\\)))",
@@ -9513,7 +9646,7 @@
         ],
         "_new_target__expression_until_for_statement_third_section": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\)))",
@@ -9539,7 +9672,7 @@
         ],
         "_class_name_shallow__expression_until_for_statement_third_section": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\)))",
@@ -9568,7 +9701,7 @@
         ],
         "_class_name_deep__expression_until_for_statement_third_section": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\)))",
@@ -9590,7 +9723,7 @@
         ],
         "_class_name_deep_dot_reference__expression_until_for_statement_third_section": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\)))",
@@ -9611,7 +9744,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;|(?=\\)))",
@@ -9640,7 +9773,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;|(?=\\)))",
@@ -9668,17 +9801,18 @@
         ],
         "_function_expression__expression_until_for_statement_third_section": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name__expression_until_for_statement_third_section"
             }
         ],
         "_function_expression_name__expression_until_for_statement_third_section": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\)))",
@@ -9704,7 +9838,7 @@
         ],
         "_function_expression_parenthesis__expression_until_for_statement_third_section": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\)))",
@@ -9723,7 +9857,7 @@
         ],
         "_function_expression_curly_bracket__expression_until_for_statement_third_section": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\)))",
@@ -9746,7 +9880,7 @@
         ],
         "_class_expression_name__expression_until_for_statement_third_section": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\)))",
@@ -9777,7 +9911,7 @@
         ],
         "_class_expression_curly_bracket_or_extends__expression_until_for_statement_third_section": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\)))",
@@ -9801,7 +9935,7 @@
         ],
         "_class_expression_inheritance__expression_until_for_statement_third_section": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\)))",
@@ -9828,7 +9962,7 @@
         ],
         "_class_expression_curly_bracket__expression_until_for_statement_third_section": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\)))",
@@ -9845,6 +9979,9 @@
         "_arrow_function_expression__expression_until_for_statement_third_section": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_for_statement_third_section",
                     "_arrow_operator",
@@ -9853,7 +9990,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_for_statement_third_section",
                     "_arrow_operator"
@@ -9861,6 +10001,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_for_statement_third_section",
                     "_arrow_operator"
@@ -9892,7 +10035,7 @@
         ],
         "_secondary__expression_until_for_statement_third_section": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ";|(?=\\))",
@@ -9964,7 +10107,7 @@
         ],
         "_dot_reference_contents__expression_until_for_statement_third_section": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ";|(?=\\))",
@@ -10106,7 +10249,7 @@
         ],
         "_primary__expression_until_for_binding": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,;)]))",
@@ -10131,7 +10274,7 @@
         ],
         "_primary_or_block_statement__expression_until_for_binding": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,;)]))",
@@ -10164,7 +10307,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=(?=[,;)]))",
@@ -10183,7 +10326,7 @@
         ],
         "_new_target__expression_until_for_binding": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,;)]))",
@@ -10209,7 +10352,7 @@
         ],
         "_class_name_shallow__expression_until_for_binding": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,;)]))",
@@ -10238,7 +10381,7 @@
         ],
         "_class_name_deep__expression_until_for_binding": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,;)]))",
@@ -10260,7 +10403,7 @@
         ],
         "_class_name_deep_dot_reference__expression_until_for_binding": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,;)]))",
@@ -10281,7 +10424,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=(?=[,;)]))",
@@ -10310,7 +10453,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=(?=[,;)]))",
@@ -10338,17 +10481,18 @@
         ],
         "_function_expression__expression_until_for_binding": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name__expression_until_for_binding"
             }
         ],
         "_function_expression_name__expression_until_for_binding": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,;)]))",
@@ -10374,7 +10518,7 @@
         ],
         "_function_expression_parenthesis__expression_until_for_binding": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,;)]))",
@@ -10393,7 +10537,7 @@
         ],
         "_function_expression_curly_bracket__expression_until_for_binding": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,;)]))",
@@ -10416,7 +10560,7 @@
         ],
         "_class_expression_name__expression_until_for_binding": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,;)]))",
@@ -10447,7 +10591,7 @@
         ],
         "_class_expression_curly_bracket_or_extends__expression_until_for_binding": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,;)]))",
@@ -10471,7 +10615,7 @@
         ],
         "_class_expression_inheritance__expression_until_for_binding": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,;)]))",
@@ -10498,7 +10642,7 @@
         ],
         "_class_expression_curly_bracket__expression_until_for_binding": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,;)]))",
@@ -10515,6 +10659,9 @@
         "_arrow_function_expression__expression_until_for_binding": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_for_binding",
                     "_arrow_operator",
@@ -10523,7 +10670,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_for_binding",
                     "_arrow_operator"
@@ -10531,6 +10681,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement__expression_until_for_binding",
                     "_arrow_operator"
@@ -10562,7 +10715,7 @@
         ],
         "_secondary__expression_until_for_binding": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[,;)])",
@@ -10638,7 +10791,7 @@
         ],
         "_dot_reference_contents__expression_until_for_binding": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[,;)])",
@@ -10780,7 +10933,7 @@
         ],
         "_primary___for_statement_first_expression": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[;)]|{{b_before}}(?:of|in){{b_after}}))",
@@ -10801,7 +10954,7 @@
         ],
         "_primary_or_block_statement___for_statement_first_expression": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[;)]|{{b_before}}(?:of|in){{b_after}}))",
@@ -10830,7 +10983,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=(?=[;)]|{{b_before}}(?:of|in){{b_after}}))",
@@ -10849,7 +11002,7 @@
         ],
         "_new_target___for_statement_first_expression": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[;)]|{{b_before}}(?:of|in){{b_after}}))",
@@ -10875,7 +11028,7 @@
         ],
         "_class_name_shallow___for_statement_first_expression": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[;)]|{{b_before}}(?:of|in){{b_after}}))",
@@ -10904,7 +11057,7 @@
         ],
         "_class_name_deep___for_statement_first_expression": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[;)]|{{b_before}}(?:of|in){{b_after}}))",
@@ -10926,7 +11079,7 @@
         ],
         "_class_name_deep_dot_reference___for_statement_first_expression": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[;)]|{{b_before}}(?:of|in){{b_after}}))",
@@ -10947,7 +11100,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=(?=[;)]|{{b_before}}(?:of|in){{b_after}}))",
@@ -10976,7 +11129,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=(?=[;)]|{{b_before}}(?:of|in){{b_after}}))",
@@ -11004,17 +11157,18 @@
         ],
         "_function_expression___for_statement_first_expression": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name___for_statement_first_expression"
             }
         ],
         "_function_expression_name___for_statement_first_expression": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[;)]|{{b_before}}(?:of|in){{b_after}}))",
@@ -11040,7 +11194,7 @@
         ],
         "_function_expression_parenthesis___for_statement_first_expression": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[;)]|{{b_before}}(?:of|in){{b_after}}))",
@@ -11059,7 +11213,7 @@
         ],
         "_function_expression_curly_bracket___for_statement_first_expression": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[;)]|{{b_before}}(?:of|in){{b_after}}))",
@@ -11082,7 +11236,7 @@
         ],
         "_class_expression_name___for_statement_first_expression": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[;)]|{{b_before}}(?:of|in){{b_after}}))",
@@ -11113,7 +11267,7 @@
         ],
         "_class_expression_curly_bracket_or_extends___for_statement_first_expression": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[;)]|{{b_before}}(?:of|in){{b_after}}))",
@@ -11137,7 +11291,7 @@
         ],
         "_class_expression_inheritance___for_statement_first_expression": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[;)]|{{b_before}}(?:of|in){{b_after}}))",
@@ -11164,7 +11318,7 @@
         ],
         "_class_expression_curly_bracket___for_statement_first_expression": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[;)]|{{b_before}}(?:of|in){{b_after}}))",
@@ -11181,6 +11335,9 @@
         "_arrow_function_expression___for_statement_first_expression": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement___for_statement_first_expression",
                     "_arrow_operator",
@@ -11189,7 +11346,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement___for_statement_first_expression",
                     "_arrow_operator"
@@ -11197,6 +11357,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement___for_statement_first_expression",
                     "_arrow_operator"
@@ -11228,7 +11391,7 @@
         ],
         "_secondary___for_statement_first_expression": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[;)]|{{b_before}}(?:of|in){{b_after}})",
@@ -11300,7 +11463,7 @@
         ],
         "_dot_reference_contents___for_statement_first_expression": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[;)]|{{b_before}}(?:of|in){{b_after}})",
@@ -11484,7 +11647,7 @@
         ],
         "__parameter_binding_until_parenthesis": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -11512,7 +11675,7 @@
         ],
         "_after__parameter_binding_until_parenthesis": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "\\)",
@@ -11533,7 +11696,7 @@
         ],
         "__parameter_binding_until_parenthesis_with_initializer": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=\\))",
@@ -11561,7 +11724,7 @@
         ],
         "_after__parameter_binding_until_parenthesis_with_initializer": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "=",
@@ -11587,7 +11750,7 @@
         ],
         "__parameter_binding_for_object_destructuring": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[,}])",
@@ -11615,7 +11778,7 @@
         ],
         "_after__parameter_binding_for_object_destructuring": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "=",
@@ -11641,7 +11804,7 @@
         ],
         "__parameter_binding_for_array_destructuring": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ",++"
@@ -11675,7 +11838,7 @@
         ],
         "_after__parameter_binding_for_array_destructuring": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "=",
@@ -11705,7 +11868,7 @@
         ],
         "__parameter_binding_list": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "include": "destructuring_spread_for_parameter_binding_list"
@@ -11736,7 +11899,7 @@
         ],
         "_after__parameter_binding_list": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ",",
@@ -11766,7 +11929,7 @@
         ],
         "__variable_binding_for_for_statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=(?=[,;)]|{{b_before}}(?:of|in){{b_after}}))",
@@ -11798,7 +11961,7 @@
         ],
         "_after__variable_binding_for_for_statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?==)",
@@ -11824,7 +11987,7 @@
         ],
         "__variable_binding": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=[^\\s\\S])",
@@ -11860,7 +12023,7 @@
                 "pop": true
             },
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "[^\\s\\S]",
@@ -11944,7 +12107,15 @@
                 ]
             },
             {
-                "match": "{{b_before}}get{{b_after}}",
+                "match": "{{b_before}}async{{b_after}}(?={{to_token}}(?!\\(|[;}]|{{line_terminator}}))",
+                "scope": "storage.modifier.js",
+                "set": [
+                    "_finish_method__method_definition_in_class",
+                    "_need_property_name_for_method__method_definition_in_class"
+                ]
+            },
+            {
+                "match": "{{b_before}}get{{b_after}}(?={{to_token}}(?!\\(|[;}]|{{line_terminator}}))",
                 "scope": "storage.type.js",
                 "set": [
                     "_finish_getter__method_definition_in_class",
@@ -11952,7 +12123,7 @@
                 ]
             },
             {
-                "match": "{{b_before}}set{{b_after}}",
+                "match": "{{b_before}}set{{b_after}}(?={{to_token}}(?!\\(|[;}]|{{line_terminator}}))",
                 "scope": "storage.type.js",
                 "set": [
                     "_finish_setter__method_definition_in_class",
@@ -12122,6 +12293,20 @@
         ],
         "_parts__method_definition_in_object_literal": [
             {
+                "match": ",",
+                "scope": "invalid.illegal.js"
+            },
+            {
+                "match": "{{ident}}{{property_assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}(?={{to_token}}:)",
+                "scope": "entity.name.property.js",
+                "pop": true
+            },
+            {
                 "match": "[,}]",
                 "pop": true
             },
@@ -12134,7 +12319,15 @@
                 ]
             },
             {
-                "match": "{{b_before}}get{{b_after}}",
+                "match": "{{b_before}}async{{b_after}}(?={{to_token}}(?!\\(|[,}]|{{line_terminator}}))",
+                "scope": "storage.modifier.js",
+                "set": [
+                    "_finish_method__method_definition_in_object_literal",
+                    "_need_property_name_for_method__method_definition_in_object_literal"
+                ]
+            },
+            {
+                "match": "{{b_before}}get{{b_after}}(?={{to_token}}(?!\\(|[,}]|{{line_terminator}}))",
                 "scope": "storage.type.js",
                 "set": [
                     "_finish_getter__method_definition_in_object_literal",
@@ -12142,7 +12335,7 @@
                 ]
             },
             {
-                "match": "{{b_before}}set{{b_after}}",
+                "match": "{{b_before}}set{{b_after}}(?={{to_token}}(?!\\(|[,}]|{{line_terminator}}))",
                 "scope": "storage.type.js",
                 "set": [
                     "_finish_setter__method_definition_in_object_literal",
@@ -12151,16 +12344,6 @@
             },
             {
                 "include": "property_name_requires_parenthesis_for_method"
-            },
-            {
-                "match": "{{ident}}{{property_assignment_for_function}}",
-                "scope": "entity.name.function.js",
-                "pop": true
-            },
-            {
-                "match": "{{ident}}(?={{to_token}}:)",
-                "scope": "entity.name.property.js",
-                "pop": true
             },
             {
                 "match": "{{reserved_word}}",
@@ -12178,10 +12361,6 @@
         "_main__method_definition_in_object_literal": [
             {
                 "match": "{{non_token}}"
-            },
-            {
-                "match": ",",
-                "scope": "invalid.illegal.js"
             },
             {
                 "include": "_parts__method_definition_in_object_literal"
@@ -12454,10 +12633,11 @@
         ],
         "_function_declaration__statement_in_block": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_declaration_want_name__statement_in_block"
             }
@@ -12928,10 +13108,11 @@
         ],
         "_function_declaration__statement_top_level": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_declaration_want_name__statement_top_level"
             }
@@ -13381,10 +13562,11 @@
         ],
         "_function_declaration__statement": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_declaration_want_name__statement"
             }
@@ -13783,7 +13965,7 @@
         ],
         "_import_statement_core": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -13792,7 +13974,7 @@
                         "match": "{{non_token}}"
                     },
                     {
-                        "match": "(?={{statement_keyword_all}})",
+                        "match": "(?={{statement_keyword_all}}|{{ident}}{{to_token}}[^,;f{{line_terminator_chars}}])",
                         "pop": true
                     },
                     {
@@ -13851,7 +14033,7 @@
         ],
         "_import_statement_optional_addition": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -13891,7 +14073,7 @@
         ],
         "_import_statement_addition": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -13929,7 +14111,7 @@
         ],
         "_import_all_named_as": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -13963,7 +14145,7 @@
         ],
         "_import_all_named_as_ident": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -13972,7 +14154,7 @@
                         "match": "{{non_token}}"
                     },
                     {
-                        "match": "(?={{statement_keyword_all}})",
+                        "match": "(?={{statement_keyword_all}}|{{ident}}{{to_token}}[^;f{{line_terminator_chars}}])",
                         "pop": true
                     },
                     {
@@ -14011,7 +14193,7 @@
         ],
         "_import_from": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14051,7 +14233,7 @@
         ],
         "_import_location": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14089,7 +14271,7 @@
         ],
         "_export_statement_core": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14106,7 +14288,7 @@
                         "set": "_class_declaration__statement"
                     },
                     {
-                        "match": "{{b_before}}(?=function{{b_after}})",
+                        "match": "{{b_before}}(?=(?:async{{some_space}})?+function{{b_after}})",
                         "set": "_function_declaration__statement"
                     },
                     {
@@ -14139,7 +14321,7 @@
                 "set": "_class_declaration__statement"
             },
             {
-                "match": "{{b_before}}(?=function{{b_after}})",
+                "match": "{{b_before}}(?=(?:async{{some_space}})?+function{{b_after}})",
                 "set": "_function_declaration__statement"
             },
             {
@@ -14167,7 +14349,7 @@
         ],
         "_variable_statement_want_binding__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14176,7 +14358,7 @@
                         "match": "{{non_token}}"
                     },
                     {
-                        "match": "(?={{statement_keyword_all}})",
+                        "match": "(?={{statement_keyword_all}}|{{ident}}{{to_token}}(?!;|(?=\\}))[^=,{{line_terminator_chars}}])",
                         "pop": true
                     },
                     {
@@ -14209,7 +14391,7 @@
         ],
         "_variable_statement_want_continue__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14241,7 +14423,7 @@
         ],
         "_function_declaration_want_name__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14250,7 +14432,7 @@
                         "match": "{{non_token}}"
                     },
                     {
-                        "match": "(?={{statement_keyword_all}})",
+                        "match": "(?={{statement_keyword_all}}|{{ident}}{{to_token}}(?!;|(?=\\}))[^({{line_terminator_chars}}])",
                         "pop": true
                     },
                     {
@@ -14283,7 +14465,7 @@
         ],
         "_function_declaration_want_parenthesis__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14321,7 +14503,7 @@
         ],
         "_function_declaration_want_curly_bracket__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14353,7 +14535,7 @@
         ],
         "_class_declaration_want_name__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14362,7 +14544,7 @@
                         "match": "{{non_token}}"
                     },
                     {
-                        "match": "(?={{statement_keyword_all}})",
+                        "match": "(?={{statement_keyword_all}}|{{ident}}{{to_token}}(?!;|(?=\\}))[^{e{{line_terminator_chars}}])",
                         "pop": true
                     },
                     {
@@ -14395,7 +14577,7 @@
         ],
         "_class_declaration_want_curly_bracket_or_extends__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14430,7 +14612,7 @@
         ],
         "_class_declaration_want_inheritance__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14439,7 +14621,7 @@
                         "match": "{{non_token}}"
                     },
                     {
-                        "match": "(?={{statement_keyword_all}})",
+                        "match": "(?={{statement_keyword_all}}|{{ident}}{{to_token}}(?!%statementExit%)[^{{{line_terminator_chars}}])",
                         "pop": true
                     },
                     {
@@ -14482,7 +14664,7 @@
         ],
         "_class_declaration_want_curly_bracket__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14514,7 +14696,7 @@
         ],
         "_if_statement_want_parenthesis__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14552,7 +14734,7 @@
         ],
         "_with_or_while_statement_want_parenthesis__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14590,7 +14772,7 @@
         ],
         "_do_while_want_parenthesis": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14622,7 +14804,7 @@
         ],
         "_for_statement_want_parenthesis__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14654,7 +14836,7 @@
         ],
         "_switch_statement_want_parenthesis__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14692,7 +14874,7 @@
         ],
         "_switch_statement_want_curly_bracket__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14724,7 +14906,7 @@
         ],
         "_try_statement_want_curly_bracket__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14762,7 +14944,7 @@
         ],
         "_catch_statement_want_parenthesis__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14800,7 +14982,7 @@
         ],
         "_catch_statement_want_curly_bracket__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14838,7 +15020,7 @@
         ],
         "_finally_statement_want_curly_bracket__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14870,7 +15052,7 @@
         ],
         "_variable_statement_want_binding__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14879,7 +15061,7 @@
                         "match": "{{non_token}}"
                     },
                     {
-                        "match": "(?={{statement_keyword_all}})",
+                        "match": "(?={{statement_keyword_all}}|{{ident}}{{to_token}}(?!;)[^=,{{line_terminator_chars}}])",
                         "pop": true
                     },
                     {
@@ -14912,7 +15094,7 @@
         ],
         "_variable_statement_want_continue__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14944,7 +15126,7 @@
         ],
         "_function_declaration_want_name__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -14953,7 +15135,7 @@
                         "match": "{{non_token}}"
                     },
                     {
-                        "match": "(?={{statement_keyword_all}})",
+                        "match": "(?={{statement_keyword_all}}|{{ident}}{{to_token}}(?!;)[^({{line_terminator_chars}}])",
                         "pop": true
                     },
                     {
@@ -14986,7 +15168,7 @@
         ],
         "_function_declaration_want_parenthesis__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15024,7 +15206,7 @@
         ],
         "_function_declaration_want_curly_bracket__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15056,7 +15238,7 @@
         ],
         "_class_declaration_want_name__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15065,7 +15247,7 @@
                         "match": "{{non_token}}"
                     },
                     {
-                        "match": "(?={{statement_keyword_all}})",
+                        "match": "(?={{statement_keyword_all}}|{{ident}}{{to_token}}(?!;)[^{e{{line_terminator_chars}}])",
                         "pop": true
                     },
                     {
@@ -15098,7 +15280,7 @@
         ],
         "_class_declaration_want_curly_bracket_or_extends__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15133,7 +15315,7 @@
         ],
         "_class_declaration_want_inheritance__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15142,7 +15324,7 @@
                         "match": "{{non_token}}"
                     },
                     {
-                        "match": "(?={{statement_keyword_all}})",
+                        "match": "(?={{statement_keyword_all}}|{{ident}}{{to_token}}(?!%statementExit%)[^{{{line_terminator_chars}}])",
                         "pop": true
                     },
                     {
@@ -15185,7 +15367,7 @@
         ],
         "_class_declaration_want_curly_bracket__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15217,7 +15399,7 @@
         ],
         "_if_statement_want_parenthesis__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15255,7 +15437,7 @@
         ],
         "_with_or_while_statement_want_parenthesis__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15293,7 +15475,7 @@
         ],
         "_for_statement_want_parenthesis__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15325,7 +15507,7 @@
         ],
         "_switch_statement_want_parenthesis__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15363,7 +15545,7 @@
         ],
         "_switch_statement_want_curly_bracket__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15395,7 +15577,7 @@
         ],
         "_try_statement_want_curly_bracket__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15433,7 +15615,7 @@
         ],
         "_catch_statement_want_parenthesis__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15471,7 +15653,7 @@
         ],
         "_catch_statement_want_curly_bracket__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15509,7 +15691,7 @@
         ],
         "_finally_statement_want_curly_bracket__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15541,7 +15723,7 @@
         ],
         "_variable_statement_want_binding__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15550,7 +15732,7 @@
                         "match": "{{non_token}}"
                     },
                     {
-                        "match": "(?={{statement_keyword_all}})",
+                        "match": "(?={{statement_keyword_all}}|{{ident}}{{to_token}}(?!;)[^=,{{line_terminator_chars}}])",
                         "pop": true
                     },
                     {
@@ -15583,7 +15765,7 @@
         ],
         "_variable_statement_want_continue__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15615,7 +15797,7 @@
         ],
         "_function_declaration_want_name__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15624,7 +15806,7 @@
                         "match": "{{non_token}}"
                     },
                     {
-                        "match": "(?={{statement_keyword_all}})",
+                        "match": "(?={{statement_keyword_all}}|{{ident}}{{to_token}}(?!;)[^({{line_terminator_chars}}])",
                         "pop": true
                     },
                     {
@@ -15657,7 +15839,7 @@
         ],
         "_function_declaration_want_parenthesis__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15695,7 +15877,7 @@
         ],
         "_function_declaration_want_curly_bracket__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15727,7 +15909,7 @@
         ],
         "_class_declaration_want_name__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15736,7 +15918,7 @@
                         "match": "{{non_token}}"
                     },
                     {
-                        "match": "(?={{statement_keyword_all}})",
+                        "match": "(?={{statement_keyword_all}}|{{ident}}{{to_token}}(?!;)[^{e{{line_terminator_chars}}])",
                         "pop": true
                     },
                     {
@@ -15769,7 +15951,7 @@
         ],
         "_class_declaration_want_curly_bracket_or_extends__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15804,7 +15986,7 @@
         ],
         "_class_declaration_want_inheritance__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15813,7 +15995,7 @@
                         "match": "{{non_token}}"
                     },
                     {
-                        "match": "(?={{statement_keyword_all}})",
+                        "match": "(?={{statement_keyword_all}}|{{ident}}{{to_token}}(?!%statementExit%)[^{{{line_terminator_chars}}])",
                         "pop": true
                     },
                     {
@@ -15856,7 +16038,7 @@
         ],
         "_class_declaration_want_curly_bracket__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15888,7 +16070,7 @@
         ],
         "_if_statement_want_parenthesis__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15926,7 +16108,7 @@
         ],
         "_with_or_while_statement_want_parenthesis__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15964,7 +16146,7 @@
         ],
         "_for_statement_want_parenthesis__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -15996,7 +16178,7 @@
         ],
         "_switch_statement_want_parenthesis__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -16034,7 +16216,7 @@
         ],
         "_switch_statement_want_curly_bracket__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -16066,7 +16248,7 @@
         ],
         "_try_statement_want_curly_bracket__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -16104,7 +16286,7 @@
         ],
         "_catch_statement_want_parenthesis__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -16142,7 +16324,7 @@
         ],
         "_catch_statement_want_curly_bracket__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -16180,7 +16362,7 @@
         ],
         "_finally_statement_want_curly_bracket__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "{{line_terminator}}",
@@ -16265,7 +16447,7 @@
         ],
         "_primary___expression_until_end_of_statement__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -16298,7 +16480,7 @@
         ],
         "_primary_or_block_statement___expression_until_end_of_statement__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -16351,7 +16533,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;|(?=\\}))",
@@ -16370,7 +16552,7 @@
         ],
         "_new_target___expression_until_end_of_statement__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -16408,7 +16590,7 @@
         ],
         "_class_name_shallow___expression_until_end_of_statement__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -16437,7 +16619,7 @@
         ],
         "_class_name_deep___expression_until_end_of_statement__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -16459,7 +16641,7 @@
         ],
         "_class_name_deep_dot_reference___expression_until_end_of_statement__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -16492,7 +16674,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;|(?=\\}))",
@@ -16521,7 +16703,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;|(?=\\}))",
@@ -16549,17 +16731,18 @@
         ],
         "_function_expression___expression_until_end_of_statement__statement_in_block": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name___expression_until_end_of_statement__statement_in_block"
             }
         ],
         "_function_expression_name___expression_until_end_of_statement__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -16597,7 +16780,7 @@
         ],
         "_function_expression_parenthesis___expression_until_end_of_statement__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -16628,7 +16811,7 @@
         ],
         "_function_expression_curly_bracket___expression_until_end_of_statement__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -16663,7 +16846,7 @@
         ],
         "_class_expression_name___expression_until_end_of_statement__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -16706,7 +16889,7 @@
         ],
         "_class_expression_curly_bracket_or_extends___expression_until_end_of_statement__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -16742,7 +16925,7 @@
         ],
         "_class_expression_inheritance___expression_until_end_of_statement__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -16781,7 +16964,7 @@
         ],
         "_class_expression_curly_bracket___expression_until_end_of_statement__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -16810,6 +16993,9 @@
         "_arrow_function_expression___expression_until_end_of_statement__statement_in_block": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement___expression_until_end_of_statement__statement_in_block",
                     "_arrow_operator",
@@ -16818,7 +17004,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement___expression_until_end_of_statement__statement_in_block",
                     "_arrow_operator"
@@ -16826,6 +17015,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement___expression_until_end_of_statement__statement_in_block",
                     "_arrow_operator"
@@ -16861,7 +17053,7 @@
                 "pop": true
             },
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ";|(?=\\})",
@@ -16952,7 +17144,7 @@
         ],
         "_dot_reference_contents___expression_until_end_of_statement__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ";|(?=\\})",
@@ -17106,7 +17298,7 @@
         ],
         "_primary___expression_until_variable_binding__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -17143,7 +17335,7 @@
         ],
         "_primary_or_block_statement___expression_until_variable_binding__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -17204,7 +17396,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;|(?=\\}))",
@@ -17223,7 +17415,7 @@
         ],
         "_new_target___expression_until_variable_binding__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -17265,7 +17457,7 @@
         ],
         "_class_name_shallow___expression_until_variable_binding__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -17294,7 +17486,7 @@
         ],
         "_class_name_deep___expression_until_variable_binding__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -17316,7 +17508,7 @@
         ],
         "_class_name_deep_dot_reference___expression_until_variable_binding__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -17353,7 +17545,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;|(?=\\}))",
@@ -17382,7 +17574,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;|(?=\\}))",
@@ -17410,17 +17602,18 @@
         ],
         "_function_expression___expression_until_variable_binding__statement_in_block": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name___expression_until_variable_binding__statement_in_block"
             }
         ],
         "_function_expression_name___expression_until_variable_binding__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -17462,7 +17655,7 @@
         ],
         "_function_expression_parenthesis___expression_until_variable_binding__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -17497,7 +17690,7 @@
         ],
         "_function_expression_curly_bracket___expression_until_variable_binding__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -17536,7 +17729,7 @@
         ],
         "_class_expression_name___expression_until_variable_binding__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -17583,7 +17776,7 @@
         ],
         "_class_expression_curly_bracket_or_extends___expression_until_variable_binding__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -17623,7 +17816,7 @@
         ],
         "_class_expression_inheritance___expression_until_variable_binding__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -17666,7 +17859,7 @@
         ],
         "_class_expression_curly_bracket___expression_until_variable_binding__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;|(?=\\}))",
@@ -17699,6 +17892,9 @@
         "_arrow_function_expression___expression_until_variable_binding__statement_in_block": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement___expression_until_variable_binding__statement_in_block",
                     "_arrow_operator",
@@ -17707,7 +17903,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement___expression_until_variable_binding__statement_in_block",
                     "_arrow_operator"
@@ -17715,6 +17914,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement___expression_until_variable_binding__statement_in_block",
                     "_arrow_operator"
@@ -17750,7 +17952,7 @@
                 "pop": true
             },
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ";|(?=\\})",
@@ -17849,7 +18051,7 @@
         ],
         "_dot_reference_contents___expression_until_variable_binding__statement_in_block": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ";|(?=\\})",
@@ -18007,7 +18209,7 @@
         ],
         "_primary___expression_until_end_of_statement__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -18040,7 +18242,7 @@
         ],
         "_primary_or_block_statement___expression_until_end_of_statement__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -18093,7 +18295,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;)",
@@ -18112,7 +18314,7 @@
         ],
         "_new_target___expression_until_end_of_statement__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -18150,7 +18352,7 @@
         ],
         "_class_name_shallow___expression_until_end_of_statement__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -18179,7 +18381,7 @@
         ],
         "_class_name_deep___expression_until_end_of_statement__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -18201,7 +18403,7 @@
         ],
         "_class_name_deep_dot_reference___expression_until_end_of_statement__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -18234,7 +18436,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;)",
@@ -18263,7 +18465,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;)",
@@ -18291,17 +18493,18 @@
         ],
         "_function_expression___expression_until_end_of_statement__statement_top_level": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name___expression_until_end_of_statement__statement_top_level"
             }
         ],
         "_function_expression_name___expression_until_end_of_statement__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -18339,7 +18542,7 @@
         ],
         "_function_expression_parenthesis___expression_until_end_of_statement__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -18370,7 +18573,7 @@
         ],
         "_function_expression_curly_bracket___expression_until_end_of_statement__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -18405,7 +18608,7 @@
         ],
         "_class_expression_name___expression_until_end_of_statement__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -18448,7 +18651,7 @@
         ],
         "_class_expression_curly_bracket_or_extends___expression_until_end_of_statement__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -18484,7 +18687,7 @@
         ],
         "_class_expression_inheritance___expression_until_end_of_statement__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -18523,7 +18726,7 @@
         ],
         "_class_expression_curly_bracket___expression_until_end_of_statement__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -18552,6 +18755,9 @@
         "_arrow_function_expression___expression_until_end_of_statement__statement_top_level": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement___expression_until_end_of_statement__statement_top_level",
                     "_arrow_operator",
@@ -18560,7 +18766,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement___expression_until_end_of_statement__statement_top_level",
                     "_arrow_operator"
@@ -18568,6 +18777,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement___expression_until_end_of_statement__statement_top_level",
                     "_arrow_operator"
@@ -18603,7 +18815,7 @@
                 "pop": true
             },
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ";",
@@ -18694,7 +18906,7 @@
         ],
         "_dot_reference_contents___expression_until_end_of_statement__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ";",
@@ -18848,7 +19060,7 @@
         ],
         "_primary___expression_until_variable_binding__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -18885,7 +19097,7 @@
         ],
         "_primary_or_block_statement___expression_until_variable_binding__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -18946,7 +19158,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;)",
@@ -18965,7 +19177,7 @@
         ],
         "_new_target___expression_until_variable_binding__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -19007,7 +19219,7 @@
         ],
         "_class_name_shallow___expression_until_variable_binding__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -19036,7 +19248,7 @@
         ],
         "_class_name_deep___expression_until_variable_binding__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -19058,7 +19270,7 @@
         ],
         "_class_name_deep_dot_reference___expression_until_variable_binding__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -19095,7 +19307,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;)",
@@ -19124,7 +19336,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;)",
@@ -19152,17 +19364,18 @@
         ],
         "_function_expression___expression_until_variable_binding__statement_top_level": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name___expression_until_variable_binding__statement_top_level"
             }
         ],
         "_function_expression_name___expression_until_variable_binding__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -19204,7 +19417,7 @@
         ],
         "_function_expression_parenthesis___expression_until_variable_binding__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -19239,7 +19452,7 @@
         ],
         "_function_expression_curly_bracket___expression_until_variable_binding__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -19278,7 +19491,7 @@
         ],
         "_class_expression_name___expression_until_variable_binding__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -19325,7 +19538,7 @@
         ],
         "_class_expression_curly_bracket_or_extends___expression_until_variable_binding__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -19365,7 +19578,7 @@
         ],
         "_class_expression_inheritance___expression_until_variable_binding__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -19408,7 +19621,7 @@
         ],
         "_class_expression_curly_bracket___expression_until_variable_binding__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -19441,6 +19654,9 @@
         "_arrow_function_expression___expression_until_variable_binding__statement_top_level": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement___expression_until_variable_binding__statement_top_level",
                     "_arrow_operator",
@@ -19449,7 +19665,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement___expression_until_variable_binding__statement_top_level",
                     "_arrow_operator"
@@ -19457,6 +19676,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement___expression_until_variable_binding__statement_top_level",
                     "_arrow_operator"
@@ -19492,7 +19714,7 @@
                 "pop": true
             },
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ";",
@@ -19591,7 +19813,7 @@
         ],
         "_dot_reference_contents___expression_until_variable_binding__statement_top_level": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ";",
@@ -19749,7 +19971,7 @@
         ],
         "_primary___expression_until_end_of_statement__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -19782,7 +20004,7 @@
         ],
         "_primary_or_block_statement___expression_until_end_of_statement__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -19835,7 +20057,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;)",
@@ -19854,7 +20076,7 @@
         ],
         "_new_target___expression_until_end_of_statement__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -19892,7 +20114,7 @@
         ],
         "_class_name_shallow___expression_until_end_of_statement__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -19921,7 +20143,7 @@
         ],
         "_class_name_deep___expression_until_end_of_statement__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -19943,7 +20165,7 @@
         ],
         "_class_name_deep_dot_reference___expression_until_end_of_statement__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -19976,7 +20198,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;)",
@@ -20005,7 +20227,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;)",
@@ -20033,17 +20255,18 @@
         ],
         "_function_expression___expression_until_end_of_statement__statement": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name___expression_until_end_of_statement__statement"
             }
         ],
         "_function_expression_name___expression_until_end_of_statement__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -20081,7 +20304,7 @@
         ],
         "_function_expression_parenthesis___expression_until_end_of_statement__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -20112,7 +20335,7 @@
         ],
         "_function_expression_curly_bracket___expression_until_end_of_statement__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -20147,7 +20370,7 @@
         ],
         "_class_expression_name___expression_until_end_of_statement__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -20190,7 +20413,7 @@
         ],
         "_class_expression_curly_bracket_or_extends___expression_until_end_of_statement__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -20226,7 +20449,7 @@
         ],
         "_class_expression_inheritance___expression_until_end_of_statement__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -20265,7 +20488,7 @@
         ],
         "_class_expression_curly_bracket___expression_until_end_of_statement__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -20294,6 +20517,9 @@
         "_arrow_function_expression___expression_until_end_of_statement__statement": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement___expression_until_end_of_statement__statement",
                     "_arrow_operator",
@@ -20302,7 +20528,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement___expression_until_end_of_statement__statement",
                     "_arrow_operator"
@@ -20310,6 +20539,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement___expression_until_end_of_statement__statement",
                     "_arrow_operator"
@@ -20345,7 +20577,7 @@
                 "pop": true
             },
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ";",
@@ -20436,7 +20668,7 @@
         ],
         "_dot_reference_contents___expression_until_end_of_statement__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ";",
@@ -20590,7 +20822,7 @@
         ],
         "_primary___expression_until_variable_binding__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -20627,7 +20859,7 @@
         ],
         "_primary_or_block_statement___expression_until_variable_binding__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -20688,7 +20920,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;)",
@@ -20707,7 +20939,7 @@
         ],
         "_new_target___expression_until_variable_binding__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -20749,7 +20981,7 @@
         ],
         "_class_name_shallow___expression_until_variable_binding__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -20778,7 +21010,7 @@
         ],
         "_class_name_deep___expression_until_variable_binding__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -20800,7 +21032,7 @@
         ],
         "_class_name_deep_dot_reference___expression_until_variable_binding__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -20837,7 +21069,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;)",
@@ -20866,7 +21098,7 @@
                 "scope": "keyword.operator.js",
                 "set": [
                     {
-                        "match": "{{space}}++"
+                        "match": "{{some_space}}"
                     },
                     {
                         "match": "(?=;)",
@@ -20894,17 +21126,18 @@
         ],
         "_function_expression___expression_until_variable_binding__statement": [
             {
-                "match": "{{b_before}}(function)(?:(\\*)|{{b_after}})",
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
                 "captures": {
-                    "1": "storage.type.js",
-                    "2": "keyword.operator.js"
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
                 },
                 "set": "_function_expression_name___expression_until_variable_binding__statement"
             }
         ],
         "_function_expression_name___expression_until_variable_binding__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -20946,7 +21179,7 @@
         ],
         "_function_expression_parenthesis___expression_until_variable_binding__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -20981,7 +21214,7 @@
         ],
         "_function_expression_curly_bracket___expression_until_variable_binding__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -21020,7 +21253,7 @@
         ],
         "_class_expression_name___expression_until_variable_binding__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -21067,7 +21300,7 @@
         ],
         "_class_expression_curly_bracket_or_extends___expression_until_variable_binding__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -21107,7 +21340,7 @@
         ],
         "_class_expression_inheritance___expression_until_variable_binding__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -21150,7 +21383,7 @@
         ],
         "_class_expression_curly_bracket___expression_until_variable_binding__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": "(?=;)",
@@ -21183,6 +21416,9 @@
         "_arrow_function_expression___expression_until_variable_binding__statement": [
             {
                 "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement___expression_until_variable_binding__statement",
                     "_arrow_operator",
@@ -21191,7 +21427,10 @@
             },
             {
                 "match": "{{arrow_function_with_reserved_word}}",
-                "scope": "invalid.illegal.js",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
                 "set": [
                     "_primary_or_block_statement___expression_until_variable_binding__statement",
                     "_arrow_operator"
@@ -21199,6 +21438,9 @@
             },
             {
                 "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
                 "set": [
                     "_primary_or_block_statement___expression_until_variable_binding__statement",
                     "_arrow_operator"
@@ -21234,7 +21476,7 @@
                 "pop": true
             },
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ";",
@@ -21333,7 +21575,7 @@
         ],
         "_dot_reference_contents___expression_until_variable_binding__statement": [
             {
-                "match": "{{space}}++"
+                "match": "{{some_space}}"
             },
             {
                 "match": ";",

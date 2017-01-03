@@ -1,5 +1,5 @@
 %%name%%:
-  - match: '{{space}}++'
+  - match: '{{some_space}}'
   - match: '{{line_terminator}}'
     set:
       - match: '{{non_token}}'

@@ -17,8 +17,8 @@ variables:
   line_terminator_chars: '\x{000a}\x{000d}\x{2028}\x{2029}'
 
   # Low-level JavaScript categories
-  keyword: '(?:break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|function|if|import|in|instanceof|new|return|super|switch|this|throw|try|typeof|var|void|while|with|yield|let|of|static)'
-  future_reserved_word: '(?:enum|await|implements|interface|package|private|protected|public)'
+  keyword: '(?:break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|function|if|import|in|instanceof|new|return|super|switch|this|throw|try|typeof|var|void|while|with|yield|let|of|static|await)'
+  future_reserved_word: '(?:enum|implements|interface|package|private|protected|public)'
   hex_escape_sequence: '(?:x\h{2})'
   unicode_escape_sequence: '(?:u\h{4}|u\{\h++\})'
   common_regexp_escape_sequences: '(?:{{hex_escape_sequence}}|{{unicode_escape_sequence}}|c[a-zA-Z]|0(?![0-9])|[1-9][0-9]*+)'
@@ -28,6 +28,7 @@ variables:
   space: '[{{space_chars}}]'
   line_terminator: '(?:\x{000d}\x{000a}|[{{line_terminator_chars}}])'
   non_token: '[{{space_chars}}{{line_terminator_chars}}]++'
+  some_space: '{{space}}++'
   to_token: '{{space}}*+' # skip to next token on the same line
   token: '[^{{space_chars}}{{line_terminator_chars}}]'
   b_before: '(?<![{{ident_part}}])' # word-break before
@@ -39,13 +40,13 @@ variables:
   ident: '(?:{{b_before}}[{{ident_start}}][{{ident_part}}]*+{{b_after}})'
   reserved_word: '(?:{{b_before}}(?:{{keyword}}|{{future_reserved_word}}|null|true|false){{b_after}})'
   statement_keyword: '(?:{{b_before}}(?:import|export|var|let|const|if|with|while|do|for|switch|try|catch|finally|break|continue|case|return|throw|debugger){{b_after}})'
-  statement_keyword_all: '(?:{{statement_keyword}}|{{b_before}}(?:function|class|true|false|null|undefined|Infinity|NaN|this|arguments|super|new|yield|typeof|void|delete|await){{b_after}})'
+  statement_keyword_all: '(?:{{statement_keyword}}|{{b_before}}(?:function|class|async|true|false|null|undefined|Infinity|NaN|this|arguments|super|new|yield|typeof|void|delete|await){{b_after}})'
   shebang: '^#!/usr/bin/env node(?:{{space}}[^{{line_terminator_chars}}]*+)?+(?={{line_terminator}}|$)'
-  arrow_function_with_parenthesis: '\((?={{to_token}}(?:(?:{{ident}}|\{|\[|\.\.\.)[^)]*+)?+\){{to_token}}=>)'
-  arrow_function_with_reserved_word: '{{reserved_word}}(?={{to_token}}=>)'
-  arrow_function_with_ident: '{{ident}}(?={{to_token}}=>)'
-  assignment_for_function: '(?={{to_token}}={{to_token}}(?:function\*?+{{to_token}}\(|{{arrow_function_with_parenthesis}}|{{arrow_function_with_reserved_word}}|{{arrow_function_with_ident}}))'
-  property_assignment_for_function: '(?={{to_token}}:{{to_token}}(?:function\*?+{{to_token}}\(|{{arrow_function_with_parenthesis}}|{{arrow_function_with_reserved_word}}|{{arrow_function_with_ident}}))'
+  arrow_function_with_parenthesis: '(?:{{b_before}}(async){{to_token}})?+\((?={{to_token}}(?:(?:{{ident}}|\{|\[|\.\.\.)[^)]*+)?+\){{to_token}}=>)'
+  arrow_function_with_reserved_word: '(?:{{b_before}}(async){{some_space}})?+({{reserved_word}})(?={{to_token}}=>)'
+  arrow_function_with_ident: '(?:{{b_before}}(async){{some_space}})?+({{ident}})(?={{to_token}}=>)'
+  assignment_for_function: '(?={{to_token}}={{to_token}}(?:(?:async{{some_space}})?+function\*?+{{to_token}}\(|{{arrow_function_with_parenthesis}}|{{arrow_function_with_reserved_word}}|{{arrow_function_with_ident}}))'
+  property_assignment_for_function: '(?={{to_token}}:{{to_token}}(?:(?:async{{some_space}})?+function\*?+{{to_token}}\(|{{arrow_function_with_parenthesis}}|{{arrow_function_with_reserved_word}}|{{arrow_function_with_ident}}))'
 
 contexts:
   prototype:
@@ -133,7 +134,7 @@ contexts:
   method_definition_in_class:
     mixin: method_definition
     exitMatch: '[;}]'
-    overrideBefore:
+    overrideNonRecurring:
       - match: '{{b_before}}static{{b_after}}'
         scope: storage.modifier.js
         set:
@@ -158,13 +159,13 @@ contexts:
     overrideBefore:
       - match: ','
         scope: invalid.illegal.js
-    overrideAfter:
       - match: '{{ident}}{{property_assignment_for_function}}'
         scope: entity.name.function.js
         pop: true
       - match: '{{ident}}(?={{to_token}}:)' # this doesn't extend through new lines
         scope: entity.name.property.js
         pop: true
+    overrideAfter:
       - match: '{{reserved_word}}'
         scope: invalid.illegal.js
         set: need_comma_or_closing_curly_bracket
@@ -429,8 +430,8 @@ contexts:
     exitValue: 'true'
 
   _optional_postfix_operator:
-    - match: '--|\+\+'
-      scope: keyword.operator.js
+    - match: '{{to_token}}(--|\+\+)'
+      captures: {1: keyword.operator.js}
       pop: true
     - match: '{{otherwise}}'
       pop: true
@@ -523,7 +524,7 @@ contexts:
     match: '(?=[''''"])'
     goto: '_import_location'
     exitMatch: ';'
-    overrideNewline: {match: '(?={{statement_keyword_all}})', pop: true}
+    overrideNewline: {match: '(?={{statement_keyword_all}}|{{ident}}{{to_token}}[^,;f{{line_terminator_chars}}])', pop: true}
     override:
       - match: '{{reserved_word}}'
         scope: invalid.illegal.js
@@ -568,7 +569,7 @@ contexts:
     matchExtra: 'scope: variable.language.js' # optional
     goto: '_import_from'
     exitMatch: ';'
-    overrideNewline: {match: '(?={{statement_keyword_all}})', pop: true}
+    overrideNewline: {match: '(?={{statement_keyword_all}}|{{ident}}{{to_token}}[^;f{{line_terminator_chars}}])', pop: true}
     override:
       - match: '{{reserved_word}}'
         scope: invalid.illegal.js
@@ -640,7 +641,7 @@ contexts:
         set: _variable_statement__statement
       - match: '{{b_before}}(?=class{{b_after}})'
         set: _class_declaration__statement
-      - match: '{{b_before}}(?=function{{b_after}})'
+      - match: '{{b_before}}(?=(?:async{{some_space}})?+function{{b_after}})'
         set: _function_declaration__statement
       - match: '{{b_before}}default{{b_after}}'
         scope: storage.modifier.js
