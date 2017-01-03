@@ -612,7 +612,7 @@
             {
                 "match": "({{ident}}){{to_token}}(as){{b_after}}",
                 "captures": {
-                    "1": "entity.other.js",
+                    "1": "entity.name.property.js",
                     "2": "keyword.operator.js"
                 },
                 "set": [
@@ -701,7 +701,7 @@
             },
             {
                 "match": "{{ident}}",
-                "scope": "entity.other.js",
+                "scope": "entity.name.property.js",
                 "set": "_export_clause_continue"
             },
             {
@@ -715,7 +715,7 @@
             },
             {
                 "match": "{{ident}}",
-                "scope": "entity.other.js",
+                "scope": "entity.name.property.js",
                 "set": "_export_clause_continue"
             },
             {
@@ -11785,7 +11785,7 @@
             },
             {
                 "match": "{{ident}}{{assignment_for_function}}",
-                "scope": "entity.function.js",
+                "scope": "entity.name.function.js",
                 "pop": true
             },
             {
@@ -11843,7 +11843,7 @@
             },
             {
                 "match": "{{ident}}{{assignment_for_function}}",
-                "scope": "entity.function.js",
+                "scope": "entity.name.function.js",
                 "pop": true
             },
             {
@@ -11873,7 +11873,7 @@
         "property_name_for_method": [
             {
                 "match": "{{ident}}(?={{to_token}}(?:))",
-                "scope": "entity.function.js",
+                "scope": "entity.name.function.js",
                 "pop": true
             },
             {
@@ -11890,7 +11890,7 @@
         "property_name_requires_parenthesis_for_method": [
             {
                 "match": "{{ident}}(?={{to_token}}(?:\\())",
-                "scope": "entity.function.js",
+                "scope": "entity.name.function.js",
                 "pop": true
             },
             {
@@ -11907,7 +11907,7 @@
         "property_name_requires_colon": [
             {
                 "match": "{{ident}}(?={{to_token}}(?::))",
-                "scope": "entity.other.js",
+                "scope": "entity.name.property.js",
                 "pop": true
             },
             {
@@ -11964,7 +11964,7 @@
             },
             {
                 "match": "{{ident}}",
-                "scope": "entity.function.js",
+                "scope": "entity.name.function.js",
                 "pop": true
             },
             {
@@ -12154,12 +12154,12 @@
             },
             {
                 "match": "{{ident}}{{property_assignment_for_function}}",
-                "scope": "entity.function.js",
+                "scope": "entity.name.function.js",
                 "pop": true
             },
             {
                 "match": "{{ident}}(?={{to_token}}:)",
-                "scope": "entity.other.js",
+                "scope": "entity.name.property.js",
                 "pop": true
             },
             {

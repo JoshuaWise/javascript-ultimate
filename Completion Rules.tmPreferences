@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>scope</key>
+    <string>source.js</string>
+    <key>settings</key>
+    <dict>
+        <key>cancelCompletion</key>
+        <string>^[\x{0020}\x{0009}\x{000B}\x{000C}\x{00A0}\x{FEFF}\p{Zs}]*+\{?+[\x{0020}\x{0009}\x{000B}\x{000C}\x{00A0}\x{FEFF}\p{Zs}]*+(?:import|export([\x{0020}\x{0009}\x{000B}\x{000C}\x{00A0}\x{FEFF}\p{Zs}]++default)?+|var|let|const|if|with|while|do|for|switch|try|catch|finally|break|continue|case|return|throw|debugger|function|class|true|false|null|undefined|Infinity|NaN|this|arguments|super|new|yield|typeof|void|delete|await|static)$</string>
+    </dict>
+</dict>
+</plist>

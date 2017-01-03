@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>name</key>
+    <string>JavaScript Indent</string>
+    <key>scope</key>
+    <string>source.js</string>
+    <key>settings</key>
+    <dict>
+        <key>decreaseIndentPattern</key>
+        <string>^(.*\*/)?[\x{0020}\x{0009}\x{000B}\x{000C}\x{00A0}\x{FEFF}\p{Zs}]*\}.*$</string>
+        <key>increaseIndentPattern</key>
+        <string>^.*\{[^}"']*$|^[\x{0020}\x{0009}\x{000B}\x{000C}\x{00A0}\x{FEFF}\p{Zs}]*+case(?![\p{L}\p{Nl}\p{Mn}\p{Mc}\p{Nd}\p{Pc}\x{2118}\x{212E}\x{309B}\x{309C}\x{1369}\x{00B7}\x{0387}\x{19DA}\x{200C}\x{200D}_$\\])[\x{0020}\x{0009}\x{000B}\x{000C}\x{00A0}\x{FEFF}\p{Zs}]*+[^\x{0020}\x{0009}\x{000B}\x{000C}\x{00A0}\x{FEFF}\p{Zs}:]++[\x{0020}\x{0009}\x{000B}\x{000C}\x{00A0}\x{FEFF}\p{Zs}]*+:$|^[\x{0020}\x{0009}\x{000B}\x{000C}\x{00A0}\x{FEFF}\p{Zs}]*+default[\x{0020}\x{0009}\x{000B}\x{000C}\x{00A0}\x{FEFF}\p{Zs}]*+:$|^[\x{0020}\x{0009}\x{000B}\x{000C}\x{00A0}\x{FEFF}\p{Zs}]*+[}{]?+[\x{0020}\x{0009}\x{000B}\x{000C}\x{00A0}\x{FEFF}\p{Zs}]*+(?:(?:else[\x{0020}\x{0009}\x{000B}\x{000C}\x{00A0}\x{FEFF}\p{Zs}]++if|if|with|for)[\x{0020}\x{0009}\x{000B}\x{000C}\x{00A0}\x{FEFF}\p{Zs}]*+\(.*|else|do)$</string>
+    </dict>
+</dict>
+</plist>

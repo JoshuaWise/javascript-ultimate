@@ -123,12 +123,12 @@ contexts:
   parameter_binding_for_object_destructuring: {mixin: parameter_binding, exitMatch: '[,}]', overrideAfter: {match: '=', scope: keyword.operator.js, set: expression_until_comma_or_curly_bracket}, identExtra: 'scope: variable.language.js'}
   parameter_binding_for_array_destructuring: {mixin: parameter_binding, exitMatch: '\]', overrideAfter: [{match: '=', scope: keyword.operator.js, push: expression_until_comma_or_square_bracket_ahead}, {match: ',', push: __parameter_binding_for_array_destructuring}], overrideBefore: [{match: ',++'}, {include: destructuring_spread_for_array_destructuring}], identExtra: 'scope: variable.language.js'}
   parameter_binding_list: {mixin: parameter_binding, exitMatch: '\)', overrideAfter: [{match: ',', set: parameter_binding_list}, {match: '=', scope: keyword.operator.js, push: expression_until_parameter_binding_list}], overrideBefore: {include: destructuring_spread_for_parameter_binding_list}, identExtra: 'scope: variable.language.js'}
-  variable_binding_for_for_statement: {mixin: parameter_binding, exitMatch: '(?=[,;)]|{{b_before}}(?:of|in){{b_after}})', overrideAfter: {match: '(?==)', scope: keyword.operator.js, pop: true}, overrideIdent: {match: '{{ident}}{{assignment_for_function}}', scope: entity.function.js, pop: true}}
-  variable_binding: {mixin: parameter_binding, exitMatch: '[^\s\S]', catchAfter: {match: '{{otherwise}}', pop: true}, overrideIdent: {match: '{{ident}}{{assignment_for_function}}', scope: entity.function.js, pop: true}}
+  variable_binding_for_for_statement: {mixin: parameter_binding, exitMatch: '(?=[,;)]|{{b_before}}(?:of|in){{b_after}})', overrideAfter: {match: '(?==)', scope: keyword.operator.js, pop: true}, overrideIdent: {match: '{{ident}}{{assignment_for_function}}', scope: entity.name.function.js, pop: true}}
+  variable_binding: {mixin: parameter_binding, exitMatch: '[^\s\S]', catchAfter: {match: '{{otherwise}}', pop: true}, overrideIdent: {match: '{{ident}}{{assignment_for_function}}', scope: entity.name.function.js, pop: true}}
 
-  property_name_for_method: {mixin: property_name, identScope: 'entity.function.js'}
-  property_name_requires_parenthesis_for_method: {mixin: property_name, identTail: '\(', identScope: 'entity.function.js'}
-  property_name_requires_colon: {mixin: property_name, identTail: ':', identScope: 'entity.other.js'}
+  property_name_for_method: {mixin: property_name, identScope: 'entity.name.function.js'}
+  property_name_requires_parenthesis_for_method: {mixin: property_name, identTail: '\(', identScope: 'entity.name.function.js'}
+  property_name_requires_colon: {mixin: property_name, identTail: ':', identScope: 'entity.name.property.js'}
 
   method_definition_in_class:
     mixin: method_definition
@@ -141,7 +141,7 @@ contexts:
           - include: _parts__method_definition_in_class
     overrideAfter:
       - match: '{{ident}}'
-        scope: entity.function.js
+        scope: entity.name.function.js
         pop: true
     exit:
       - match: '(?<=\})'
@@ -160,16 +160,16 @@ contexts:
         scope: invalid.illegal.js
     overrideAfter:
       - match: '{{ident}}{{property_assignment_for_function}}'
-        scope: entity.function.js
+        scope: entity.name.function.js
         pop: true
       - match: '{{ident}}(?={{to_token}}:)' # this doesn't extend through new lines
-        scope: entity.other.js
+        scope: entity.name.property.js
         pop: true
       - match: '{{reserved_word}}'
         scope: invalid.illegal.js
         set: need_comma_or_closing_curly_bracket
       - match: '{{ident}}'
-        # scope: entity.other.js # optional
+        # scope: entity.name.property.js # optional
         set: need_comma_or_closing_curly_bracket
     exit:
       - match: '(?<=\})'
@@ -582,7 +582,7 @@ contexts:
     - match: '\}'
       set: _import_from
     - match: '({{ident}}){{to_token}}(as){{b_after}}' # this doesn't extend through new lines
-      captures: {1: entity.other.js, 2: keyword.operator.js}
+      captures: {1: entity.name.property.js, 2: keyword.operator.js}
       set:
         - match: '\}'
           set: _import_from
@@ -660,7 +660,7 @@ contexts:
       scope: invalid.illegal.js
       set: _export_clause_continue
     - match: '{{ident}}'
-      scope: entity.other.js
+      scope: entity.name.property.js
       set: _export_clause_continue
     - include: otherwise_invalid
 
@@ -668,7 +668,7 @@ contexts:
     - match: '\}'
       pop: true
     - match: '{{ident}}'
-      scope: entity.other.js
+      scope: entity.name.property.js
       set: _export_clause_continue
     - include: otherwise_invalid
 
