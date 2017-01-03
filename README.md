@@ -6,7 +6,7 @@ Although Sublime Text's built-in JavaScript language definition have made *signi
 Here are some of the improvements that it makes:
 * Complete and accurate ES2016 support
 * JavaDoc support
-* Context-awareness, capable of highlighting errors or mistakes in your code
+* Context-awareness (capable of highlighting errors or mistakes in your code)
 
 ## Regular Expression comprehension
 If you use JavaScript Ultimate with any of your existing themes, it will work just fine, and you can you enjoy a perfect JavaScript language definition.
