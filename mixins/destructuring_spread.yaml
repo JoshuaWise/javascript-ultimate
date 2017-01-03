@@ -9,6 +9,7 @@ _identifier__%%name%%:
   - match: '{{reserved_word}}'
     scope: invalid.illegal.js
     pop: true
+  - include: %%destructuring%%
   - match: '{{ident}}'
     %%~identExtra%%
     pop: true

@@ -6,9 +6,10 @@
 _destructuring_spread__%%name%%:
   mixin: destructuring_spread
   exitMatch: '\}'
+  # exitExtra: 'scope: storage.modifier.js' # optional
   initializer: expression_until_curly_bracket_ahead_no_comma
   identExtra: '%%~identExtra%%'
-  # exitExtra: 'scope: storage.modifier.js' # optional
+  destructuring: '%%destructuring%%'
 
 _parameter_binding__%%name%%:
   mixin: parameter_binding

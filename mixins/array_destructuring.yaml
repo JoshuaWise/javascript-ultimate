@@ -8,6 +8,7 @@ _destructuring_spread__%%name%%:
   exitMatch: '(?=\])'
   initializer: expression_until_square_bracket_ahead_no_comma
   identExtra: '%%~identExtra%%'
+  destructuring: '%%destructuring%%'
 
 _parameter_binding__%%name%%:
   mixin: parameter_binding

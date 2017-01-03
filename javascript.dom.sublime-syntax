@@ -12731,6 +12731,9 @@
                 "pop": true
             },
             {
+                "include": "destructuring_for_parameter"
+            },
+            {
                 "match": "{{ident}}",
                 "scope": "variable.language.js",
                 "pop": true
@@ -17586,6 +17589,9 @@
                 "pop": true
             },
             {
+                "include": "destructuring_for_parameter"
+            },
+            {
                 "match": "{{ident}}",
                 "scope": "variable.language.js",
                 "pop": true
@@ -17688,6 +17694,9 @@
                 "pop": true
             },
             {
+                "include": "destructuring_for_variable"
+            },
+            {
                 "match": "{{ident}}",
                 "pop": true
             },
@@ -17786,6 +17795,9 @@
                 "match": "{{reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "pop": true
+            },
+            {
+                "include": "destructuring_for_parameter"
             },
             {
                 "match": "{{ident}}",
@@ -17890,6 +17902,9 @@
                 "match": "{{reserved_word}}",
                 "scope": "invalid.illegal.js",
                 "pop": true
+            },
+            {
+                "include": "destructuring_for_variable"
             },
             {
                 "match": "{{ident}}",

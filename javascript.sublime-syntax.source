@@ -117,7 +117,7 @@ contexts:
 
 
 
-  destructuring_spread_for_parameter_binding_list: {mixin: destructuring_spread, exitMatch: '(?=\))', initializer: expression_until_parenthesis_ahead_no_comma, identExtra: 'scope: variable.language.js'}
+  destructuring_spread_for_parameter_binding_list: {mixin: destructuring_spread, exitMatch: '(?=\))', initializer: expression_until_parenthesis_ahead_no_comma, identExtra: 'scope: variable.language.js', destructuring: destructuring_for_parameter}
 
   parameter_binding_until_parenthesis: {mixin: parameter_binding, exitMatch: '\)', identExtra: 'scope: variable.language.js', destructuring: destructuring_for_parameter}
   parameter_binding_until_parenthesis_with_initializer: {mixin: parameter_binding, exitMatch: '\)', overrideAfter: {match: '=', scope: keyword.operator.js, push: expression_until_parenthesis_ahead_no_comma}, identExtra: 'scope: variable.language.js', destructuring: destructuring_for_parameter}
