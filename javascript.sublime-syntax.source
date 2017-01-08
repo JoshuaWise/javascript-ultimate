@@ -403,10 +403,12 @@ contexts:
       scope: constant.numeric.decimal.js
       pop: true
 
-  constant_or_variable:
+  language_constant:
     - match: '{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}'
       scope: constant.language.js
       pop: true
+
+  language_variable:
     - match: '{{b_before}}(?:this|arguments|super){{b_after}}'
       scope: variable.language.js
       pop: true

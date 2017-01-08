@@ -14,7 +14,8 @@ _primary_parts__%%name%%:
   - include: object_literal
   - include: _function_expression__%%name%%
   - include: _class_expression__%%name%%
-  - include: constant_or_variable
+  - include: language_constant
+  - include: language_variable
   - include: _new_keyword__%%name%%
   - include: _prefix_operators__%%name%%
   - include: _unary_operators__%%name%%
@@ -121,7 +122,9 @@ _prefix_operators__%%name%%:
       - match: '{{b_before}}(?:undefined|Infinity|NaN){{b_after}}'
         scope: invalid.illegal.js
         pop: true
+      - include: language_variable
       - include: identifier_reference_simple
+      - include: parenthesized_expression
       - include: otherwise_invalid
 
 _unary_operators__%%name%%:

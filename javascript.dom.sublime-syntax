@@ -462,12 +462,14 @@
                 "pop": true
             }
         ],
-        "constant_or_variable": [
+        "language_constant": [
             {
                 "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                 "scope": "constant.language.js",
                 "pop": true
-            },
+            }
+        ],
+        "language_variable": [
             {
                 "match": "{{b_before}}(?:this|arguments|super){{b_after}}",
                 "scope": "variable.language.js",
@@ -719,7 +721,10 @@
                 "include": "_class_expression__expression_until_parenthesis"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword__expression_until_parenthesis"
@@ -915,7 +920,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -1423,7 +1434,10 @@
                 "include": "_class_expression__expression_until_square_bracket"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword__expression_until_square_bracket"
@@ -1619,7 +1633,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -2127,7 +2147,10 @@
                 "include": "_class_expression__expression_until_colon"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword__expression_until_colon"
@@ -2323,7 +2346,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -2831,7 +2860,10 @@
                 "include": "_class_expression__expression_until_curly_bracket_ahead_or_colon"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword__expression_until_curly_bracket_ahead_or_colon"
@@ -3027,7 +3059,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -3535,7 +3573,10 @@
                 "include": "_class_expression__expression_until_end_of_template_interpolation"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword__expression_until_end_of_template_interpolation"
@@ -3731,7 +3772,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -4241,7 +4288,10 @@
                 "include": "_class_expression__expression_until_comma_or_curly_bracket"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword__expression_until_comma_or_curly_bracket"
@@ -4437,7 +4487,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -4945,7 +5001,10 @@
                 "include": "_class_expression__expression_until_comma_or_square_bracket_ahead"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword__expression_until_comma_or_square_bracket_ahead"
@@ -5141,7 +5200,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -5649,7 +5714,10 @@
                 "include": "_class_expression__expression_until_parameter_binding_list"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword__expression_until_parameter_binding_list"
@@ -5845,7 +5913,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -6357,7 +6431,10 @@
                 "include": "_class_expression__expression_until_parenthesis_with_spread"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword__expression_until_parenthesis_with_spread"
@@ -6563,7 +6640,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -7075,7 +7158,10 @@
                 "include": "_class_expression__expression_until_parenthesis_no_comma"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword__expression_until_parenthesis_no_comma"
@@ -7271,7 +7357,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -7783,7 +7875,10 @@
                 "include": "_class_expression__expression_until_parenthesis_ahead_no_comma"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword__expression_until_parenthesis_ahead_no_comma"
@@ -7979,7 +8074,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -8491,7 +8592,10 @@
                 "include": "_class_expression__expression_until_square_bracket_with_spread_or_comma_anywhere"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword__expression_until_square_bracket_with_spread_or_comma_anywhere"
@@ -8703,7 +8807,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -9211,7 +9321,10 @@
                 "include": "_class_expression__expression_until_square_bracket_ahead_no_comma"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword__expression_until_square_bracket_ahead_no_comma"
@@ -9407,7 +9520,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -9919,7 +10038,10 @@
                 "include": "_class_expression__expression_until_curly_bracket_ahead_no_comma"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword__expression_until_curly_bracket_ahead_no_comma"
@@ -10115,7 +10237,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -10627,7 +10755,10 @@
                 "include": "_class_expression__expression_until_for_statement_third_section"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword__expression_until_for_statement_third_section"
@@ -10823,7 +10954,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -11331,7 +11468,10 @@
                 "include": "_class_expression__expression_until_for_binding"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword__expression_until_for_binding"
@@ -11535,7 +11675,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -12047,7 +12193,10 @@
                 "include": "_class_expression___for_statement_first_expression"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword___for_statement_first_expression"
@@ -12243,7 +12392,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -18034,7 +18189,10 @@
                 "include": "_class_expression___expression_until_end_of_statement__statement_in_block"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword___expression_until_end_of_statement__statement_in_block"
@@ -18290,7 +18448,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -18917,7 +19081,10 @@
                 "include": "_class_expression___expression_until_variable_binding__statement_in_block"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword___expression_until_variable_binding__statement_in_block"
@@ -19193,7 +19360,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -19860,7 +20033,10 @@
                 "include": "_class_expression___expression_until_end_of_statement__statement_top_level"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword___expression_until_end_of_statement__statement_top_level"
@@ -20116,7 +20292,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -20743,7 +20925,10 @@
                 "include": "_class_expression___expression_until_variable_binding__statement_top_level"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword___expression_until_variable_binding__statement_top_level"
@@ -21019,7 +21204,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -21686,7 +21877,10 @@
                 "include": "_class_expression___expression_until_end_of_statement__statement"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword___expression_until_end_of_statement__statement"
@@ -21942,7 +22136,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
@@ -22569,7 +22769,10 @@
                 "include": "_class_expression___expression_until_variable_binding__statement"
             },
             {
-                "include": "constant_or_variable"
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
             },
             {
                 "include": "_new_keyword___expression_until_variable_binding__statement"
@@ -22845,7 +23048,13 @@
                         "pop": true
                     },
                     {
+                        "include": "language_variable"
+                    },
+                    {
                         "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
                     },
                     {
                         "include": "otherwise_invalid"
