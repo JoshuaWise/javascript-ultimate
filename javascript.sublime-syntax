@@ -912,15 +912,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -1593,15 +1593,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -2274,15 +2274,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -2955,15 +2955,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -3636,15 +3636,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -4319,15 +4319,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -5000,15 +5000,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -5681,15 +5681,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -6376,15 +6376,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -7061,15 +7061,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -7746,15 +7746,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -8447,15 +8447,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -9128,15 +9128,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -9813,15 +9813,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -10498,15 +10498,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -11187,15 +11187,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -11872,15 +11872,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -17856,15 +17856,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -18736,15 +18736,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -19636,15 +19636,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -20516,15 +20516,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -21416,15 +21416,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
@@ -22296,15 +22296,15 @@
                         "pop": true
                     },
                     {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "match": "{{b_before}}(?:undefined|Infinity|NaN){{b_after}}",
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
                         "scope": "invalid.illegal.js",
                         "pop": true
                     },
                     {
                         "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
                     },
                     {
                         "include": "identifier_reference_simple"
