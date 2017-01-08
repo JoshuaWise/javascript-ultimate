@@ -1,0 +1,11 @@
+JavaScript Ultimate now support ES2016!
+
+You'll also notice a few features from ES2017, such as object spread/rest operators
+and async/await functions.
+
+NOTE:
+If you use SublimeLinter, you'll need to add the following to your settings file:
+(Preferences > Package Settings > SublimeLinter > Settings - User)
+"syntax_map": {
+  "javascript.dom": "javascript" 
+}
