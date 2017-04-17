@@ -97,11 +97,11 @@ contexts:
   expression_until_end_of_template_interpolation: {mixin: expression, exitMatch: '\}', exitExtra: 'scope: string.quoted.template.js variable.language.js'}
   expression_until_comma_or_curly_bracket: {mixin: expression, exitMatch: '[,}]'}
   expression_until_comma_or_square_bracket_ahead: {mixin: expression, exitMatch: '(?=[,\]])'}
+  expression_until_parenthesis_ahead_or_comma: {mixin: expression, exitMatch: '(?=\))|,'}
   expression_until_parameter_binding_list: {mixin: expression, exitMatch: '(?=\))', overrideSecondary: {match: '(?=,)', pop: true}}
-  expression_until_parenthesis_with_spread: {mixin: expression, exitMatch: '\)', overridePrimary: {match: '\.\.\.', scope: keyword.operator.js, pop: true}, catchSecondary: {match: '(?<=\.\.\.)', set: expression_until_parenthesis_no_comma}}
-  expression_until_parenthesis_no_comma: {mixin: expression, exitMatch: '\)', overrideSecondary: {match: ',', scope: invalid.illegal.js}}
   expression_until_parenthesis_ahead_no_comma: {mixin: expression, exitMatch: '(?=\))', overrideSecondary: {match: ',', scope: invalid.illegal.js}}
-  expression_until_square_bracket_with_spread_or_comma_anywhere: {mixin: expression, exitMatch: '\]', overridePrimary: [{match: ',++'}, {match: '\.\.\.', scope: keyword.operator.js, set: _primary__expression_until_comma_or_square_bracket_ahead}]}
+  expression_until_parenthesis_with_spread_anywhere: {mixin: expression, exitMatch: '\)', beforeAnything: [{match: '{{non_token}}'}, {match: '\.\.\.', scope: keyword.operator.js, push: expression_until_parenthesis_ahead_or_comma}], overrideSecondary: {match: ',', set: expression_until_parenthesis_with_spread_anywhere}}
+  expression_until_square_bracket_with_spread_or_comma_anywhere: {mixin: expression, exitMatch: '\]', beforeAnything: [{match: '{{non_token}}'}, {match: ',++'}, {match: '\.\.\.', scope: keyword.operator.js, push: expression_until_comma_or_square_bracket_ahead}], overridePrimary: [{match: '(?=,)', pop: true}], overrideSecondary: [{match: '(?=,)', set: expression_until_square_bracket_with_spread_or_comma_anywhere}]}
   expression_until_square_bracket_ahead_no_comma: {mixin: expression, exitMatch: '(?=\])', overrideSecondary: {match: ',', scope: invalid.illegal.js}}
   expression_until_curly_bracket_ahead_no_comma: {mixin: expression, exitMatch: '(?=\})', overrideSecondary: {match: ',', scope: invalid.illegal.js}}
   expression_until_for_statement_third_section: {mixin: expression, exitMatch: ';|(?=\))'}

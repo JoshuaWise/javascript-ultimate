@@ -342,7 +342,7 @@ _square_bracket_reference__%%name%%:
 
 _function_invocation__%%name%%:
   - match: '\('
-    set: [_secondary__%%name%%, expression_until_parenthesis_with_spread]
+    set: [_secondary__%%name%%, expression_until_parenthesis_with_spread_anywhere]
 
 _template_literal__%%name%%:
   - match: '(?=`)'
