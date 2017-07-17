@@ -78,6 +78,8 @@ contexts:
     - match: '{{otherwise}}'
       set:
       - match: '{{non_token}}'
+      - match: '(?=</[sS][cC][rR][iI][pP][tT]>)'
+        pop: true
       - match: '{{otherwise}}'
         push: statement_top_level
 
