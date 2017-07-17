@@ -1374,7 +1374,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary__expression_until_parenthesis",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -2087,7 +2087,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary__expression_until_square_bracket",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -2800,7 +2800,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary__expression_until_colon",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -3513,7 +3513,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary__expression_until_curly_bracket_ahead_or_colon",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -4228,7 +4228,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary__expression_until_end_of_template_interpolation",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -4941,7 +4941,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary__expression_until_comma_or_curly_bracket",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -5654,7 +5654,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary__expression_until_comma_or_square_bracket_ahead",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -5673,6 +5673,719 @@
                 "set": [
                     "_secondary__expression_until_comma_or_square_bracket_ahead",
                     "_primary__expression_until_comma_or_square_bracket_ahead",
+                    "expression_until_colon"
+                ]
+            }
+        ],
+        "expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{otherwise}}",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "_primary__expression_until_parenthesis_ahead_or_comma"
+                ]
+            }
+        ],
+        "_primary_parts__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "include": "_arrow_function_expression__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "include": "parenthesized_expression"
+            },
+            {
+                "include": "string_literal"
+            },
+            {
+                "include": "template_literal"
+            },
+            {
+                "include": "regular_expression_literal"
+            },
+            {
+                "include": "numeric_literal"
+            },
+            {
+                "include": "array_literal"
+            },
+            {
+                "include": "object_literal"
+            },
+            {
+                "include": "_function_expression__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "include": "_class_expression__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
+            },
+            {
+                "include": "_new_keyword__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "include": "_prefix_operators__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "include": "_unary_operators__expression_until_parenthesis_ahead_or_comma"
+            }
+        ],
+        "_primary__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=(?=\\))|,)",
+                "pop": true
+            },
+            {
+                "include": "_primary_parts__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "include": "reserved_word_reference"
+            },
+            {
+                "include": "identifier_reference"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_primary_or_block_statement__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=(?=\\))|,)",
+                "pop": true
+            },
+            {
+                "match": "(?=\\{)",
+                "set": "block_statement"
+            },
+            {
+                "include": "_primary_parts__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "include": "reserved_word_reference"
+            },
+            {
+                "include": "identifier_reference"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_new_keyword__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{b_before}}new{{b_after}}",
+                "scope": "keyword.operator.js",
+                "set": [
+                    {
+                        "match": "{{some_space}}"
+                    },
+                    {
+                        "match": "(?=(?=\\))|,)",
+                        "pop": true
+                    },
+                    {
+                        "match": "\\.",
+                        "scope": "keyword.operator.js",
+                        "set": "_new_target__expression_until_parenthesis_ahead_or_comma"
+                    },
+                    {
+                        "include": "_class_name_shallow__expression_until_parenthesis_ahead_or_comma"
+                    }
+                ]
+            }
+        ],
+        "_new_target__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=(?=\\))|,)",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}target{{b_after}}",
+                "scope": "support.class.js",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}(?:t|ta|tar|targ|targe){{b_after}}",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "invalid.illegal.js",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_class_name_shallow__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=(?=\\))|,)",
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "set": [
+                    "_class_name_deep__expression_until_parenthesis_ahead_or_comma",
+                    "expression_until_parenthesis"
+                ]
+            },
+            {
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "set": "_class_name_deep__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "support.class.js",
+                "set": "_class_name_deep__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "include": "_primary__expression_until_parenthesis_ahead_or_comma"
+            }
+        ],
+        "_class_name_deep__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=(?=\\))|,)",
+                "pop": true
+            },
+            {
+                "match": "\\.",
+                "scope": "support.class.js",
+                "set": "_class_name_deep_dot_reference__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "match": "\\[",
+                "push": "expression_until_square_bracket"
+            },
+            {
+                "match": "{{otherwise}}",
+                "pop": true
+            }
+        ],
+        "_class_name_deep_dot_reference__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=(?=\\))|,)",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "support.class.js",
+                "set": "_class_name_deep__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_prefix_operators__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "(?<!-)--|(?<!\\+)\\+\\+",
+                "scope": "keyword.operator.js",
+                "set": [
+                    {
+                        "match": "{{some_space}}"
+                    },
+                    {
+                        "match": "(?=(?=\\))|,)",
+                        "pop": true
+                    },
+                    {
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
+                        "scope": "invalid.illegal.js",
+                        "pop": true
+                    },
+                    {
+                        "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
+                    },
+                    {
+                        "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
+                    },
+                    {
+                        "include": "otherwise_invalid"
+                    }
+                ]
+            }
+        ],
+        "_unary_operators__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{b_before}}yield(?:{{to_token}}\\*|{{b_after}})",
+                "scope": "keyword.operator.js",
+                "set": [
+                    {
+                        "match": "{{some_space}}"
+                    },
+                    {
+                        "match": "(?=(?=\\))|,)",
+                        "pop": true
+                    },
+                    {
+                        "match": "(?={{line_terminator}})",
+                        "pop": true
+                    },
+                    {
+                        "include": "_primary__expression_until_parenthesis_ahead_or_comma"
+                    }
+                ]
+            },
+            {
+                "match": "!|(?<!\\+)\\+(?!\\+)|(?<!-)-(?!-)|{{b_before}}(?:typeof|void|delete|await){{b_after}}",
+                "scope": "keyword.operator.js",
+                "set": "_primary__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "match": "~",
+                "scope": "keyword.operator.bitwise.js",
+                "set": "_primary__expression_until_parenthesis_ahead_or_comma"
+            }
+        ],
+        "_function_expression__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
+                },
+                "set": "_function_expression_name__expression_until_parenthesis_ahead_or_comma"
+            }
+        ],
+        "_function_expression_name__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=(?=\\))|,)",
+                "pop": true
+            },
+            {
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "set": "_function_expression_parenthesis__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "entity.name.function.js",
+                "set": "_function_expression_parenthesis__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "match": "(?=\\()",
+                "set": "_function_expression_parenthesis__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_function_expression_parenthesis__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=(?=\\))|,)",
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "set": [
+                    "_function_expression_curly_bracket__expression_until_parenthesis_ahead_or_comma",
+                    "parameter_binding_list"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_function_expression_curly_bracket__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=(?=\\))|,)",
+                "pop": true
+            },
+            {
+                "match": "(?=\\{)",
+                "set": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_class_expression__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{b_before}}class{{b_after}}",
+                "scope": "storage.type.js",
+                "set": "_class_expression_name__expression_until_parenthesis_ahead_or_comma"
+            }
+        ],
+        "_class_expression_name__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=(?=\\))|,)",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}extends{{b_after}}",
+                "scope": "storage.modifier.js",
+                "set": "_class_expression_inheritance__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "set": "_class_expression_curly_bracket_or_extends__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "entity.name.function.js",
+                "set": "_class_expression_curly_bracket_or_extends__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "match": "\\{",
+                "set": "_class_block"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_class_expression_curly_bracket_or_extends__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=(?=\\))|,)",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}extends{{b_after}}",
+                "scope": "storage.modifier.js",
+                "set": "_class_expression_inheritance__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "match": "{{b_before}}(?:extend|exten|exte|ext|ex|e){{to_token}}{{b_after}}"
+            },
+            {
+                "match": "\\{",
+                "set": "_class_block"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_class_expression_inheritance__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=(?=\\))|,)",
+                "pop": true
+            },
+            {
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "set": "_class_expression_curly_bracket__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "entity.name.function.js",
+                "set": "_class_expression_curly_bracket__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "match": "\\{",
+                "scope": "invalid.illegal.js",
+                "set": "_class_block"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_class_expression_curly_bracket__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=(?=\\))|,)",
+                "pop": true
+            },
+            {
+                "match": "\\{",
+                "set": "_class_block"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_arrow_function_expression__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
+                "set": [
+                    "_primary_or_block_statement__expression_until_parenthesis_ahead_or_comma",
+                    "_arrow_operator",
+                    "parameter_binding_list"
+                ]
+            },
+            {
+                "match": "{{arrow_function_with_reserved_word}}",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
+                "set": [
+                    "_primary_or_block_statement__expression_until_parenthesis_ahead_or_comma",
+                    "_arrow_operator"
+                ]
+            },
+            {
+                "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
+                "set": [
+                    "_primary_or_block_statement__expression_until_parenthesis_ahead_or_comma",
+                    "_arrow_operator"
+                ]
+            }
+        ],
+        "_secondary_parts__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "include": "_instanceof_keyword__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "include": "_binary_operators__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "include": "_dot_reference__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "include": "_square_bracket_reference__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "include": "_function_invocation__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "include": "_template_literal__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "include": "_conditional_expression__expression_until_parenthesis_ahead_or_comma"
+            }
+        ],
+        "_secondary__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=\\))|,",
+                "pop": true
+            },
+            {
+                "include": "_secondary_parts__expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_instanceof_keyword__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{b_before}}instanceof{{b_after}}",
+                "scope": "keyword.operator.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "_class_name_shallow__expression_until_parenthesis_ahead_or_comma"
+                ]
+            }
+        ],
+        "_binary_operators__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
+                "scope": "keyword.operator.bitwise.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "_primary__expression_until_parenthesis_ahead_or_comma"
+                ]
+            },
+            {
+                "match": "\\*\\*|-=|\\+=|===?+|!==?+|<=|>=|&&|\\|\\||\\*=?+|/=|%=",
+                "scope": "keyword.operator.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "_primary__expression_until_parenthesis_ahead_or_comma"
+                ]
+            },
+            {
+                "match": "%|\\*|/|-|\\+|=|<|>|{{b_before}}in{{b_after}}",
+                "scope": "keyword.operator.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "_primary__expression_until_parenthesis_ahead_or_comma"
+                ]
+            },
+            {
+                "match": "&|\\^|~|\\|",
+                "scope": "keyword.operator.bitwise.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "_primary__expression_until_parenthesis_ahead_or_comma"
+                ]
+            },
+            {
+                "match": ",",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "_primary__expression_until_parenthesis_ahead_or_comma"
+                ]
+            }
+        ],
+        "_dot_reference__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "\\.",
+                "set": "_dot_reference_contents__expression_until_parenthesis_ahead_or_comma"
+            }
+        ],
+        "_dot_reference_contents__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=\\))|,",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|splice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn)(?={{to_token}}\\()",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?>E(?>LEMENT_NODE|NTITY_(?>REFERENCE_NODE|NODE))|A(?>TTRIBUTE_NODE|NY_(?>TYPE|UNORDERED_NODE_TYPE))|T(?>EXT_NODE|YPE_(?>BACK_FORWARD|NAVIGATE|RE(?>LOAD|SERVED)))|C(?>DATA_SECTION_NODE|O(?>MMENT_NODE|NNECTING)|HECKING|LOS(?>ING|ED))|PROCESSING_INSTRUCTION_NODE|DO(?>CUMENT_(?>NODE|TYPE_NODE|FRAGMENT_NODE)|MSTRING_SIZE_ERR|WNLOADING|NE)|N(?>O(?>T(?>ATION_NODE|_(?>FOUND_ERR|SUPPORTED_ERR))|_(?>DATA_ALLOWED_ERR|MODIFICATION_ALLOWED_ERR))|UMBER_TYPE|ETWORK_(?>EMPTY|IDLE|LOADING|NO_SOURCE))|I(?>N(?>DEX_SIZE_ERR|VALID_CHARACTER_ERR|USE_ATTRIBUTE_ERR)|DLE)|H(?>IERARCHY_REQUEST_ERR|EADERS_RECEIVED|AVE_NOTHING)|WRONG_DOCUMENT_ERR|U(?>N(?>CACHED|SENT|ORDERED_NODE_(?>ITERATOR_TYPE|SNAPSHOT_TYPE))|PDATEREADY)|O(?>PEN(?>ED)?|RDERED_NODE_(?>ITERATOR_TYPE|SNAPSHOT_TYPE))|LOADING|S(?>HOW_(?>A(?>LL|TTRIBUTE)|C(?>DATA_SECTION|OMMENT)|DOCUMENT(?>_(?>FRAGMENT|TYPE))?|E(?>LEMENT|NTITY(?>_REFERENCE)?)|NOTATION|PROCESSING_INSTRUCTION|TEXT)|TRING_TYPE|ECURITY_ERR|VG_(?>SPREADMETHOD_(?>UNKNOWN|PAD|RE(?>FLECT|PEAT))|ANGLETYPE_(?>UN(?>KNOWN|SPECIFIED)|DEG|RAD|GRAD)|LENGTHTYPE_(?>UNKNOWN|NUMBER|P(?>ERCENTAGE|X|T|C)|E(?>MS|XS)|CM|MM|IN)|PRESERVEASPECTRATIO_(?>UNKNOWN|NONE|XM(?>I(?>NYM(?>I(?>N|D)|AX)|DYM(?>I(?>N|D)|AX))|AXYM(?>I(?>N|D)|AX)))|MEETORSLICE_(?>UNKNOWN|MEET|SLICE)|TRANSFORM_(?>UNKNOWN|MATRIX|TRANSLATE|S(?>CALE|KEW(?>X|Y))|ROTATE)))|BOOLEAN_TYPE|FIRST_ORDERED_NODE_TYPE){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?>v(?>i(?>sib(?>le|ility)|ew(?>port(?>Element)?|Target)|deo(?>Tracks|Height|Width))|olume|al(?>id(?>ationMessage|ity)|ue(?>As(?>Date|Number|String)|InSpecifiedUnits)?)|e(?>rticalAlign|ctorEffect))|t(?>i(?>m(?>ing|eout)|tle)|ype(?>MustMatch)?|op|ext(?>Content|Tra(?>cks|nsform)|A(?>lign|nchor)|Baseline|Indent|Decoration|Overflow|Rendering|Shadow)?|a(?>gName|b(?>Index|index|leLayout|Size)|rget(?>Element)?)|Head|Foot|Bodies|ra(?>ck|ns(?>form(?>Origin|Style)?|ition(?>TimingFunction|D(?>elay|uration)|Property)?)))|n(?>a(?>vigation(?>Start)?|tural(?>Height|Width)|mespaceURI)|e(?>xt(?>Sibling|ElementSibling)|tworkState)|ode(?>Name|Type|Value)|umberOfItems)|u(?>n(?>loadEvent(?>Start|End)|i(?>code(?>Bidi|Range)|tType))|pload|se(?>Map|FinalURL|rZoom|CurrentView)|rl)|r(?>e(?>direct(?>Start|End|Count)|qu(?>estStart|ired(?>Features|Extensions)?)|s(?>ponse(?>Start|End|T(?>ext|ype)|XML)?|ize)|ad(?>yState|Only)|ferrer|peat|l(?>atedTarget|List)?|gion|v(?>ersed)?|turnValue)|ight(?>Context)?|o(?>w(?>Span|s|Index)|tate)|x|y)?|f(?>e(?>tchStart|lxBasis)|o(?>rm(?>s|Action|EncType|Method|NoValidate|Target)?|nt(?>Kerning|S(?>t(?>retch|yle)|ize)|Variant(?>Ligatures)?|Family|Weight)?)|i(?>rst(?>Child|ElementChild)|l(?>es|l(?>Style|Opacity|Rule)?|ter(?>Units|Res(?>X|Y))?))|l(?>o(?>at|od(?>Color|Opacity))|ex(?>Direction|Flow|Grow|Shrink|Wrap)?)|x|y)?|d(?>o(?>m(?>ain(?>Lookup(?>Start|End))?|Loading|Interactive|Co(?>ntentLoadedEvent(?>Start|End)|mplete)|inantBaseline)|c(?>type|ument(?>Element|URI(?>Object)?))|wnload)|e(?>f(?>ault(?>V(?>iew|alue)|Muted|PlaybackRate|Checked|Selected)?|er)|signMode|lta(?>X|Y|Z|Mode))|at(?>a(?>set)?|e(?>time|Time))|i(?>r(?>Name|ection)?|s(?>abled|play))|raggable|uration|x|y)?|c(?>o(?>n(?>nect(?>Start|End)|t(?>e(?>nt(?>Editable|Document|Window|S(?>criptType|tyleType))?|xt(?>Menu)?)|rol(?>ler(?>s)?|s)?))|l(?>or(?>Depth|Interpolation(?>Filters)?|Rendering)?|Span|s)|mp(?>atMode|lete)|o(?>rds|kie(?>Enabled)?)|unter(?>Reset|Increment))|h(?>a(?>r(?>acterSet|Code|set)|llenge)|ild(?>Nodes|ren|ElementCount)|ecked)|l(?>ass(?>List|Name)?|i(?>ent(?>Height|Width|Left|Top|X|Y)|p(?>Path(?>Units)?|Rule)?)|ear)|trlKey|r(?>ossOrigin|edentials)|ur(?>rent(?>S(?>rc|cale)|T(?>ime|rans(?>form|late))|View)|sor)|ite|ellIndex|a(?>ption(?>Side)?|che|nvas)|ssText|x|y)?|s(?>e(?>c(?>ureConnectionStart|tionRowIndex)|a(?>rch|mless)|lect(?>ed(?>StyleSheetSet|Index|Options)?|ion(?>Direction|End|Start))?|ek(?>able|ing))|u(?>btle|mmary)|t(?>a(?>t(?>e|us(?>Text)?)|rt)|yle(?>Sheet(?>s|Sets))?|ep|roke(?>Style|Dash(?>array|offset)|Line(?>cap|join)|Miterlimit|Opacity|Width)?|op(?>Color|Opacity))|c(?>r(?>ipts|oll(?>Height|Left|Top|Width)|een(?>X|Y|PixelToMillimeter(?>X|Y)))|ope(?>d)?)|ystem(?>Id|Language)|h(?>a(?>dow(?>Root|Blur|Color|Offset(?>X|Y))|pe(?>ImageThreshold|Margin|Outside|Rendering)?)|iftKey|eet)|ize(?>s)?|rc(?>doc|set|lang)?|andbox|p(?>an|readMethod))|l(?>o(?>adEvent(?>Start|End)|op|w|calName)|e(?>ft(?>Context)?|tterSpacing)|a(?>ng(?>uage)?|st(?>M(?>odified(?>Date)?|atch)|StyleSheetSet|Child|ElementChild|Paren)|bels|yer(?>X|Y))|i(?>n(?>ks|e(?>Width|Cap|Join|DashOffset|Height))|st(?>Style(?>Type|Image|Position)?)?|ghtingColor))|a(?>vail(?>Width|Height|Top|Left)|c(?>ti(?>veElement|on)|ce(?>ssKey(?>Label)?|pt(?>Charset)?))|n(?>chors|im(?>ated(?>InstanceRoot|Points)|Val)|gle)|pplets|ttributes|l(?>t(?>Key)?|lowfullscreen|ign)|u(?>dioTracks|to(?>play|focus|complete))|reas|sync|bbr)?|b(?>o(?>ttom|dy(?>Used)?|rder(?>Left(?>Width|Color|Style)?|R(?>ight(?>Width|Color|Style)?|adius)|Top(?>Width|Color|Style|LeftRadius|RightRadius)?|Bottom(?>Width|Color|Style|LeftRadius|RightRadius)?|S(?>tyle|pacing)|Width|Col(?>or|lapse)|Image(?>Outset|Width|S(?>ource|lice)|Repeat)?)?|xS(?>izing|hadow))|a(?>se(?>URI(?>Object)?|lineShift|Val)|ckground(?>Origin|BlendMode|C(?>lip|olor)|Image|Repeat(?>X|Y)?|Attachment|Position(?>X|Y)?)?)|u(?>tton(?>s)?|ffered(?>Amount)?)|inaryType)?|w(?>i(?>d(?>th|ows)|thCredentials|llValidate)|h(?>oleText|i(?>ch|teSpace))|r(?>ap|itingMode)|ord(?>Break|Spacing|Wrap))|h(?>e(?>ight|ad(?>ers)?)|ref(?>lang)?|ost(?>name)?|ash|i(?>dden|gh)|t(?>mlFor|tpEquiv))|p(?>ixel(?>Depth|UnitToMillimeter(?>X|Y))|r(?>o(?>tocol|perties)|e(?>f(?>erredStyleSheetSet|ix)|vious(?>Sibling|ElementSibling)|load|serveAspectRatio)|imitiveUnits)|o(?>rt|int(?>er(?>LockElement|Events)|s)|s(?>ition|ter))|a(?>t(?>hname|tern(?>Units|ContentUnits|Transform)?)|rent(?>Node|Element|Rule)|ge(?>X|Y|Break(?>After|Before|Inside))|used|dding(?>Left|Right|Top|Bottom)?|intOrder)|l(?>ugins|a(?>y(?>backRate|ed)|ceholder))|ublicId|erspective(?>Origin)?)|o(?>r(?>i(?>entation|gin)|der|phans)|scpu|wner(?>Document|SVGElement)|ut(?>erHTML|line(?>Width|Color|Style|Offset)?)|ffset(?>Height|Width|Parent|Top|Node|Left|X|Y)?|p(?>ti(?>ons|mum)|en|acity)|k|verflow(?>Wrap|X|Y)?|bject(?>Fit|Position))|g(?>eolocation|lobal(?>Alpha|CompositeOperation)|radient(?>Units|Transform))|e(?>m(?>bed(?>s)?|ptyCells)|n(?>ded|c(?>oding|type)|ableBackground)|rror|lements|xtensions)?|i(?>m(?>age(?>s|SmoothingEnabled)|plementation)|d|n(?>nerHTML|determinate|putMode|stanceRoot)|s(?>ContentEditable|Map))|URL(?>String)?|x(?>mlbase|1|2)?|k(?>ey(?>Code|type|System)|ind)|m(?>e(?>t(?>aKey|hod)|dia(?>Group)?|nu|etOrSlice)|o(?>vement(?>X|Y)|de)|u(?>ted|ltiple)|a(?>x(?>Length|Width|Height|Zoom)?|r(?>gin(?>Left|Right|Top|Bottom)?|ker(?>Mid|End|Start)?)|sk(?>Type|Units|ContentUnits)?|trix)|i(?>n(?>Width|Height|Zoom)?|terLimit|meTypes))|y(?>1|2)?|__proto__|z(?>Index|oom)|quotes){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?>n(?>o(?>w|rmalize)|amedItem|ewValueSpecifiedUnits)|l(?>o(?>ckOrientation|ad(?>Overlay)?|okup(?>Prefix|NamespaceURI))|in(?>eTo|k))|u(?>n(?>lockOrientation|wrapKey|suspendRedraw(?>All)?|pauseAnimations)|pdate)|a(?>d(?>d(?>EventListener|HitRegion)?|optNode)|ssign|ppend(?>Child|Data|Item)?|bort|r(?>rayBuffer|c(?>To)?)|n(?>chor|imationsPaused))|r(?>e(?>move(?>EventListener|Item|Child|Attribute(?>N(?>S|ode))?|HitRegion)?|p(?>lace(?>State|Child|Data|Item)?|ortValidity)|l(?>oad|easeCapture)|gister(?>ProtocolHandler|ContentHandler|Element)|quest(?>Fullscreen|PointerLock)|s(?>et(?>Transform)?|tore)|direct|ct)|otate(?>FromVector)?)|d(?>i(?>spatchEvent|gest)|e(?>lete(?>Data(?>base)?|T(?>Head|Foot)|C(?>aption|ell)|Row)?|crypt|rive(?>Key|Bits)|selectAll)|raw(?>FocusIfNeeded|Image))|key|g(?>e(?>t(?>I(?>tem|mageData|ntersectionList)|R(?>andomValues|esponseHeader)|Bo(?>xObjectFor|undingClientRect)|E(?>lement(?>ById|sBy(?>ClassName|Name|TagName(?>NS)?))|nclosureList)|S(?>election|tartTime|impleDuration)|A(?>ttribute(?>N(?>S|ode(?>NS)?))?|ll(?>ResponseHeaders)?)|C(?>lientRect(?>s)?|ontext|urrentTime)|D(?>estinationInsertionPoints|istributedNodes)|ModifierState|VideoPlaybackQuality|LineDash|Year|P(?>resentationAttribute|ointAtLength|athSegAtLength)|TotalLength)|nerateKey)|o)|s(?>e(?>t(?>Item|Attribute(?>N(?>S|ode(?>NS)?))?|R(?>equestHeader|angeText|otate)|Cu(?>stomValidity|rrentTime)|S(?>electionRange|cale|kew(?>X|Y))|LineDash|Trans(?>form|late)|Year|FilterRes|Matrix)|nd|lect)|wapCache|ign|u(?>b(?>str(?>ingData)?|mit)?|p|spendRedraw)|plitText|c(?>roll(?>IntoView|PathIntoView)|ale(?>NonUniform)?)|t(?>ep(?>Down|Up)|r(?>oke(?>Rect|Text)?|ike))|ave|mall|kew(?>X|Y))|c(?>l(?>ear(?>Rect|HitRegions)?|o(?>se(?>st|Path)?|ne(?>Node)?)|i(?>ck|p))|mp|reate(?>Attribute|C(?>DATASection|omment|aption)|DocumentFragment|E(?>lement(?>NS)?|ntityReference|vent|xpression)|N(?>odeIterator|SResolver)|P(?>rocessingInstruction|attern)|Ra(?>nge|dialGradient)|T(?>extNode|ouchList|reeWalker|Head|Foot)|S(?>hadowRoot|VG(?>P(?>athSeg(?>Moveto(?>Abs|Rel)|Lineto(?>Abs|Rel|Horizontal(?>Abs|Rel)|Vertical(?>Abs|Rel))|Curveto(?>Cubic(?>Abs|Rel|Smooth(?>Abs|Rel))|Quadratic(?>Abs|Rel|Smooth(?>Abs|Rel)))|Arc(?>Abs|Rel))|oint)|Number|Length|Angle|Matrix|Rect|Transform(?>FromMatrix)?))|LinearGradient|ImageData)|o(?>mp(?>areDocumentPosition|ile)|n(?>tains|vertToSpecifiedUnits|solidate))|a(?>retPositionFromPoint|nPlayType)|heck(?>Validity|Intersection|Enclosure))|AddSearchProvider|IsSearchProviderInstalled|i(?>t(?>em|alics)|mport(?>Key|Node)|n(?>sert(?>Before|Data|AdjacentHTML|Row|Cell|ItemBefore)|it(?>Key(?>Event|boardEvent)|ialize)|verse)|s(?>DefaultNamespace|EqualNode|PointIn(?>Path|Stroke)))|o(?>pen|verrideMimeType)|e(?>n(?>crypt|ableStyleSheetsForSet)|x(?>portKey|ecCommand|itPointerLock)|l(?>ement(?>FromPoint|sFromPoint)|lipse)|valuate|rror)|verify|wr(?>apKey|ite(?>ln)?)|has(?>Focus|ChildNodes|Attribute(?>NS)?|Extension)?|b(?>ack|l(?>ur|ob|ink)|e(?>ginPath|zierCurveTo)|ig|old)|f(?>o(?>r(?>ward|mData|ceRedraw)|cus|nt(?>color|size))|i(?>nd(?>All)?|ll(?>Rect|Text)?|xed)|astSeek|lip(?>X|Y))|p(?>u(?>shState|tImageData)|ostMessage|lay|ause(?>Animations)?)|qu(?>ery(?>CommandSupported|Selector(?>All)?)|adraticCurveTo)|m(?>atches|easureText|oveTo|ultiply)|t(?>e(?>rminate|xt)|o(?>DataURL|Blob|GMTString)|rans(?>late|form))|json)(?={{to_token}}\\()",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?>on(?>o(?>rientationchange|ffline)|c(?>hecking|ached|o(?>py|mplete)|ut)|error|noupdate|downloading|p(?>rogress|aste)|updateready|readystatechange|t(?>imeout|ouch(?>start|en(?>d|ter)|move|cancel|leave))|message|storage|blocked)){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_square_bracket_reference__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "\\[",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "_optional_postfix_operator",
+                    "expression_until_square_bracket"
+                ]
+            }
+        ],
+        "_function_invocation__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "\\(",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "expression_until_parenthesis_with_spread_anywhere"
+                ]
+            }
+        ],
+        "_template_literal__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "(?=`)",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "template_literal"
+                ]
+            }
+        ],
+        "_conditional_expression__expression_until_parenthesis_ahead_or_comma": [
+            {
+                "match": "\\?",
+                "set": [
+                    "_secondary__expression_until_parenthesis_ahead_or_comma",
+                    "_primary__expression_until_parenthesis_ahead_or_comma",
                     "expression_until_colon"
                 ]
             }
@@ -6371,7 +7084,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary__expression_until_parameter_binding_list",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -6390,1450 +7103,6 @@
                 "set": [
                     "_secondary__expression_until_parameter_binding_list",
                     "_primary__expression_until_parameter_binding_list",
-                    "expression_until_colon"
-                ]
-            }
-        ],
-        "expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{otherwise}}",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "_primary__expression_until_parenthesis_with_spread"
-                ]
-            }
-        ],
-        "_primary_parts__expression_until_parenthesis_with_spread": [
-            {
-                "include": "_arrow_function_expression__expression_until_parenthesis_with_spread"
-            },
-            {
-                "include": "parenthesized_expression"
-            },
-            {
-                "include": "string_literal"
-            },
-            {
-                "include": "template_literal"
-            },
-            {
-                "include": "regular_expression_literal"
-            },
-            {
-                "include": "numeric_literal"
-            },
-            {
-                "include": "array_literal"
-            },
-            {
-                "include": "object_literal"
-            },
-            {
-                "include": "_function_expression__expression_until_parenthesis_with_spread"
-            },
-            {
-                "include": "_class_expression__expression_until_parenthesis_with_spread"
-            },
-            {
-                "include": "language_constant"
-            },
-            {
-                "include": "language_variable"
-            },
-            {
-                "include": "_new_keyword__expression_until_parenthesis_with_spread"
-            },
-            {
-                "include": "_prefix_operators__expression_until_parenthesis_with_spread"
-            },
-            {
-                "include": "_unary_operators__expression_until_parenthesis_with_spread"
-            }
-        ],
-        "_primary__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "\\.\\.\\.",
-                "scope": "keyword.operator.js",
-                "pop": true
-            },
-            {
-                "include": "_primary_parts__expression_until_parenthesis_with_spread"
-            },
-            {
-                "include": "reserved_word_reference"
-            },
-            {
-                "include": "identifier_reference"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_primary_or_block_statement__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "\\.\\.\\.",
-                "scope": "keyword.operator.js",
-                "pop": true
-            },
-            {
-                "match": "(?=\\{)",
-                "set": "block_statement"
-            },
-            {
-                "include": "_primary_parts__expression_until_parenthesis_with_spread"
-            },
-            {
-                "include": "reserved_word_reference"
-            },
-            {
-                "include": "identifier_reference"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_new_keyword__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{b_before}}new{{b_after}}",
-                "scope": "keyword.operator.js",
-                "set": [
-                    {
-                        "match": "{{some_space}}"
-                    },
-                    {
-                        "match": "(?=\\))",
-                        "pop": true
-                    },
-                    {
-                        "match": "\\.",
-                        "scope": "keyword.operator.js",
-                        "set": "_new_target__expression_until_parenthesis_with_spread"
-                    },
-                    {
-                        "include": "_class_name_shallow__expression_until_parenthesis_with_spread"
-                    }
-                ]
-            }
-        ],
-        "_new_target__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "{{b_before}}target{{b_after}}",
-                "scope": "support.class.js",
-                "pop": true
-            },
-            {
-                "match": "{{b_before}}(?:t|ta|tar|targ|targe){{b_after}}",
-                "pop": true
-            },
-            {
-                "match": "{{ident}}",
-                "scope": "invalid.illegal.js",
-                "pop": true
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_class_name_shallow__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "\\(",
-                "set": [
-                    "_class_name_deep__expression_until_parenthesis_with_spread",
-                    "expression_until_parenthesis"
-                ]
-            },
-            {
-                "match": "{{reserved_word}}",
-                "scope": "invalid.illegal.js",
-                "set": "_class_name_deep__expression_until_parenthesis_with_spread"
-            },
-            {
-                "match": "{{ident}}",
-                "scope": "support.class.js",
-                "set": "_class_name_deep__expression_until_parenthesis_with_spread"
-            },
-            {
-                "include": "_primary__expression_until_parenthesis_with_spread"
-            }
-        ],
-        "_class_name_deep__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "\\.",
-                "scope": "support.class.js",
-                "set": "_class_name_deep_dot_reference__expression_until_parenthesis_with_spread"
-            },
-            {
-                "match": "\\[",
-                "push": "expression_until_square_bracket"
-            },
-            {
-                "match": "{{otherwise}}",
-                "pop": true
-            }
-        ],
-        "_class_name_deep_dot_reference__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "{{ident}}",
-                "scope": "support.class.js",
-                "set": "_class_name_deep__expression_until_parenthesis_with_spread"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_prefix_operators__expression_until_parenthesis_with_spread": [
-            {
-                "match": "(?<!-)--|(?<!\\+)\\+\\+",
-                "scope": "keyword.operator.js",
-                "set": [
-                    {
-                        "match": "{{some_space}}"
-                    },
-                    {
-                        "match": "(?=\\))",
-                        "pop": true
-                    },
-                    {
-                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
-                        "scope": "invalid.illegal.js",
-                        "pop": true
-                    },
-                    {
-                        "include": "language_variable"
-                    },
-                    {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "include": "identifier_reference_simple"
-                    },
-                    {
-                        "include": "parenthesized_expression"
-                    },
-                    {
-                        "include": "otherwise_invalid"
-                    }
-                ]
-            }
-        ],
-        "_unary_operators__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{b_before}}yield(?:{{to_token}}\\*|{{b_after}})",
-                "scope": "keyword.operator.js",
-                "set": [
-                    {
-                        "match": "{{some_space}}"
-                    },
-                    {
-                        "match": "(?=\\))",
-                        "pop": true
-                    },
-                    {
-                        "match": "(?={{line_terminator}})",
-                        "pop": true
-                    },
-                    {
-                        "include": "_primary__expression_until_parenthesis_with_spread"
-                    }
-                ]
-            },
-            {
-                "match": "!|(?<!\\+)\\+(?!\\+)|(?<!-)-(?!-)|{{b_before}}(?:typeof|void|delete|await){{b_after}}",
-                "scope": "keyword.operator.js",
-                "set": "_primary__expression_until_parenthesis_with_spread"
-            },
-            {
-                "match": "~",
-                "scope": "keyword.operator.bitwise.js",
-                "set": "_primary__expression_until_parenthesis_with_spread"
-            }
-        ],
-        "_function_expression__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
-                "captures": {
-                    "1": "storage.modifier.js",
-                    "2": "storage.type.js",
-                    "3": "keyword.operator.js"
-                },
-                "set": "_function_expression_name__expression_until_parenthesis_with_spread"
-            }
-        ],
-        "_function_expression_name__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "{{reserved_word}}",
-                "scope": "invalid.illegal.js",
-                "set": "_function_expression_parenthesis__expression_until_parenthesis_with_spread"
-            },
-            {
-                "match": "{{ident}}",
-                "scope": "entity.name.function.js",
-                "set": "_function_expression_parenthesis__expression_until_parenthesis_with_spread"
-            },
-            {
-                "match": "(?=\\()",
-                "set": "_function_expression_parenthesis__expression_until_parenthesis_with_spread"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_function_expression_parenthesis__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "\\(",
-                "set": [
-                    "_function_expression_curly_bracket__expression_until_parenthesis_with_spread",
-                    "parameter_binding_list"
-                ]
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_function_expression_curly_bracket__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "(?=\\{)",
-                "set": "block_statement"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_class_expression__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{b_before}}class{{b_after}}",
-                "scope": "storage.type.js",
-                "set": "_class_expression_name__expression_until_parenthesis_with_spread"
-            }
-        ],
-        "_class_expression_name__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "{{b_before}}extends{{b_after}}",
-                "scope": "storage.modifier.js",
-                "set": "_class_expression_inheritance__expression_until_parenthesis_with_spread"
-            },
-            {
-                "match": "{{reserved_word}}",
-                "scope": "invalid.illegal.js",
-                "set": "_class_expression_curly_bracket_or_extends__expression_until_parenthesis_with_spread"
-            },
-            {
-                "match": "{{ident}}",
-                "scope": "entity.name.function.js",
-                "set": "_class_expression_curly_bracket_or_extends__expression_until_parenthesis_with_spread"
-            },
-            {
-                "match": "\\{",
-                "set": "_class_block"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_class_expression_curly_bracket_or_extends__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "{{b_before}}extends{{b_after}}",
-                "scope": "storage.modifier.js",
-                "set": "_class_expression_inheritance__expression_until_parenthesis_with_spread"
-            },
-            {
-                "match": "{{b_before}}(?:extend|exten|exte|ext|ex|e){{to_token}}{{b_after}}"
-            },
-            {
-                "match": "\\{",
-                "set": "_class_block"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_class_expression_inheritance__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "{{reserved_word}}",
-                "scope": "invalid.illegal.js",
-                "set": "_class_expression_curly_bracket__expression_until_parenthesis_with_spread"
-            },
-            {
-                "match": "{{ident}}",
-                "scope": "entity.name.function.js",
-                "set": "_class_expression_curly_bracket__expression_until_parenthesis_with_spread"
-            },
-            {
-                "match": "\\{",
-                "scope": "invalid.illegal.js",
-                "set": "_class_block"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_class_expression_curly_bracket__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "\\{",
-                "set": "_class_block"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_arrow_function_expression__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{arrow_function_with_parenthesis}}",
-                "captures": {
-                    "1": "storage.modifier.js"
-                },
-                "set": [
-                    "_primary_or_block_statement__expression_until_parenthesis_with_spread",
-                    "_arrow_operator",
-                    "parameter_binding_list"
-                ]
-            },
-            {
-                "match": "{{arrow_function_with_reserved_word}}",
-                "captures": {
-                    "1": "storage.modifier.js",
-                    "2": "invalid.illegal.js"
-                },
-                "set": [
-                    "_primary_or_block_statement__expression_until_parenthesis_with_spread",
-                    "_arrow_operator"
-                ]
-            },
-            {
-                "match": "{{arrow_function_with_ident}}",
-                "captures": {
-                    "1": "storage.modifier.js"
-                },
-                "set": [
-                    "_primary_or_block_statement__expression_until_parenthesis_with_spread",
-                    "_arrow_operator"
-                ]
-            }
-        ],
-        "_secondary_parts__expression_until_parenthesis_with_spread": [
-            {
-                "include": "_instanceof_keyword__expression_until_parenthesis_with_spread"
-            },
-            {
-                "include": "_binary_operators__expression_until_parenthesis_with_spread"
-            },
-            {
-                "include": "_dot_reference__expression_until_parenthesis_with_spread"
-            },
-            {
-                "include": "_square_bracket_reference__expression_until_parenthesis_with_spread"
-            },
-            {
-                "include": "_function_invocation__expression_until_parenthesis_with_spread"
-            },
-            {
-                "include": "_template_literal__expression_until_parenthesis_with_spread"
-            },
-            {
-                "include": "_conditional_expression__expression_until_parenthesis_with_spread"
-            }
-        ],
-        "_secondary__expression_until_parenthesis_with_spread": [
-            {
-                "match": "(?<=\\.\\.\\.)",
-                "set": "expression_until_parenthesis_no_comma"
-            },
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "\\)",
-                "pop": true
-            },
-            {
-                "include": "_secondary_parts__expression_until_parenthesis_with_spread"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_instanceof_keyword__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{b_before}}instanceof{{b_after}}",
-                "scope": "keyword.operator.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "_class_name_shallow__expression_until_parenthesis_with_spread"
-                ]
-            }
-        ],
-        "_binary_operators__expression_until_parenthesis_with_spread": [
-            {
-                "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "keyword.operator.bitwise.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "_primary__expression_until_parenthesis_with_spread"
-                ]
-            },
-            {
-                "match": "\\*\\*|-=|\\+=|===?+|!==?+|<=|>=|&&|\\|\\||\\*=?+|/=|%=",
-                "scope": "keyword.operator.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "_primary__expression_until_parenthesis_with_spread"
-                ]
-            },
-            {
-                "match": "%|\\*|/|-|\\+|=|<|>|{{b_before}}in{{b_after}}",
-                "scope": "keyword.operator.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "_primary__expression_until_parenthesis_with_spread"
-                ]
-            },
-            {
-                "match": "&|\\^|~|\\|",
-                "scope": "keyword.operator.bitwise.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "_primary__expression_until_parenthesis_with_spread"
-                ]
-            },
-            {
-                "match": ",",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "_primary__expression_until_parenthesis_with_spread"
-                ]
-            }
-        ],
-        "_dot_reference__expression_until_parenthesis_with_spread": [
-            {
-                "match": "\\.",
-                "set": "_dot_reference_contents__expression_until_parenthesis_with_spread"
-            }
-        ],
-        "_dot_reference_contents__expression_until_parenthesis_with_spread": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "\\)",
-                "pop": true
-            },
-            {
-                "match": "{{b_before}}constructor{{b_after}}",
-                "scope": "support.class.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "_optional_postfix_operator"
-                ]
-            },
-            {
-                "match": "{{ident}}{{assignment_for_function}}",
-                "scope": "entity.name.function.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "_optional_postfix_operator"
-                ]
-            },
-            {
-                "match": "{{b_before}}(?:prototype|length|size|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT){{b_after}}",
-                "scope": "support.constant.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "_optional_postfix_operator"
-                ]
-            },
-            {
-                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|splice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn)(?={{to_token}}\\()",
-                "scope": "support.function.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "_optional_postfix_operator"
-                ]
-            },
-            {
-                "match": "{{b_before}}(?>E(?>LEMENT_NODE|NTITY_(?>REFERENCE_NODE|NODE))|A(?>TTRIBUTE_NODE|NY_(?>TYPE|UNORDERED_NODE_TYPE))|T(?>EXT_NODE|YPE_(?>BACK_FORWARD|NAVIGATE|RE(?>LOAD|SERVED)))|C(?>DATA_SECTION_NODE|O(?>MMENT_NODE|NNECTING)|HECKING|LOS(?>ING|ED))|PROCESSING_INSTRUCTION_NODE|DO(?>CUMENT_(?>NODE|TYPE_NODE|FRAGMENT_NODE)|MSTRING_SIZE_ERR|WNLOADING|NE)|N(?>O(?>T(?>ATION_NODE|_(?>FOUND_ERR|SUPPORTED_ERR))|_(?>DATA_ALLOWED_ERR|MODIFICATION_ALLOWED_ERR))|UMBER_TYPE|ETWORK_(?>EMPTY|IDLE|LOADING|NO_SOURCE))|I(?>N(?>DEX_SIZE_ERR|VALID_CHARACTER_ERR|USE_ATTRIBUTE_ERR)|DLE)|H(?>IERARCHY_REQUEST_ERR|EADERS_RECEIVED|AVE_NOTHING)|WRONG_DOCUMENT_ERR|U(?>N(?>CACHED|SENT|ORDERED_NODE_(?>ITERATOR_TYPE|SNAPSHOT_TYPE))|PDATEREADY)|O(?>PEN(?>ED)?|RDERED_NODE_(?>ITERATOR_TYPE|SNAPSHOT_TYPE))|LOADING|S(?>HOW_(?>A(?>LL|TTRIBUTE)|C(?>DATA_SECTION|OMMENT)|DOCUMENT(?>_(?>FRAGMENT|TYPE))?|E(?>LEMENT|NTITY(?>_REFERENCE)?)|NOTATION|PROCESSING_INSTRUCTION|TEXT)|TRING_TYPE|ECURITY_ERR|VG_(?>SPREADMETHOD_(?>UNKNOWN|PAD|RE(?>FLECT|PEAT))|ANGLETYPE_(?>UN(?>KNOWN|SPECIFIED)|DEG|RAD|GRAD)|LENGTHTYPE_(?>UNKNOWN|NUMBER|P(?>ERCENTAGE|X|T|C)|E(?>MS|XS)|CM|MM|IN)|PRESERVEASPECTRATIO_(?>UNKNOWN|NONE|XM(?>I(?>NYM(?>I(?>N|D)|AX)|DYM(?>I(?>N|D)|AX))|AXYM(?>I(?>N|D)|AX)))|MEETORSLICE_(?>UNKNOWN|MEET|SLICE)|TRANSFORM_(?>UNKNOWN|MATRIX|TRANSLATE|S(?>CALE|KEW(?>X|Y))|ROTATE)))|BOOLEAN_TYPE|FIRST_ORDERED_NODE_TYPE){{b_after}}",
-                "scope": "support.constant.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "_optional_postfix_operator"
-                ]
-            },
-            {
-                "match": "{{b_before}}(?>v(?>i(?>sib(?>le|ility)|ew(?>port(?>Element)?|Target)|deo(?>Tracks|Height|Width))|olume|al(?>id(?>ationMessage|ity)|ue(?>As(?>Date|Number|String)|InSpecifiedUnits)?)|e(?>rticalAlign|ctorEffect))|t(?>i(?>m(?>ing|eout)|tle)|ype(?>MustMatch)?|op|ext(?>Content|Tra(?>cks|nsform)|A(?>lign|nchor)|Baseline|Indent|Decoration|Overflow|Rendering|Shadow)?|a(?>gName|b(?>Index|index|leLayout|Size)|rget(?>Element)?)|Head|Foot|Bodies|ra(?>ck|ns(?>form(?>Origin|Style)?|ition(?>TimingFunction|D(?>elay|uration)|Property)?)))|n(?>a(?>vigation(?>Start)?|tural(?>Height|Width)|mespaceURI)|e(?>xt(?>Sibling|ElementSibling)|tworkState)|ode(?>Name|Type|Value)|umberOfItems)|u(?>n(?>loadEvent(?>Start|End)|i(?>code(?>Bidi|Range)|tType))|pload|se(?>Map|FinalURL|rZoom|CurrentView)|rl)|r(?>e(?>direct(?>Start|End|Count)|qu(?>estStart|ired(?>Features|Extensions)?)|s(?>ponse(?>Start|End|T(?>ext|ype)|XML)?|ize)|ad(?>yState|Only)|ferrer|peat|l(?>atedTarget|List)?|gion|v(?>ersed)?|turnValue)|ight(?>Context)?|o(?>w(?>Span|s|Index)|tate)|x|y)?|f(?>e(?>tchStart|lxBasis)|o(?>rm(?>s|Action|EncType|Method|NoValidate|Target)?|nt(?>Kerning|S(?>t(?>retch|yle)|ize)|Variant(?>Ligatures)?|Family|Weight)?)|i(?>rst(?>Child|ElementChild)|l(?>es|l(?>Style|Opacity|Rule)?|ter(?>Units|Res(?>X|Y))?))|l(?>o(?>at|od(?>Color|Opacity))|ex(?>Direction|Flow|Grow|Shrink|Wrap)?)|x|y)?|d(?>o(?>m(?>ain(?>Lookup(?>Start|End))?|Loading|Interactive|Co(?>ntentLoadedEvent(?>Start|End)|mplete)|inantBaseline)|c(?>type|ument(?>Element|URI(?>Object)?))|wnload)|e(?>f(?>ault(?>V(?>iew|alue)|Muted|PlaybackRate|Checked|Selected)?|er)|signMode|lta(?>X|Y|Z|Mode))|at(?>a(?>set)?|e(?>time|Time))|i(?>r(?>Name|ection)?|s(?>abled|play))|raggable|uration|x|y)?|c(?>o(?>n(?>nect(?>Start|End)|t(?>e(?>nt(?>Editable|Document|Window|S(?>criptType|tyleType))?|xt(?>Menu)?)|rol(?>ler(?>s)?|s)?))|l(?>or(?>Depth|Interpolation(?>Filters)?|Rendering)?|Span|s)|mp(?>atMode|lete)|o(?>rds|kie(?>Enabled)?)|unter(?>Reset|Increment))|h(?>a(?>r(?>acterSet|Code|set)|llenge)|ild(?>Nodes|ren|ElementCount)|ecked)|l(?>ass(?>List|Name)?|i(?>ent(?>Height|Width|Left|Top|X|Y)|p(?>Path(?>Units)?|Rule)?)|ear)|trlKey|r(?>ossOrigin|edentials)|ur(?>rent(?>S(?>rc|cale)|T(?>ime|rans(?>form|late))|View)|sor)|ite|ellIndex|a(?>ption(?>Side)?|che|nvas)|ssText|x|y)?|s(?>e(?>c(?>ureConnectionStart|tionRowIndex)|a(?>rch|mless)|lect(?>ed(?>StyleSheetSet|Index|Options)?|ion(?>Direction|End|Start))?|ek(?>able|ing))|u(?>btle|mmary)|t(?>a(?>t(?>e|us(?>Text)?)|rt)|yle(?>Sheet(?>s|Sets))?|ep|roke(?>Style|Dash(?>array|offset)|Line(?>cap|join)|Miterlimit|Opacity|Width)?|op(?>Color|Opacity))|c(?>r(?>ipts|oll(?>Height|Left|Top|Width)|een(?>X|Y|PixelToMillimeter(?>X|Y)))|ope(?>d)?)|ystem(?>Id|Language)|h(?>a(?>dow(?>Root|Blur|Color|Offset(?>X|Y))|pe(?>ImageThreshold|Margin|Outside|Rendering)?)|iftKey|eet)|ize(?>s)?|rc(?>doc|set|lang)?|andbox|p(?>an|readMethod))|l(?>o(?>adEvent(?>Start|End)|op|w|calName)|e(?>ft(?>Context)?|tterSpacing)|a(?>ng(?>uage)?|st(?>M(?>odified(?>Date)?|atch)|StyleSheetSet|Child|ElementChild|Paren)|bels|yer(?>X|Y))|i(?>n(?>ks|e(?>Width|Cap|Join|DashOffset|Height))|st(?>Style(?>Type|Image|Position)?)?|ghtingColor))|a(?>vail(?>Width|Height|Top|Left)|c(?>ti(?>veElement|on)|ce(?>ssKey(?>Label)?|pt(?>Charset)?))|n(?>chors|im(?>ated(?>InstanceRoot|Points)|Val)|gle)|pplets|ttributes|l(?>t(?>Key)?|lowfullscreen|ign)|u(?>dioTracks|to(?>play|focus|complete))|reas|sync|bbr)?|b(?>o(?>ttom|dy(?>Used)?|rder(?>Left(?>Width|Color|Style)?|R(?>ight(?>Width|Color|Style)?|adius)|Top(?>Width|Color|Style|LeftRadius|RightRadius)?|Bottom(?>Width|Color|Style|LeftRadius|RightRadius)?|S(?>tyle|pacing)|Width|Col(?>or|lapse)|Image(?>Outset|Width|S(?>ource|lice)|Repeat)?)?|xS(?>izing|hadow))|a(?>se(?>URI(?>Object)?|lineShift|Val)|ckground(?>Origin|BlendMode|C(?>lip|olor)|Image|Repeat(?>X|Y)?|Attachment|Position(?>X|Y)?)?)|u(?>tton(?>s)?|ffered(?>Amount)?)|inaryType)?|w(?>i(?>d(?>th|ows)|thCredentials|llValidate)|h(?>oleText|i(?>ch|teSpace))|r(?>ap|itingMode)|ord(?>Break|Spacing|Wrap))|h(?>e(?>ight|ad(?>ers)?)|ref(?>lang)?|ost(?>name)?|ash|i(?>dden|gh)|t(?>mlFor|tpEquiv))|p(?>ixel(?>Depth|UnitToMillimeter(?>X|Y))|r(?>o(?>tocol|perties)|e(?>f(?>erredStyleSheetSet|ix)|vious(?>Sibling|ElementSibling)|load|serveAspectRatio)|imitiveUnits)|o(?>rt|int(?>er(?>LockElement|Events)|s)|s(?>ition|ter))|a(?>t(?>hname|tern(?>Units|ContentUnits|Transform)?)|rent(?>Node|Element|Rule)|ge(?>X|Y|Break(?>After|Before|Inside))|used|dding(?>Left|Right|Top|Bottom)?|intOrder)|l(?>ugins|a(?>y(?>backRate|ed)|ceholder))|ublicId|erspective(?>Origin)?)|o(?>r(?>i(?>entation|gin)|der|phans)|scpu|wner(?>Document|SVGElement)|ut(?>erHTML|line(?>Width|Color|Style|Offset)?)|ffset(?>Height|Width|Parent|Top|Node|Left|X|Y)?|p(?>ti(?>ons|mum)|en|acity)|k|verflow(?>Wrap|X|Y)?|bject(?>Fit|Position))|g(?>eolocation|lobal(?>Alpha|CompositeOperation)|radient(?>Units|Transform))|e(?>m(?>bed(?>s)?|ptyCells)|n(?>ded|c(?>oding|type)|ableBackground)|rror|lements|xtensions)?|i(?>m(?>age(?>s|SmoothingEnabled)|plementation)|d|n(?>nerHTML|determinate|putMode|stanceRoot)|s(?>ContentEditable|Map))|URL(?>String)?|x(?>mlbase|1|2)?|k(?>ey(?>Code|type|System)|ind)|m(?>e(?>t(?>aKey|hod)|dia(?>Group)?|nu|etOrSlice)|o(?>vement(?>X|Y)|de)|u(?>ted|ltiple)|a(?>x(?>Length|Width|Height|Zoom)?|r(?>gin(?>Left|Right|Top|Bottom)?|ker(?>Mid|End|Start)?)|sk(?>Type|Units|ContentUnits)?|trix)|i(?>n(?>Width|Height|Zoom)?|terLimit|meTypes))|y(?>1|2)?|__proto__|z(?>Index|oom)|quotes){{b_after}}",
-                "scope": "support.constant.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "_optional_postfix_operator"
-                ]
-            },
-            {
-                "match": "{{b_before}}(?>n(?>o(?>w|rmalize)|amedItem|ewValueSpecifiedUnits)|l(?>o(?>ckOrientation|ad(?>Overlay)?|okup(?>Prefix|NamespaceURI))|in(?>eTo|k))|u(?>n(?>lockOrientation|wrapKey|suspendRedraw(?>All)?|pauseAnimations)|pdate)|a(?>d(?>d(?>EventListener|HitRegion)?|optNode)|ssign|ppend(?>Child|Data|Item)?|bort|r(?>rayBuffer|c(?>To)?)|n(?>chor|imationsPaused))|r(?>e(?>move(?>EventListener|Item|Child|Attribute(?>N(?>S|ode))?|HitRegion)?|p(?>lace(?>State|Child|Data|Item)?|ortValidity)|l(?>oad|easeCapture)|gister(?>ProtocolHandler|ContentHandler|Element)|quest(?>Fullscreen|PointerLock)|s(?>et(?>Transform)?|tore)|direct|ct)|otate(?>FromVector)?)|d(?>i(?>spatchEvent|gest)|e(?>lete(?>Data(?>base)?|T(?>Head|Foot)|C(?>aption|ell)|Row)?|crypt|rive(?>Key|Bits)|selectAll)|raw(?>FocusIfNeeded|Image))|key|g(?>e(?>t(?>I(?>tem|mageData|ntersectionList)|R(?>andomValues|esponseHeader)|Bo(?>xObjectFor|undingClientRect)|E(?>lement(?>ById|sBy(?>ClassName|Name|TagName(?>NS)?))|nclosureList)|S(?>election|tartTime|impleDuration)|A(?>ttribute(?>N(?>S|ode(?>NS)?))?|ll(?>ResponseHeaders)?)|C(?>lientRect(?>s)?|ontext|urrentTime)|D(?>estinationInsertionPoints|istributedNodes)|ModifierState|VideoPlaybackQuality|LineDash|Year|P(?>resentationAttribute|ointAtLength|athSegAtLength)|TotalLength)|nerateKey)|o)|s(?>e(?>t(?>Item|Attribute(?>N(?>S|ode(?>NS)?))?|R(?>equestHeader|angeText|otate)|Cu(?>stomValidity|rrentTime)|S(?>electionRange|cale|kew(?>X|Y))|LineDash|Trans(?>form|late)|Year|FilterRes|Matrix)|nd|lect)|wapCache|ign|u(?>b(?>str(?>ingData)?|mit)?|p|spendRedraw)|plitText|c(?>roll(?>IntoView|PathIntoView)|ale(?>NonUniform)?)|t(?>ep(?>Down|Up)|r(?>oke(?>Rect|Text)?|ike))|ave|mall|kew(?>X|Y))|c(?>l(?>ear(?>Rect|HitRegions)?|o(?>se(?>st|Path)?|ne(?>Node)?)|i(?>ck|p))|mp|reate(?>Attribute|C(?>DATASection|omment|aption)|DocumentFragment|E(?>lement(?>NS)?|ntityReference|vent|xpression)|N(?>odeIterator|SResolver)|P(?>rocessingInstruction|attern)|Ra(?>nge|dialGradient)|T(?>extNode|ouchList|reeWalker|Head|Foot)|S(?>hadowRoot|VG(?>P(?>athSeg(?>Moveto(?>Abs|Rel)|Lineto(?>Abs|Rel|Horizontal(?>Abs|Rel)|Vertical(?>Abs|Rel))|Curveto(?>Cubic(?>Abs|Rel|Smooth(?>Abs|Rel))|Quadratic(?>Abs|Rel|Smooth(?>Abs|Rel)))|Arc(?>Abs|Rel))|oint)|Number|Length|Angle|Matrix|Rect|Transform(?>FromMatrix)?))|LinearGradient|ImageData)|o(?>mp(?>areDocumentPosition|ile)|n(?>tains|vertToSpecifiedUnits|solidate))|a(?>retPositionFromPoint|nPlayType)|heck(?>Validity|Intersection|Enclosure))|AddSearchProvider|IsSearchProviderInstalled|i(?>t(?>em|alics)|mport(?>Key|Node)|n(?>sert(?>Before|Data|AdjacentHTML|Row|Cell|ItemBefore)|it(?>Key(?>Event|boardEvent)|ialize)|verse)|s(?>DefaultNamespace|EqualNode|PointIn(?>Path|Stroke)))|o(?>pen|verrideMimeType)|e(?>n(?>crypt|ableStyleSheetsForSet)|x(?>portKey|ecCommand|itPointerLock)|l(?>ement(?>FromPoint|sFromPoint)|lipse)|valuate|rror)|verify|wr(?>apKey|ite(?>ln)?)|has(?>Focus|ChildNodes|Attribute(?>NS)?|Extension)?|b(?>ack|l(?>ur|ob|ink)|e(?>ginPath|zierCurveTo)|ig|old)|f(?>o(?>r(?>ward|mData|ceRedraw)|cus|nt(?>color|size))|i(?>nd(?>All)?|ll(?>Rect|Text)?|xed)|astSeek|lip(?>X|Y))|p(?>u(?>shState|tImageData)|ostMessage|lay|ause(?>Animations)?)|qu(?>ery(?>CommandSupported|Selector(?>All)?)|adraticCurveTo)|m(?>atches|easureText|oveTo|ultiply)|t(?>e(?>rminate|xt)|o(?>DataURL|Blob|GMTString)|rans(?>late|form))|json)(?={{to_token}}\\()",
-                "scope": "support.function.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "_optional_postfix_operator"
-                ]
-            },
-            {
-                "match": "{{b_before}}(?>on(?>o(?>rientationchange|ffline)|c(?>hecking|ached|o(?>py|mplete)|ut)|error|noupdate|downloading|p(?>rogress|aste)|updateready|readystatechange|t(?>imeout|ouch(?>start|en(?>d|ter)|move|cancel|leave))|message|storage|blocked)){{b_after}}",
-                "scope": "support.function.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "_optional_postfix_operator"
-                ]
-            },
-            {
-                "match": "{{ident}}",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "_optional_postfix_operator"
-                ]
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_square_bracket_reference__expression_until_parenthesis_with_spread": [
-            {
-                "match": "\\[",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "_optional_postfix_operator",
-                    "expression_until_square_bracket"
-                ]
-            }
-        ],
-        "_function_invocation__expression_until_parenthesis_with_spread": [
-            {
-                "match": "\\(",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "expression_until_parenthesis_with_spread"
-                ]
-            }
-        ],
-        "_template_literal__expression_until_parenthesis_with_spread": [
-            {
-                "match": "(?=`)",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "template_literal"
-                ]
-            }
-        ],
-        "_conditional_expression__expression_until_parenthesis_with_spread": [
-            {
-                "match": "\\?",
-                "set": [
-                    "_secondary__expression_until_parenthesis_with_spread",
-                    "_primary__expression_until_parenthesis_with_spread",
-                    "expression_until_colon"
-                ]
-            }
-        ],
-        "expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{otherwise}}",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "_primary__expression_until_parenthesis_no_comma"
-                ]
-            }
-        ],
-        "_primary_parts__expression_until_parenthesis_no_comma": [
-            {
-                "include": "_arrow_function_expression__expression_until_parenthesis_no_comma"
-            },
-            {
-                "include": "parenthesized_expression"
-            },
-            {
-                "include": "string_literal"
-            },
-            {
-                "include": "template_literal"
-            },
-            {
-                "include": "regular_expression_literal"
-            },
-            {
-                "include": "numeric_literal"
-            },
-            {
-                "include": "array_literal"
-            },
-            {
-                "include": "object_literal"
-            },
-            {
-                "include": "_function_expression__expression_until_parenthesis_no_comma"
-            },
-            {
-                "include": "_class_expression__expression_until_parenthesis_no_comma"
-            },
-            {
-                "include": "language_constant"
-            },
-            {
-                "include": "language_variable"
-            },
-            {
-                "include": "_new_keyword__expression_until_parenthesis_no_comma"
-            },
-            {
-                "include": "_prefix_operators__expression_until_parenthesis_no_comma"
-            },
-            {
-                "include": "_unary_operators__expression_until_parenthesis_no_comma"
-            }
-        ],
-        "_primary__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "include": "_primary_parts__expression_until_parenthesis_no_comma"
-            },
-            {
-                "include": "reserved_word_reference"
-            },
-            {
-                "include": "identifier_reference"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_primary_or_block_statement__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "(?=\\{)",
-                "set": "block_statement"
-            },
-            {
-                "include": "_primary_parts__expression_until_parenthesis_no_comma"
-            },
-            {
-                "include": "reserved_word_reference"
-            },
-            {
-                "include": "identifier_reference"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_new_keyword__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{b_before}}new{{b_after}}",
-                "scope": "keyword.operator.js",
-                "set": [
-                    {
-                        "match": "{{some_space}}"
-                    },
-                    {
-                        "match": "(?=\\))",
-                        "pop": true
-                    },
-                    {
-                        "match": "\\.",
-                        "scope": "keyword.operator.js",
-                        "set": "_new_target__expression_until_parenthesis_no_comma"
-                    },
-                    {
-                        "include": "_class_name_shallow__expression_until_parenthesis_no_comma"
-                    }
-                ]
-            }
-        ],
-        "_new_target__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "{{b_before}}target{{b_after}}",
-                "scope": "support.class.js",
-                "pop": true
-            },
-            {
-                "match": "{{b_before}}(?:t|ta|tar|targ|targe){{b_after}}",
-                "pop": true
-            },
-            {
-                "match": "{{ident}}",
-                "scope": "invalid.illegal.js",
-                "pop": true
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_class_name_shallow__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "\\(",
-                "set": [
-                    "_class_name_deep__expression_until_parenthesis_no_comma",
-                    "expression_until_parenthesis"
-                ]
-            },
-            {
-                "match": "{{reserved_word}}",
-                "scope": "invalid.illegal.js",
-                "set": "_class_name_deep__expression_until_parenthesis_no_comma"
-            },
-            {
-                "match": "{{ident}}",
-                "scope": "support.class.js",
-                "set": "_class_name_deep__expression_until_parenthesis_no_comma"
-            },
-            {
-                "include": "_primary__expression_until_parenthesis_no_comma"
-            }
-        ],
-        "_class_name_deep__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "\\.",
-                "scope": "support.class.js",
-                "set": "_class_name_deep_dot_reference__expression_until_parenthesis_no_comma"
-            },
-            {
-                "match": "\\[",
-                "push": "expression_until_square_bracket"
-            },
-            {
-                "match": "{{otherwise}}",
-                "pop": true
-            }
-        ],
-        "_class_name_deep_dot_reference__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "{{ident}}",
-                "scope": "support.class.js",
-                "set": "_class_name_deep__expression_until_parenthesis_no_comma"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_prefix_operators__expression_until_parenthesis_no_comma": [
-            {
-                "match": "(?<!-)--|(?<!\\+)\\+\\+",
-                "scope": "keyword.operator.js",
-                "set": [
-                    {
-                        "match": "{{some_space}}"
-                    },
-                    {
-                        "match": "(?=\\))",
-                        "pop": true
-                    },
-                    {
-                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
-                        "scope": "invalid.illegal.js",
-                        "pop": true
-                    },
-                    {
-                        "include": "language_variable"
-                    },
-                    {
-                        "include": "reserved_word_reference"
-                    },
-                    {
-                        "include": "identifier_reference_simple"
-                    },
-                    {
-                        "include": "parenthesized_expression"
-                    },
-                    {
-                        "include": "otherwise_invalid"
-                    }
-                ]
-            }
-        ],
-        "_unary_operators__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{b_before}}yield(?:{{to_token}}\\*|{{b_after}})",
-                "scope": "keyword.operator.js",
-                "set": [
-                    {
-                        "match": "{{some_space}}"
-                    },
-                    {
-                        "match": "(?=\\))",
-                        "pop": true
-                    },
-                    {
-                        "match": "(?={{line_terminator}})",
-                        "pop": true
-                    },
-                    {
-                        "include": "_primary__expression_until_parenthesis_no_comma"
-                    }
-                ]
-            },
-            {
-                "match": "!|(?<!\\+)\\+(?!\\+)|(?<!-)-(?!-)|{{b_before}}(?:typeof|void|delete|await){{b_after}}",
-                "scope": "keyword.operator.js",
-                "set": "_primary__expression_until_parenthesis_no_comma"
-            },
-            {
-                "match": "~",
-                "scope": "keyword.operator.bitwise.js",
-                "set": "_primary__expression_until_parenthesis_no_comma"
-            }
-        ],
-        "_function_expression__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
-                "captures": {
-                    "1": "storage.modifier.js",
-                    "2": "storage.type.js",
-                    "3": "keyword.operator.js"
-                },
-                "set": "_function_expression_name__expression_until_parenthesis_no_comma"
-            }
-        ],
-        "_function_expression_name__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "{{reserved_word}}",
-                "scope": "invalid.illegal.js",
-                "set": "_function_expression_parenthesis__expression_until_parenthesis_no_comma"
-            },
-            {
-                "match": "{{ident}}",
-                "scope": "entity.name.function.js",
-                "set": "_function_expression_parenthesis__expression_until_parenthesis_no_comma"
-            },
-            {
-                "match": "(?=\\()",
-                "set": "_function_expression_parenthesis__expression_until_parenthesis_no_comma"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_function_expression_parenthesis__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "\\(",
-                "set": [
-                    "_function_expression_curly_bracket__expression_until_parenthesis_no_comma",
-                    "parameter_binding_list"
-                ]
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_function_expression_curly_bracket__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "(?=\\{)",
-                "set": "block_statement"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_class_expression__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{b_before}}class{{b_after}}",
-                "scope": "storage.type.js",
-                "set": "_class_expression_name__expression_until_parenthesis_no_comma"
-            }
-        ],
-        "_class_expression_name__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "{{b_before}}extends{{b_after}}",
-                "scope": "storage.modifier.js",
-                "set": "_class_expression_inheritance__expression_until_parenthesis_no_comma"
-            },
-            {
-                "match": "{{reserved_word}}",
-                "scope": "invalid.illegal.js",
-                "set": "_class_expression_curly_bracket_or_extends__expression_until_parenthesis_no_comma"
-            },
-            {
-                "match": "{{ident}}",
-                "scope": "entity.name.function.js",
-                "set": "_class_expression_curly_bracket_or_extends__expression_until_parenthesis_no_comma"
-            },
-            {
-                "match": "\\{",
-                "set": "_class_block"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_class_expression_curly_bracket_or_extends__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "{{b_before}}extends{{b_after}}",
-                "scope": "storage.modifier.js",
-                "set": "_class_expression_inheritance__expression_until_parenthesis_no_comma"
-            },
-            {
-                "match": "{{b_before}}(?:extend|exten|exte|ext|ex|e){{to_token}}{{b_after}}"
-            },
-            {
-                "match": "\\{",
-                "set": "_class_block"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_class_expression_inheritance__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "{{reserved_word}}",
-                "scope": "invalid.illegal.js",
-                "set": "_class_expression_curly_bracket__expression_until_parenthesis_no_comma"
-            },
-            {
-                "match": "{{ident}}",
-                "scope": "entity.name.function.js",
-                "set": "_class_expression_curly_bracket__expression_until_parenthesis_no_comma"
-            },
-            {
-                "match": "\\{",
-                "scope": "invalid.illegal.js",
-                "set": "_class_block"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_class_expression_curly_bracket__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "(?=\\))",
-                "pop": true
-            },
-            {
-                "match": "\\{",
-                "set": "_class_block"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_arrow_function_expression__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{arrow_function_with_parenthesis}}",
-                "captures": {
-                    "1": "storage.modifier.js"
-                },
-                "set": [
-                    "_primary_or_block_statement__expression_until_parenthesis_no_comma",
-                    "_arrow_operator",
-                    "parameter_binding_list"
-                ]
-            },
-            {
-                "match": "{{arrow_function_with_reserved_word}}",
-                "captures": {
-                    "1": "storage.modifier.js",
-                    "2": "invalid.illegal.js"
-                },
-                "set": [
-                    "_primary_or_block_statement__expression_until_parenthesis_no_comma",
-                    "_arrow_operator"
-                ]
-            },
-            {
-                "match": "{{arrow_function_with_ident}}",
-                "captures": {
-                    "1": "storage.modifier.js"
-                },
-                "set": [
-                    "_primary_or_block_statement__expression_until_parenthesis_no_comma",
-                    "_arrow_operator"
-                ]
-            }
-        ],
-        "_secondary_parts__expression_until_parenthesis_no_comma": [
-            {
-                "include": "_instanceof_keyword__expression_until_parenthesis_no_comma"
-            },
-            {
-                "include": "_binary_operators__expression_until_parenthesis_no_comma"
-            },
-            {
-                "include": "_dot_reference__expression_until_parenthesis_no_comma"
-            },
-            {
-                "include": "_square_bracket_reference__expression_until_parenthesis_no_comma"
-            },
-            {
-                "include": "_function_invocation__expression_until_parenthesis_no_comma"
-            },
-            {
-                "include": "_template_literal__expression_until_parenthesis_no_comma"
-            },
-            {
-                "include": "_conditional_expression__expression_until_parenthesis_no_comma"
-            }
-        ],
-        "_secondary__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "\\)",
-                "pop": true
-            },
-            {
-                "match": ",",
-                "scope": "invalid.illegal.js"
-            },
-            {
-                "include": "_secondary_parts__expression_until_parenthesis_no_comma"
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_instanceof_keyword__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{b_before}}instanceof{{b_after}}",
-                "scope": "keyword.operator.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "_class_name_shallow__expression_until_parenthesis_no_comma"
-                ]
-            }
-        ],
-        "_binary_operators__expression_until_parenthesis_no_comma": [
-            {
-                "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
-                "scope": "keyword.operator.bitwise.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "_primary__expression_until_parenthesis_no_comma"
-                ]
-            },
-            {
-                "match": "\\*\\*|-=|\\+=|===?+|!==?+|<=|>=|&&|\\|\\||\\*=?+|/=|%=",
-                "scope": "keyword.operator.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "_primary__expression_until_parenthesis_no_comma"
-                ]
-            },
-            {
-                "match": "%|\\*|/|-|\\+|=|<|>|{{b_before}}in{{b_after}}",
-                "scope": "keyword.operator.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "_primary__expression_until_parenthesis_no_comma"
-                ]
-            },
-            {
-                "match": "&|\\^|~|\\|",
-                "scope": "keyword.operator.bitwise.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "_primary__expression_until_parenthesis_no_comma"
-                ]
-            },
-            {
-                "match": ",",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "_primary__expression_until_parenthesis_no_comma"
-                ]
-            }
-        ],
-        "_dot_reference__expression_until_parenthesis_no_comma": [
-            {
-                "match": "\\.",
-                "set": "_dot_reference_contents__expression_until_parenthesis_no_comma"
-            }
-        ],
-        "_dot_reference_contents__expression_until_parenthesis_no_comma": [
-            {
-                "match": "{{some_space}}"
-            },
-            {
-                "match": "\\)",
-                "pop": true
-            },
-            {
-                "match": "{{b_before}}constructor{{b_after}}",
-                "scope": "support.class.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "_optional_postfix_operator"
-                ]
-            },
-            {
-                "match": "{{ident}}{{assignment_for_function}}",
-                "scope": "entity.name.function.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "_optional_postfix_operator"
-                ]
-            },
-            {
-                "match": "{{b_before}}(?:prototype|length|size|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT){{b_after}}",
-                "scope": "support.constant.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "_optional_postfix_operator"
-                ]
-            },
-            {
-                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|splice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn)(?={{to_token}}\\()",
-                "scope": "support.function.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "_optional_postfix_operator"
-                ]
-            },
-            {
-                "match": "{{b_before}}(?>E(?>LEMENT_NODE|NTITY_(?>REFERENCE_NODE|NODE))|A(?>TTRIBUTE_NODE|NY_(?>TYPE|UNORDERED_NODE_TYPE))|T(?>EXT_NODE|YPE_(?>BACK_FORWARD|NAVIGATE|RE(?>LOAD|SERVED)))|C(?>DATA_SECTION_NODE|O(?>MMENT_NODE|NNECTING)|HECKING|LOS(?>ING|ED))|PROCESSING_INSTRUCTION_NODE|DO(?>CUMENT_(?>NODE|TYPE_NODE|FRAGMENT_NODE)|MSTRING_SIZE_ERR|WNLOADING|NE)|N(?>O(?>T(?>ATION_NODE|_(?>FOUND_ERR|SUPPORTED_ERR))|_(?>DATA_ALLOWED_ERR|MODIFICATION_ALLOWED_ERR))|UMBER_TYPE|ETWORK_(?>EMPTY|IDLE|LOADING|NO_SOURCE))|I(?>N(?>DEX_SIZE_ERR|VALID_CHARACTER_ERR|USE_ATTRIBUTE_ERR)|DLE)|H(?>IERARCHY_REQUEST_ERR|EADERS_RECEIVED|AVE_NOTHING)|WRONG_DOCUMENT_ERR|U(?>N(?>CACHED|SENT|ORDERED_NODE_(?>ITERATOR_TYPE|SNAPSHOT_TYPE))|PDATEREADY)|O(?>PEN(?>ED)?|RDERED_NODE_(?>ITERATOR_TYPE|SNAPSHOT_TYPE))|LOADING|S(?>HOW_(?>A(?>LL|TTRIBUTE)|C(?>DATA_SECTION|OMMENT)|DOCUMENT(?>_(?>FRAGMENT|TYPE))?|E(?>LEMENT|NTITY(?>_REFERENCE)?)|NOTATION|PROCESSING_INSTRUCTION|TEXT)|TRING_TYPE|ECURITY_ERR|VG_(?>SPREADMETHOD_(?>UNKNOWN|PAD|RE(?>FLECT|PEAT))|ANGLETYPE_(?>UN(?>KNOWN|SPECIFIED)|DEG|RAD|GRAD)|LENGTHTYPE_(?>UNKNOWN|NUMBER|P(?>ERCENTAGE|X|T|C)|E(?>MS|XS)|CM|MM|IN)|PRESERVEASPECTRATIO_(?>UNKNOWN|NONE|XM(?>I(?>NYM(?>I(?>N|D)|AX)|DYM(?>I(?>N|D)|AX))|AXYM(?>I(?>N|D)|AX)))|MEETORSLICE_(?>UNKNOWN|MEET|SLICE)|TRANSFORM_(?>UNKNOWN|MATRIX|TRANSLATE|S(?>CALE|KEW(?>X|Y))|ROTATE)))|BOOLEAN_TYPE|FIRST_ORDERED_NODE_TYPE){{b_after}}",
-                "scope": "support.constant.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "_optional_postfix_operator"
-                ]
-            },
-            {
-                "match": "{{b_before}}(?>v(?>i(?>sib(?>le|ility)|ew(?>port(?>Element)?|Target)|deo(?>Tracks|Height|Width))|olume|al(?>id(?>ationMessage|ity)|ue(?>As(?>Date|Number|String)|InSpecifiedUnits)?)|e(?>rticalAlign|ctorEffect))|t(?>i(?>m(?>ing|eout)|tle)|ype(?>MustMatch)?|op|ext(?>Content|Tra(?>cks|nsform)|A(?>lign|nchor)|Baseline|Indent|Decoration|Overflow|Rendering|Shadow)?|a(?>gName|b(?>Index|index|leLayout|Size)|rget(?>Element)?)|Head|Foot|Bodies|ra(?>ck|ns(?>form(?>Origin|Style)?|ition(?>TimingFunction|D(?>elay|uration)|Property)?)))|n(?>a(?>vigation(?>Start)?|tural(?>Height|Width)|mespaceURI)|e(?>xt(?>Sibling|ElementSibling)|tworkState)|ode(?>Name|Type|Value)|umberOfItems)|u(?>n(?>loadEvent(?>Start|End)|i(?>code(?>Bidi|Range)|tType))|pload|se(?>Map|FinalURL|rZoom|CurrentView)|rl)|r(?>e(?>direct(?>Start|End|Count)|qu(?>estStart|ired(?>Features|Extensions)?)|s(?>ponse(?>Start|End|T(?>ext|ype)|XML)?|ize)|ad(?>yState|Only)|ferrer|peat|l(?>atedTarget|List)?|gion|v(?>ersed)?|turnValue)|ight(?>Context)?|o(?>w(?>Span|s|Index)|tate)|x|y)?|f(?>e(?>tchStart|lxBasis)|o(?>rm(?>s|Action|EncType|Method|NoValidate|Target)?|nt(?>Kerning|S(?>t(?>retch|yle)|ize)|Variant(?>Ligatures)?|Family|Weight)?)|i(?>rst(?>Child|ElementChild)|l(?>es|l(?>Style|Opacity|Rule)?|ter(?>Units|Res(?>X|Y))?))|l(?>o(?>at|od(?>Color|Opacity))|ex(?>Direction|Flow|Grow|Shrink|Wrap)?)|x|y)?|d(?>o(?>m(?>ain(?>Lookup(?>Start|End))?|Loading|Interactive|Co(?>ntentLoadedEvent(?>Start|End)|mplete)|inantBaseline)|c(?>type|ument(?>Element|URI(?>Object)?))|wnload)|e(?>f(?>ault(?>V(?>iew|alue)|Muted|PlaybackRate|Checked|Selected)?|er)|signMode|lta(?>X|Y|Z|Mode))|at(?>a(?>set)?|e(?>time|Time))|i(?>r(?>Name|ection)?|s(?>abled|play))|raggable|uration|x|y)?|c(?>o(?>n(?>nect(?>Start|End)|t(?>e(?>nt(?>Editable|Document|Window|S(?>criptType|tyleType))?|xt(?>Menu)?)|rol(?>ler(?>s)?|s)?))|l(?>or(?>Depth|Interpolation(?>Filters)?|Rendering)?|Span|s)|mp(?>atMode|lete)|o(?>rds|kie(?>Enabled)?)|unter(?>Reset|Increment))|h(?>a(?>r(?>acterSet|Code|set)|llenge)|ild(?>Nodes|ren|ElementCount)|ecked)|l(?>ass(?>List|Name)?|i(?>ent(?>Height|Width|Left|Top|X|Y)|p(?>Path(?>Units)?|Rule)?)|ear)|trlKey|r(?>ossOrigin|edentials)|ur(?>rent(?>S(?>rc|cale)|T(?>ime|rans(?>form|late))|View)|sor)|ite|ellIndex|a(?>ption(?>Side)?|che|nvas)|ssText|x|y)?|s(?>e(?>c(?>ureConnectionStart|tionRowIndex)|a(?>rch|mless)|lect(?>ed(?>StyleSheetSet|Index|Options)?|ion(?>Direction|End|Start))?|ek(?>able|ing))|u(?>btle|mmary)|t(?>a(?>t(?>e|us(?>Text)?)|rt)|yle(?>Sheet(?>s|Sets))?|ep|roke(?>Style|Dash(?>array|offset)|Line(?>cap|join)|Miterlimit|Opacity|Width)?|op(?>Color|Opacity))|c(?>r(?>ipts|oll(?>Height|Left|Top|Width)|een(?>X|Y|PixelToMillimeter(?>X|Y)))|ope(?>d)?)|ystem(?>Id|Language)|h(?>a(?>dow(?>Root|Blur|Color|Offset(?>X|Y))|pe(?>ImageThreshold|Margin|Outside|Rendering)?)|iftKey|eet)|ize(?>s)?|rc(?>doc|set|lang)?|andbox|p(?>an|readMethod))|l(?>o(?>adEvent(?>Start|End)|op|w|calName)|e(?>ft(?>Context)?|tterSpacing)|a(?>ng(?>uage)?|st(?>M(?>odified(?>Date)?|atch)|StyleSheetSet|Child|ElementChild|Paren)|bels|yer(?>X|Y))|i(?>n(?>ks|e(?>Width|Cap|Join|DashOffset|Height))|st(?>Style(?>Type|Image|Position)?)?|ghtingColor))|a(?>vail(?>Width|Height|Top|Left)|c(?>ti(?>veElement|on)|ce(?>ssKey(?>Label)?|pt(?>Charset)?))|n(?>chors|im(?>ated(?>InstanceRoot|Points)|Val)|gle)|pplets|ttributes|l(?>t(?>Key)?|lowfullscreen|ign)|u(?>dioTracks|to(?>play|focus|complete))|reas|sync|bbr)?|b(?>o(?>ttom|dy(?>Used)?|rder(?>Left(?>Width|Color|Style)?|R(?>ight(?>Width|Color|Style)?|adius)|Top(?>Width|Color|Style|LeftRadius|RightRadius)?|Bottom(?>Width|Color|Style|LeftRadius|RightRadius)?|S(?>tyle|pacing)|Width|Col(?>or|lapse)|Image(?>Outset|Width|S(?>ource|lice)|Repeat)?)?|xS(?>izing|hadow))|a(?>se(?>URI(?>Object)?|lineShift|Val)|ckground(?>Origin|BlendMode|C(?>lip|olor)|Image|Repeat(?>X|Y)?|Attachment|Position(?>X|Y)?)?)|u(?>tton(?>s)?|ffered(?>Amount)?)|inaryType)?|w(?>i(?>d(?>th|ows)|thCredentials|llValidate)|h(?>oleText|i(?>ch|teSpace))|r(?>ap|itingMode)|ord(?>Break|Spacing|Wrap))|h(?>e(?>ight|ad(?>ers)?)|ref(?>lang)?|ost(?>name)?|ash|i(?>dden|gh)|t(?>mlFor|tpEquiv))|p(?>ixel(?>Depth|UnitToMillimeter(?>X|Y))|r(?>o(?>tocol|perties)|e(?>f(?>erredStyleSheetSet|ix)|vious(?>Sibling|ElementSibling)|load|serveAspectRatio)|imitiveUnits)|o(?>rt|int(?>er(?>LockElement|Events)|s)|s(?>ition|ter))|a(?>t(?>hname|tern(?>Units|ContentUnits|Transform)?)|rent(?>Node|Element|Rule)|ge(?>X|Y|Break(?>After|Before|Inside))|used|dding(?>Left|Right|Top|Bottom)?|intOrder)|l(?>ugins|a(?>y(?>backRate|ed)|ceholder))|ublicId|erspective(?>Origin)?)|o(?>r(?>i(?>entation|gin)|der|phans)|scpu|wner(?>Document|SVGElement)|ut(?>erHTML|line(?>Width|Color|Style|Offset)?)|ffset(?>Height|Width|Parent|Top|Node|Left|X|Y)?|p(?>ti(?>ons|mum)|en|acity)|k|verflow(?>Wrap|X|Y)?|bject(?>Fit|Position))|g(?>eolocation|lobal(?>Alpha|CompositeOperation)|radient(?>Units|Transform))|e(?>m(?>bed(?>s)?|ptyCells)|n(?>ded|c(?>oding|type)|ableBackground)|rror|lements|xtensions)?|i(?>m(?>age(?>s|SmoothingEnabled)|plementation)|d|n(?>nerHTML|determinate|putMode|stanceRoot)|s(?>ContentEditable|Map))|URL(?>String)?|x(?>mlbase|1|2)?|k(?>ey(?>Code|type|System)|ind)|m(?>e(?>t(?>aKey|hod)|dia(?>Group)?|nu|etOrSlice)|o(?>vement(?>X|Y)|de)|u(?>ted|ltiple)|a(?>x(?>Length|Width|Height|Zoom)?|r(?>gin(?>Left|Right|Top|Bottom)?|ker(?>Mid|End|Start)?)|sk(?>Type|Units|ContentUnits)?|trix)|i(?>n(?>Width|Height|Zoom)?|terLimit|meTypes))|y(?>1|2)?|__proto__|z(?>Index|oom)|quotes){{b_after}}",
-                "scope": "support.constant.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "_optional_postfix_operator"
-                ]
-            },
-            {
-                "match": "{{b_before}}(?>n(?>o(?>w|rmalize)|amedItem|ewValueSpecifiedUnits)|l(?>o(?>ckOrientation|ad(?>Overlay)?|okup(?>Prefix|NamespaceURI))|in(?>eTo|k))|u(?>n(?>lockOrientation|wrapKey|suspendRedraw(?>All)?|pauseAnimations)|pdate)|a(?>d(?>d(?>EventListener|HitRegion)?|optNode)|ssign|ppend(?>Child|Data|Item)?|bort|r(?>rayBuffer|c(?>To)?)|n(?>chor|imationsPaused))|r(?>e(?>move(?>EventListener|Item|Child|Attribute(?>N(?>S|ode))?|HitRegion)?|p(?>lace(?>State|Child|Data|Item)?|ortValidity)|l(?>oad|easeCapture)|gister(?>ProtocolHandler|ContentHandler|Element)|quest(?>Fullscreen|PointerLock)|s(?>et(?>Transform)?|tore)|direct|ct)|otate(?>FromVector)?)|d(?>i(?>spatchEvent|gest)|e(?>lete(?>Data(?>base)?|T(?>Head|Foot)|C(?>aption|ell)|Row)?|crypt|rive(?>Key|Bits)|selectAll)|raw(?>FocusIfNeeded|Image))|key|g(?>e(?>t(?>I(?>tem|mageData|ntersectionList)|R(?>andomValues|esponseHeader)|Bo(?>xObjectFor|undingClientRect)|E(?>lement(?>ById|sBy(?>ClassName|Name|TagName(?>NS)?))|nclosureList)|S(?>election|tartTime|impleDuration)|A(?>ttribute(?>N(?>S|ode(?>NS)?))?|ll(?>ResponseHeaders)?)|C(?>lientRect(?>s)?|ontext|urrentTime)|D(?>estinationInsertionPoints|istributedNodes)|ModifierState|VideoPlaybackQuality|LineDash|Year|P(?>resentationAttribute|ointAtLength|athSegAtLength)|TotalLength)|nerateKey)|o)|s(?>e(?>t(?>Item|Attribute(?>N(?>S|ode(?>NS)?))?|R(?>equestHeader|angeText|otate)|Cu(?>stomValidity|rrentTime)|S(?>electionRange|cale|kew(?>X|Y))|LineDash|Trans(?>form|late)|Year|FilterRes|Matrix)|nd|lect)|wapCache|ign|u(?>b(?>str(?>ingData)?|mit)?|p|spendRedraw)|plitText|c(?>roll(?>IntoView|PathIntoView)|ale(?>NonUniform)?)|t(?>ep(?>Down|Up)|r(?>oke(?>Rect|Text)?|ike))|ave|mall|kew(?>X|Y))|c(?>l(?>ear(?>Rect|HitRegions)?|o(?>se(?>st|Path)?|ne(?>Node)?)|i(?>ck|p))|mp|reate(?>Attribute|C(?>DATASection|omment|aption)|DocumentFragment|E(?>lement(?>NS)?|ntityReference|vent|xpression)|N(?>odeIterator|SResolver)|P(?>rocessingInstruction|attern)|Ra(?>nge|dialGradient)|T(?>extNode|ouchList|reeWalker|Head|Foot)|S(?>hadowRoot|VG(?>P(?>athSeg(?>Moveto(?>Abs|Rel)|Lineto(?>Abs|Rel|Horizontal(?>Abs|Rel)|Vertical(?>Abs|Rel))|Curveto(?>Cubic(?>Abs|Rel|Smooth(?>Abs|Rel))|Quadratic(?>Abs|Rel|Smooth(?>Abs|Rel)))|Arc(?>Abs|Rel))|oint)|Number|Length|Angle|Matrix|Rect|Transform(?>FromMatrix)?))|LinearGradient|ImageData)|o(?>mp(?>areDocumentPosition|ile)|n(?>tains|vertToSpecifiedUnits|solidate))|a(?>retPositionFromPoint|nPlayType)|heck(?>Validity|Intersection|Enclosure))|AddSearchProvider|IsSearchProviderInstalled|i(?>t(?>em|alics)|mport(?>Key|Node)|n(?>sert(?>Before|Data|AdjacentHTML|Row|Cell|ItemBefore)|it(?>Key(?>Event|boardEvent)|ialize)|verse)|s(?>DefaultNamespace|EqualNode|PointIn(?>Path|Stroke)))|o(?>pen|verrideMimeType)|e(?>n(?>crypt|ableStyleSheetsForSet)|x(?>portKey|ecCommand|itPointerLock)|l(?>ement(?>FromPoint|sFromPoint)|lipse)|valuate|rror)|verify|wr(?>apKey|ite(?>ln)?)|has(?>Focus|ChildNodes|Attribute(?>NS)?|Extension)?|b(?>ack|l(?>ur|ob|ink)|e(?>ginPath|zierCurveTo)|ig|old)|f(?>o(?>r(?>ward|mData|ceRedraw)|cus|nt(?>color|size))|i(?>nd(?>All)?|ll(?>Rect|Text)?|xed)|astSeek|lip(?>X|Y))|p(?>u(?>shState|tImageData)|ostMessage|lay|ause(?>Animations)?)|qu(?>ery(?>CommandSupported|Selector(?>All)?)|adraticCurveTo)|m(?>atches|easureText|oveTo|ultiply)|t(?>e(?>rminate|xt)|o(?>DataURL|Blob|GMTString)|rans(?>late|form))|json)(?={{to_token}}\\()",
-                "scope": "support.function.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "_optional_postfix_operator"
-                ]
-            },
-            {
-                "match": "{{b_before}}(?>on(?>o(?>rientationchange|ffline)|c(?>hecking|ached|o(?>py|mplete)|ut)|error|noupdate|downloading|p(?>rogress|aste)|updateready|readystatechange|t(?>imeout|ouch(?>start|en(?>d|ter)|move|cancel|leave))|message|storage|blocked)){{b_after}}",
-                "scope": "support.function.js",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "_optional_postfix_operator"
-                ]
-            },
-            {
-                "match": "{{ident}}",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "_optional_postfix_operator"
-                ]
-            },
-            {
-                "include": "otherwise_invalid"
-            }
-        ],
-        "_square_bracket_reference__expression_until_parenthesis_no_comma": [
-            {
-                "match": "\\[",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "_optional_postfix_operator",
-                    "expression_until_square_bracket"
-                ]
-            }
-        ],
-        "_function_invocation__expression_until_parenthesis_no_comma": [
-            {
-                "match": "\\(",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "expression_until_parenthesis_with_spread"
-                ]
-            }
-        ],
-        "_template_literal__expression_until_parenthesis_no_comma": [
-            {
-                "match": "(?=`)",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "template_literal"
-                ]
-            }
-        ],
-        "_conditional_expression__expression_until_parenthesis_no_comma": [
-            {
-                "match": "\\?",
-                "set": [
-                    "_secondary__expression_until_parenthesis_no_comma",
-                    "_primary__expression_until_parenthesis_no_comma",
                     "expression_until_colon"
                 ]
             }
@@ -8532,7 +7801,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary__expression_until_parenthesis_ahead_no_comma",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -8555,7 +7824,743 @@
                 ]
             }
         ],
+        "expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": "\\.\\.\\.",
+                "scope": "keyword.operator.js",
+                "push": "expression_until_parenthesis_ahead_or_comma"
+            },
+            {
+                "match": "{{otherwise}}",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "_primary__expression_until_parenthesis_with_spread_anywhere"
+                ]
+            }
+        ],
+        "_primary_parts__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "include": "_arrow_function_expression__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "include": "parenthesized_expression"
+            },
+            {
+                "include": "string_literal"
+            },
+            {
+                "include": "template_literal"
+            },
+            {
+                "include": "regular_expression_literal"
+            },
+            {
+                "include": "numeric_literal"
+            },
+            {
+                "include": "array_literal"
+            },
+            {
+                "include": "object_literal"
+            },
+            {
+                "include": "_function_expression__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "include": "_class_expression__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "include": "language_constant"
+            },
+            {
+                "include": "language_variable"
+            },
+            {
+                "include": "_new_keyword__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "include": "_prefix_operators__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "include": "_unary_operators__expression_until_parenthesis_with_spread_anywhere"
+            }
+        ],
+        "_primary__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "include": "_primary_parts__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "include": "reserved_word_reference"
+            },
+            {
+                "include": "identifier_reference"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_primary_or_block_statement__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "match": "(?=\\{)",
+                "set": "block_statement"
+            },
+            {
+                "include": "_primary_parts__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "include": "reserved_word_reference"
+            },
+            {
+                "include": "identifier_reference"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_new_keyword__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{b_before}}new{{b_after}}",
+                "scope": "keyword.operator.js",
+                "set": [
+                    {
+                        "match": "{{some_space}}"
+                    },
+                    {
+                        "match": "(?=\\))",
+                        "pop": true
+                    },
+                    {
+                        "match": "\\.",
+                        "scope": "keyword.operator.js",
+                        "set": "_new_target__expression_until_parenthesis_with_spread_anywhere"
+                    },
+                    {
+                        "include": "_class_name_shallow__expression_until_parenthesis_with_spread_anywhere"
+                    }
+                ]
+            }
+        ],
+        "_new_target__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}target{{b_after}}",
+                "scope": "support.class.js",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}(?:t|ta|tar|targ|targe){{b_after}}",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "invalid.illegal.js",
+                "pop": true
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_class_name_shallow__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "set": [
+                    "_class_name_deep__expression_until_parenthesis_with_spread_anywhere",
+                    "expression_until_parenthesis"
+                ]
+            },
+            {
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "set": "_class_name_deep__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "support.class.js",
+                "set": "_class_name_deep__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "include": "_primary__expression_until_parenthesis_with_spread_anywhere"
+            }
+        ],
+        "_class_name_deep__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "match": "\\.",
+                "scope": "support.class.js",
+                "set": "_class_name_deep_dot_reference__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "match": "\\[",
+                "push": "expression_until_square_bracket"
+            },
+            {
+                "match": "{{otherwise}}",
+                "pop": true
+            }
+        ],
+        "_class_name_deep_dot_reference__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "support.class.js",
+                "set": "_class_name_deep__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_prefix_operators__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "(?<!-)--|(?<!\\+)\\+\\+",
+                "scope": "keyword.operator.js",
+                "set": [
+                    {
+                        "match": "{{some_space}}"
+                    },
+                    {
+                        "match": "(?=\\))",
+                        "pop": true
+                    },
+                    {
+                        "match": "{{b_before}}(?:true|false|null|undefined|Infinity|NaN){{b_after}}",
+                        "scope": "invalid.illegal.js",
+                        "pop": true
+                    },
+                    {
+                        "include": "language_variable"
+                    },
+                    {
+                        "include": "reserved_word_reference"
+                    },
+                    {
+                        "include": "identifier_reference_simple"
+                    },
+                    {
+                        "include": "parenthesized_expression"
+                    },
+                    {
+                        "include": "otherwise_invalid"
+                    }
+                ]
+            }
+        ],
+        "_unary_operators__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{b_before}}yield(?:{{to_token}}\\*|{{b_after}})",
+                "scope": "keyword.operator.js",
+                "set": [
+                    {
+                        "match": "{{some_space}}"
+                    },
+                    {
+                        "match": "(?=\\))",
+                        "pop": true
+                    },
+                    {
+                        "match": "(?={{line_terminator}})",
+                        "pop": true
+                    },
+                    {
+                        "include": "_primary__expression_until_parenthesis_with_spread_anywhere"
+                    }
+                ]
+            },
+            {
+                "match": "!|(?<!\\+)\\+(?!\\+)|(?<!-)-(?!-)|{{b_before}}(?:typeof|void|delete|await){{b_after}}",
+                "scope": "keyword.operator.js",
+                "set": "_primary__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "match": "~",
+                "scope": "keyword.operator.bitwise.js",
+                "set": "_primary__expression_until_parenthesis_with_spread_anywhere"
+            }
+        ],
+        "_function_expression__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{b_before}}(?:(async){{some_space}})?+(function)(?:(\\*)|{{b_after}})",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "storage.type.js",
+                    "3": "keyword.operator.js"
+                },
+                "set": "_function_expression_name__expression_until_parenthesis_with_spread_anywhere"
+            }
+        ],
+        "_function_expression_name__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "set": "_function_expression_parenthesis__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "entity.name.function.js",
+                "set": "_function_expression_parenthesis__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "match": "(?=\\()",
+                "set": "_function_expression_parenthesis__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_function_expression_parenthesis__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "match": "\\(",
+                "set": [
+                    "_function_expression_curly_bracket__expression_until_parenthesis_with_spread_anywhere",
+                    "parameter_binding_list"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_function_expression_curly_bracket__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "match": "(?=\\{)",
+                "set": "block_statement"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_class_expression__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{b_before}}class{{b_after}}",
+                "scope": "storage.type.js",
+                "set": "_class_expression_name__expression_until_parenthesis_with_spread_anywhere"
+            }
+        ],
+        "_class_expression_name__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}extends{{b_after}}",
+                "scope": "storage.modifier.js",
+                "set": "_class_expression_inheritance__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "set": "_class_expression_curly_bracket_or_extends__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "entity.name.function.js",
+                "set": "_class_expression_curly_bracket_or_extends__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "match": "\\{",
+                "set": "_class_block"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_class_expression_curly_bracket_or_extends__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}extends{{b_after}}",
+                "scope": "storage.modifier.js",
+                "set": "_class_expression_inheritance__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "match": "{{b_before}}(?:extend|exten|exte|ext|ex|e){{to_token}}{{b_after}}"
+            },
+            {
+                "match": "\\{",
+                "set": "_class_block"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_class_expression_inheritance__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "match": "{{reserved_word}}",
+                "scope": "invalid.illegal.js",
+                "set": "_class_expression_curly_bracket__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "match": "{{ident}}",
+                "scope": "entity.name.function.js",
+                "set": "_class_expression_curly_bracket__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "match": "\\{",
+                "scope": "invalid.illegal.js",
+                "set": "_class_block"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_class_expression_curly_bracket__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "(?=\\))",
+                "pop": true
+            },
+            {
+                "match": "\\{",
+                "set": "_class_block"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_arrow_function_expression__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{arrow_function_with_parenthesis}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
+                "set": [
+                    "_primary_or_block_statement__expression_until_parenthesis_with_spread_anywhere",
+                    "_arrow_operator",
+                    "parameter_binding_list"
+                ]
+            },
+            {
+                "match": "{{arrow_function_with_reserved_word}}",
+                "captures": {
+                    "1": "storage.modifier.js",
+                    "2": "invalid.illegal.js"
+                },
+                "set": [
+                    "_primary_or_block_statement__expression_until_parenthesis_with_spread_anywhere",
+                    "_arrow_operator"
+                ]
+            },
+            {
+                "match": "{{arrow_function_with_ident}}",
+                "captures": {
+                    "1": "storage.modifier.js"
+                },
+                "set": [
+                    "_primary_or_block_statement__expression_until_parenthesis_with_spread_anywhere",
+                    "_arrow_operator"
+                ]
+            }
+        ],
+        "_secondary_parts__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "include": "_instanceof_keyword__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "include": "_binary_operators__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "include": "_dot_reference__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "include": "_square_bracket_reference__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "include": "_function_invocation__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "include": "_template_literal__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "include": "_conditional_expression__expression_until_parenthesis_with_spread_anywhere"
+            }
+        ],
+        "_secondary__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "\\)",
+                "pop": true
+            },
+            {
+                "match": ",",
+                "set": "expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "include": "_secondary_parts__expression_until_parenthesis_with_spread_anywhere"
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_instanceof_keyword__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{b_before}}instanceof{{b_after}}",
+                "scope": "keyword.operator.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "_class_name_shallow__expression_until_parenthesis_with_spread_anywhere"
+                ]
+            }
+        ],
+        "_binary_operators__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": ">>>?+=?+|<<=?+|&=|\\^=|\\|=",
+                "scope": "keyword.operator.bitwise.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "_primary__expression_until_parenthesis_with_spread_anywhere"
+                ]
+            },
+            {
+                "match": "\\*\\*|-=|\\+=|===?+|!==?+|<=|>=|&&|\\|\\||\\*=?+|/=|%=",
+                "scope": "keyword.operator.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "_primary__expression_until_parenthesis_with_spread_anywhere"
+                ]
+            },
+            {
+                "match": "%|\\*|/|-|\\+|=|<|>|{{b_before}}in{{b_after}}",
+                "scope": "keyword.operator.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "_primary__expression_until_parenthesis_with_spread_anywhere"
+                ]
+            },
+            {
+                "match": "&|\\^|~|\\|",
+                "scope": "keyword.operator.bitwise.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "_primary__expression_until_parenthesis_with_spread_anywhere"
+                ]
+            },
+            {
+                "match": ",",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "_primary__expression_until_parenthesis_with_spread_anywhere"
+                ]
+            }
+        ],
+        "_dot_reference__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "\\.",
+                "set": "_dot_reference_contents__expression_until_parenthesis_with_spread_anywhere"
+            }
+        ],
+        "_dot_reference_contents__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "{{some_space}}"
+            },
+            {
+                "match": "\\)",
+                "pop": true
+            },
+            {
+                "match": "{{b_before}}constructor{{b_after}}",
+                "scope": "support.class.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}{{assignment_for_function}}",
+                "scope": "entity.name.function.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:prototype|length|size|message|buffer|byteLength|byteOffset|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|NaN|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?:create|ceil|cos|defineProperty|defineProperties|freeze|fromCharCode|fromCodePoint|chatAt|charCodeAt|codePointAt|concat|endsWith|includes|indexOf|lastIndexOf|localeCompare|match|normalize|repeat|replace|search|slice|splice|split|startsWith|substr|substring|toLocaleLowerCase|toLocaleUpperCase|toLowerCase|toUpperCase|trim|floor|getOwnProperty|getOwnPropertyDescriptor|getOwnPropertyDescriptors|getOwnPropertyName|getOwnPropertySymbols|getPrototypeOf|is|isExtensible|isFrozen|isSealed|isArray|isView|keys|pow|parse|preventExtensions|seal|sin|sqrt|stringify|tan|acos|atan2|atan|asin|abs|exp|log|max|min|random|round|UTC|now|exec|test|toString|toSource|assign|hasOwnProperty|isPrototypeOf|propertyIsEnumerable|toLocaleString|valueOf|setPrototypeOf|values|entries|call|apply|bind|is|isInteger|isFinite|isNaN|isSafeInteger|parseFloat|parseInt|toExponential|toFixed|toPrecision|trunc|tanh|sinh|cosh|sign|log2|log10|log1p|imul|hypot|fround|expml|clz32|cbrt|atanh|asinh|acosh|getDate|getDay|getFullYear|getHours|getMilliseconds|getMinutes|getMonth|getSeconds|getTime|getTimezoneOffset|getUTCDate|getUTCDay|getUTCFullYear|getUTCHours|getUTCMilliseconds|getUTCMinutes|getUTCMonth|getUTCSeconds|setDate|setFullYear|setHours|setMilliseconds|setMinutes|setMonth|setSeconds|setTime|setUTCDate|setUTCFullYear|setUTCHours|setUTCMilliseconds|setUTCMinutes|setUTCMonth|setUTCSeconds|toDateString|toISOString|toJSON|toLocaleDateString|toLocaleTimeString|toTimeString|toUTCString|for|keyFor|from|copyWithin|every|fill|filter|find|findIndex|forEach|join|map|pop|push|shift|unshift|reduce|reduceRight|reverse|some|sort|set|subarray|clear|delete|get|has|add|construct|deleteProperty|getCanonicalLocales|next|return|throw|all|race|then|catch|resolve|reject|getFloat32|setFloat32|getFloat64|setFloat64|getInt16|setInt16|getInt32|setInt32|getInt64|setInt64|getInt8|setInt8|getUint16|setUint16|getUint32|setUint32|getUint64|setUint64|getUint8|setUint8|assert|count|dir|dirxml|group|groupCollapsed|groupEnd|info|log|profile|profileEnd|table|time|timeEnd|trace|warn)(?={{to_token}}\\()",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?>E(?>LEMENT_NODE|NTITY_(?>REFERENCE_NODE|NODE))|A(?>TTRIBUTE_NODE|NY_(?>TYPE|UNORDERED_NODE_TYPE))|T(?>EXT_NODE|YPE_(?>BACK_FORWARD|NAVIGATE|RE(?>LOAD|SERVED)))|C(?>DATA_SECTION_NODE|O(?>MMENT_NODE|NNECTING)|HECKING|LOS(?>ING|ED))|PROCESSING_INSTRUCTION_NODE|DO(?>CUMENT_(?>NODE|TYPE_NODE|FRAGMENT_NODE)|MSTRING_SIZE_ERR|WNLOADING|NE)|N(?>O(?>T(?>ATION_NODE|_(?>FOUND_ERR|SUPPORTED_ERR))|_(?>DATA_ALLOWED_ERR|MODIFICATION_ALLOWED_ERR))|UMBER_TYPE|ETWORK_(?>EMPTY|IDLE|LOADING|NO_SOURCE))|I(?>N(?>DEX_SIZE_ERR|VALID_CHARACTER_ERR|USE_ATTRIBUTE_ERR)|DLE)|H(?>IERARCHY_REQUEST_ERR|EADERS_RECEIVED|AVE_NOTHING)|WRONG_DOCUMENT_ERR|U(?>N(?>CACHED|SENT|ORDERED_NODE_(?>ITERATOR_TYPE|SNAPSHOT_TYPE))|PDATEREADY)|O(?>PEN(?>ED)?|RDERED_NODE_(?>ITERATOR_TYPE|SNAPSHOT_TYPE))|LOADING|S(?>HOW_(?>A(?>LL|TTRIBUTE)|C(?>DATA_SECTION|OMMENT)|DOCUMENT(?>_(?>FRAGMENT|TYPE))?|E(?>LEMENT|NTITY(?>_REFERENCE)?)|NOTATION|PROCESSING_INSTRUCTION|TEXT)|TRING_TYPE|ECURITY_ERR|VG_(?>SPREADMETHOD_(?>UNKNOWN|PAD|RE(?>FLECT|PEAT))|ANGLETYPE_(?>UN(?>KNOWN|SPECIFIED)|DEG|RAD|GRAD)|LENGTHTYPE_(?>UNKNOWN|NUMBER|P(?>ERCENTAGE|X|T|C)|E(?>MS|XS)|CM|MM|IN)|PRESERVEASPECTRATIO_(?>UNKNOWN|NONE|XM(?>I(?>NYM(?>I(?>N|D)|AX)|DYM(?>I(?>N|D)|AX))|AXYM(?>I(?>N|D)|AX)))|MEETORSLICE_(?>UNKNOWN|MEET|SLICE)|TRANSFORM_(?>UNKNOWN|MATRIX|TRANSLATE|S(?>CALE|KEW(?>X|Y))|ROTATE)))|BOOLEAN_TYPE|FIRST_ORDERED_NODE_TYPE){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?>v(?>i(?>sib(?>le|ility)|ew(?>port(?>Element)?|Target)|deo(?>Tracks|Height|Width))|olume|al(?>id(?>ationMessage|ity)|ue(?>As(?>Date|Number|String)|InSpecifiedUnits)?)|e(?>rticalAlign|ctorEffect))|t(?>i(?>m(?>ing|eout)|tle)|ype(?>MustMatch)?|op|ext(?>Content|Tra(?>cks|nsform)|A(?>lign|nchor)|Baseline|Indent|Decoration|Overflow|Rendering|Shadow)?|a(?>gName|b(?>Index|index|leLayout|Size)|rget(?>Element)?)|Head|Foot|Bodies|ra(?>ck|ns(?>form(?>Origin|Style)?|ition(?>TimingFunction|D(?>elay|uration)|Property)?)))|n(?>a(?>vigation(?>Start)?|tural(?>Height|Width)|mespaceURI)|e(?>xt(?>Sibling|ElementSibling)|tworkState)|ode(?>Name|Type|Value)|umberOfItems)|u(?>n(?>loadEvent(?>Start|End)|i(?>code(?>Bidi|Range)|tType))|pload|se(?>Map|FinalURL|rZoom|CurrentView)|rl)|r(?>e(?>direct(?>Start|End|Count)|qu(?>estStart|ired(?>Features|Extensions)?)|s(?>ponse(?>Start|End|T(?>ext|ype)|XML)?|ize)|ad(?>yState|Only)|ferrer|peat|l(?>atedTarget|List)?|gion|v(?>ersed)?|turnValue)|ight(?>Context)?|o(?>w(?>Span|s|Index)|tate)|x|y)?|f(?>e(?>tchStart|lxBasis)|o(?>rm(?>s|Action|EncType|Method|NoValidate|Target)?|nt(?>Kerning|S(?>t(?>retch|yle)|ize)|Variant(?>Ligatures)?|Family|Weight)?)|i(?>rst(?>Child|ElementChild)|l(?>es|l(?>Style|Opacity|Rule)?|ter(?>Units|Res(?>X|Y))?))|l(?>o(?>at|od(?>Color|Opacity))|ex(?>Direction|Flow|Grow|Shrink|Wrap)?)|x|y)?|d(?>o(?>m(?>ain(?>Lookup(?>Start|End))?|Loading|Interactive|Co(?>ntentLoadedEvent(?>Start|End)|mplete)|inantBaseline)|c(?>type|ument(?>Element|URI(?>Object)?))|wnload)|e(?>f(?>ault(?>V(?>iew|alue)|Muted|PlaybackRate|Checked|Selected)?|er)|signMode|lta(?>X|Y|Z|Mode))|at(?>a(?>set)?|e(?>time|Time))|i(?>r(?>Name|ection)?|s(?>abled|play))|raggable|uration|x|y)?|c(?>o(?>n(?>nect(?>Start|End)|t(?>e(?>nt(?>Editable|Document|Window|S(?>criptType|tyleType))?|xt(?>Menu)?)|rol(?>ler(?>s)?|s)?))|l(?>or(?>Depth|Interpolation(?>Filters)?|Rendering)?|Span|s)|mp(?>atMode|lete)|o(?>rds|kie(?>Enabled)?)|unter(?>Reset|Increment))|h(?>a(?>r(?>acterSet|Code|set)|llenge)|ild(?>Nodes|ren|ElementCount)|ecked)|l(?>ass(?>List|Name)?|i(?>ent(?>Height|Width|Left|Top|X|Y)|p(?>Path(?>Units)?|Rule)?)|ear)|trlKey|r(?>ossOrigin|edentials)|ur(?>rent(?>S(?>rc|cale)|T(?>ime|rans(?>form|late))|View)|sor)|ite|ellIndex|a(?>ption(?>Side)?|che|nvas)|ssText|x|y)?|s(?>e(?>c(?>ureConnectionStart|tionRowIndex)|a(?>rch|mless)|lect(?>ed(?>StyleSheetSet|Index|Options)?|ion(?>Direction|End|Start))?|ek(?>able|ing))|u(?>btle|mmary)|t(?>a(?>t(?>e|us(?>Text)?)|rt)|yle(?>Sheet(?>s|Sets))?|ep|roke(?>Style|Dash(?>array|offset)|Line(?>cap|join)|Miterlimit|Opacity|Width)?|op(?>Color|Opacity))|c(?>r(?>ipts|oll(?>Height|Left|Top|Width)|een(?>X|Y|PixelToMillimeter(?>X|Y)))|ope(?>d)?)|ystem(?>Id|Language)|h(?>a(?>dow(?>Root|Blur|Color|Offset(?>X|Y))|pe(?>ImageThreshold|Margin|Outside|Rendering)?)|iftKey|eet)|ize(?>s)?|rc(?>doc|set|lang)?|andbox|p(?>an|readMethod))|l(?>o(?>adEvent(?>Start|End)|op|w|calName)|e(?>ft(?>Context)?|tterSpacing)|a(?>ng(?>uage)?|st(?>M(?>odified(?>Date)?|atch)|StyleSheetSet|Child|ElementChild|Paren)|bels|yer(?>X|Y))|i(?>n(?>ks|e(?>Width|Cap|Join|DashOffset|Height))|st(?>Style(?>Type|Image|Position)?)?|ghtingColor))|a(?>vail(?>Width|Height|Top|Left)|c(?>ti(?>veElement|on)|ce(?>ssKey(?>Label)?|pt(?>Charset)?))|n(?>chors|im(?>ated(?>InstanceRoot|Points)|Val)|gle)|pplets|ttributes|l(?>t(?>Key)?|lowfullscreen|ign)|u(?>dioTracks|to(?>play|focus|complete))|reas|sync|bbr)?|b(?>o(?>ttom|dy(?>Used)?|rder(?>Left(?>Width|Color|Style)?|R(?>ight(?>Width|Color|Style)?|adius)|Top(?>Width|Color|Style|LeftRadius|RightRadius)?|Bottom(?>Width|Color|Style|LeftRadius|RightRadius)?|S(?>tyle|pacing)|Width|Col(?>or|lapse)|Image(?>Outset|Width|S(?>ource|lice)|Repeat)?)?|xS(?>izing|hadow))|a(?>se(?>URI(?>Object)?|lineShift|Val)|ckground(?>Origin|BlendMode|C(?>lip|olor)|Image|Repeat(?>X|Y)?|Attachment|Position(?>X|Y)?)?)|u(?>tton(?>s)?|ffered(?>Amount)?)|inaryType)?|w(?>i(?>d(?>th|ows)|thCredentials|llValidate)|h(?>oleText|i(?>ch|teSpace))|r(?>ap|itingMode)|ord(?>Break|Spacing|Wrap))|h(?>e(?>ight|ad(?>ers)?)|ref(?>lang)?|ost(?>name)?|ash|i(?>dden|gh)|t(?>mlFor|tpEquiv))|p(?>ixel(?>Depth|UnitToMillimeter(?>X|Y))|r(?>o(?>tocol|perties)|e(?>f(?>erredStyleSheetSet|ix)|vious(?>Sibling|ElementSibling)|load|serveAspectRatio)|imitiveUnits)|o(?>rt|int(?>er(?>LockElement|Events)|s)|s(?>ition|ter))|a(?>t(?>hname|tern(?>Units|ContentUnits|Transform)?)|rent(?>Node|Element|Rule)|ge(?>X|Y|Break(?>After|Before|Inside))|used|dding(?>Left|Right|Top|Bottom)?|intOrder)|l(?>ugins|a(?>y(?>backRate|ed)|ceholder))|ublicId|erspective(?>Origin)?)|o(?>r(?>i(?>entation|gin)|der|phans)|scpu|wner(?>Document|SVGElement)|ut(?>erHTML|line(?>Width|Color|Style|Offset)?)|ffset(?>Height|Width|Parent|Top|Node|Left|X|Y)?|p(?>ti(?>ons|mum)|en|acity)|k|verflow(?>Wrap|X|Y)?|bject(?>Fit|Position))|g(?>eolocation|lobal(?>Alpha|CompositeOperation)|radient(?>Units|Transform))|e(?>m(?>bed(?>s)?|ptyCells)|n(?>ded|c(?>oding|type)|ableBackground)|rror|lements|xtensions)?|i(?>m(?>age(?>s|SmoothingEnabled)|plementation)|d|n(?>nerHTML|determinate|putMode|stanceRoot)|s(?>ContentEditable|Map))|URL(?>String)?|x(?>mlbase|1|2)?|k(?>ey(?>Code|type|System)|ind)|m(?>e(?>t(?>aKey|hod)|dia(?>Group)?|nu|etOrSlice)|o(?>vement(?>X|Y)|de)|u(?>ted|ltiple)|a(?>x(?>Length|Width|Height|Zoom)?|r(?>gin(?>Left|Right|Top|Bottom)?|ker(?>Mid|End|Start)?)|sk(?>Type|Units|ContentUnits)?|trix)|i(?>n(?>Width|Height|Zoom)?|terLimit|meTypes))|y(?>1|2)?|__proto__|z(?>Index|oom)|quotes){{b_after}}",
+                "scope": "support.constant.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?>n(?>o(?>w|rmalize)|amedItem|ewValueSpecifiedUnits)|l(?>o(?>ckOrientation|ad(?>Overlay)?|okup(?>Prefix|NamespaceURI))|in(?>eTo|k))|u(?>n(?>lockOrientation|wrapKey|suspendRedraw(?>All)?|pauseAnimations)|pdate)|a(?>d(?>d(?>EventListener|HitRegion)?|optNode)|ssign|ppend(?>Child|Data|Item)?|bort|r(?>rayBuffer|c(?>To)?)|n(?>chor|imationsPaused))|r(?>e(?>move(?>EventListener|Item|Child|Attribute(?>N(?>S|ode))?|HitRegion)?|p(?>lace(?>State|Child|Data|Item)?|ortValidity)|l(?>oad|easeCapture)|gister(?>ProtocolHandler|ContentHandler|Element)|quest(?>Fullscreen|PointerLock)|s(?>et(?>Transform)?|tore)|direct|ct)|otate(?>FromVector)?)|d(?>i(?>spatchEvent|gest)|e(?>lete(?>Data(?>base)?|T(?>Head|Foot)|C(?>aption|ell)|Row)?|crypt|rive(?>Key|Bits)|selectAll)|raw(?>FocusIfNeeded|Image))|key|g(?>e(?>t(?>I(?>tem|mageData|ntersectionList)|R(?>andomValues|esponseHeader)|Bo(?>xObjectFor|undingClientRect)|E(?>lement(?>ById|sBy(?>ClassName|Name|TagName(?>NS)?))|nclosureList)|S(?>election|tartTime|impleDuration)|A(?>ttribute(?>N(?>S|ode(?>NS)?))?|ll(?>ResponseHeaders)?)|C(?>lientRect(?>s)?|ontext|urrentTime)|D(?>estinationInsertionPoints|istributedNodes)|ModifierState|VideoPlaybackQuality|LineDash|Year|P(?>resentationAttribute|ointAtLength|athSegAtLength)|TotalLength)|nerateKey)|o)|s(?>e(?>t(?>Item|Attribute(?>N(?>S|ode(?>NS)?))?|R(?>equestHeader|angeText|otate)|Cu(?>stomValidity|rrentTime)|S(?>electionRange|cale|kew(?>X|Y))|LineDash|Trans(?>form|late)|Year|FilterRes|Matrix)|nd|lect)|wapCache|ign|u(?>b(?>str(?>ingData)?|mit)?|p|spendRedraw)|plitText|c(?>roll(?>IntoView|PathIntoView)|ale(?>NonUniform)?)|t(?>ep(?>Down|Up)|r(?>oke(?>Rect|Text)?|ike))|ave|mall|kew(?>X|Y))|c(?>l(?>ear(?>Rect|HitRegions)?|o(?>se(?>st|Path)?|ne(?>Node)?)|i(?>ck|p))|mp|reate(?>Attribute|C(?>DATASection|omment|aption)|DocumentFragment|E(?>lement(?>NS)?|ntityReference|vent|xpression)|N(?>odeIterator|SResolver)|P(?>rocessingInstruction|attern)|Ra(?>nge|dialGradient)|T(?>extNode|ouchList|reeWalker|Head|Foot)|S(?>hadowRoot|VG(?>P(?>athSeg(?>Moveto(?>Abs|Rel)|Lineto(?>Abs|Rel|Horizontal(?>Abs|Rel)|Vertical(?>Abs|Rel))|Curveto(?>Cubic(?>Abs|Rel|Smooth(?>Abs|Rel))|Quadratic(?>Abs|Rel|Smooth(?>Abs|Rel)))|Arc(?>Abs|Rel))|oint)|Number|Length|Angle|Matrix|Rect|Transform(?>FromMatrix)?))|LinearGradient|ImageData)|o(?>mp(?>areDocumentPosition|ile)|n(?>tains|vertToSpecifiedUnits|solidate))|a(?>retPositionFromPoint|nPlayType)|heck(?>Validity|Intersection|Enclosure))|AddSearchProvider|IsSearchProviderInstalled|i(?>t(?>em|alics)|mport(?>Key|Node)|n(?>sert(?>Before|Data|AdjacentHTML|Row|Cell|ItemBefore)|it(?>Key(?>Event|boardEvent)|ialize)|verse)|s(?>DefaultNamespace|EqualNode|PointIn(?>Path|Stroke)))|o(?>pen|verrideMimeType)|e(?>n(?>crypt|ableStyleSheetsForSet)|x(?>portKey|ecCommand|itPointerLock)|l(?>ement(?>FromPoint|sFromPoint)|lipse)|valuate|rror)|verify|wr(?>apKey|ite(?>ln)?)|has(?>Focus|ChildNodes|Attribute(?>NS)?|Extension)?|b(?>ack|l(?>ur|ob|ink)|e(?>ginPath|zierCurveTo)|ig|old)|f(?>o(?>r(?>ward|mData|ceRedraw)|cus|nt(?>color|size))|i(?>nd(?>All)?|ll(?>Rect|Text)?|xed)|astSeek|lip(?>X|Y))|p(?>u(?>shState|tImageData)|ostMessage|lay|ause(?>Animations)?)|qu(?>ery(?>CommandSupported|Selector(?>All)?)|adraticCurveTo)|m(?>atches|easureText|oveTo|ultiply)|t(?>e(?>rminate|xt)|o(?>DataURL|Blob|GMTString)|rans(?>late|form))|json)(?={{to_token}}\\()",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{b_before}}(?>on(?>o(?>rientationchange|ffline)|c(?>hecking|ached|o(?>py|mplete)|ut)|error|noupdate|downloading|p(?>rogress|aste)|updateready|readystatechange|t(?>imeout|ouch(?>start|en(?>d|ter)|move|cancel|leave))|message|storage|blocked)){{b_after}}",
+                "scope": "support.function.js",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "match": "{{ident}}",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "_optional_postfix_operator"
+                ]
+            },
+            {
+                "include": "otherwise_invalid"
+            }
+        ],
+        "_square_bracket_reference__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "\\[",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "_optional_postfix_operator",
+                    "expression_until_square_bracket"
+                ]
+            }
+        ],
+        "_function_invocation__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "\\(",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "expression_until_parenthesis_with_spread_anywhere"
+                ]
+            }
+        ],
+        "_template_literal__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "(?=`)",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "template_literal"
+                ]
+            }
+        ],
+        "_conditional_expression__expression_until_parenthesis_with_spread_anywhere": [
+            {
+                "match": "\\?",
+                "set": [
+                    "_secondary__expression_until_parenthesis_with_spread_anywhere",
+                    "_primary__expression_until_parenthesis_with_spread_anywhere",
+                    "expression_until_colon"
+                ]
+            }
+        ],
         "expression_until_square_bracket_with_spread_or_comma_anywhere": [
+            {
+                "match": "{{non_token}}"
+            },
+            {
+                "match": ",++"
+            },
+            {
+                "match": "\\.\\.\\.",
+                "scope": "keyword.operator.js",
+                "push": "expression_until_comma_or_square_bracket_ahead"
+            },
             {
                 "match": "{{otherwise}}",
                 "set": [
@@ -8620,12 +8625,8 @@
                 "pop": true
             },
             {
-                "match": ",++"
-            },
-            {
-                "match": "\\.\\.\\.",
-                "scope": "keyword.operator.js",
-                "set": "_primary__expression_until_comma_or_square_bracket_ahead"
+                "match": "(?=,)",
+                "pop": true
             },
             {
                 "include": "_primary_parts__expression_until_square_bracket_with_spread_or_comma_anywhere"
@@ -8649,12 +8650,8 @@
                 "pop": true
             },
             {
-                "match": ",++"
-            },
-            {
-                "match": "\\.\\.\\.",
-                "scope": "keyword.operator.js",
-                "set": "_primary__expression_until_comma_or_square_bracket_ahead"
+                "match": "(?=,)",
+                "pop": true
             },
             {
                 "match": "(?=\\{)",
@@ -9100,6 +9097,10 @@
                 "pop": true
             },
             {
+                "match": "(?=,)",
+                "set": "expression_until_square_bracket_with_spread_or_comma_anywhere"
+            },
+            {
                 "include": "_secondary_parts__expression_until_square_bracket_with_spread_or_comma_anywhere"
             },
             {
@@ -9261,7 +9262,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary__expression_until_square_bracket_with_spread_or_comma_anywhere",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -9978,7 +9979,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary__expression_until_square_bracket_ahead_no_comma",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -10695,7 +10696,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary__expression_until_curly_bracket_ahead_no_comma",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -11408,7 +11409,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary__expression_until_for_statement_third_section",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -12133,7 +12134,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary__expression_until_for_binding",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -12846,7 +12847,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary___for_statement_first_expression",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -19021,7 +19022,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary___expression_until_end_of_statement__statement_in_block",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -19973,7 +19974,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary___expression_until_variable_binding__statement_in_block",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -20865,7 +20866,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary___expression_until_end_of_statement__statement_top_level",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -21817,7 +21818,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary___expression_until_variable_binding__statement_top_level",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -22709,7 +22710,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary___expression_until_end_of_statement__statement",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
@@ -23661,7 +23662,7 @@
                 "match": "\\(",
                 "set": [
                     "_secondary___expression_until_variable_binding__statement",
-                    "expression_until_parenthesis_with_spread"
+                    "expression_until_parenthesis_with_spread_anywhere"
                 ]
             }
         ],
