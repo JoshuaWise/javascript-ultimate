@@ -2,10 +2,10 @@
   - match: '{{b_before}}(?:Object|Function|Boolean|String|Number|Symbol|Error|EvalError|RangeError|ReferenceError|SyntaxError|TypeError|URIError|Date|RegExp|Array|Uint8Array|Uint8ClampedArray|Int8Array|Uint16Array|Int16Array|Uint32Array|Int32Array|Float32Array|Float64Array|Map|Set|WeakMap|WeakSet|ArrayBuffer|DataView|Promise|Proxy){{b_after}}'
     scope: support.class.js
     %%exitType%%: %%exitValue%%
-  - match: '{{b_before}}(?:eval|isFinite|isNaN|parseFloat|parseInt|decodeURI|decodeURIComponent|encodeURI|encodeURIComponent|setTimeout|setInterval|clearTimeout|clearInterval|setImmediate|clearImmediate){{b_after}}'
+  - match: '{{b_before}}(?:eval|import|isFinite|isNaN|parseFloat|parseInt|decodeURI|decodeURIComponent|encodeURI|encodeURIComponent|setTimeout|setInterval|clearTimeout|clearInterval|setImmediate|clearImmediate){{b_after}}'
     scope: support.function.js
     %%exitType%%: %%exitValue%%
-  - match: '{{b_before}}(?:console|Math|JSON|Reflect|Intl|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT){{b_after}}'
+  - match: '{{b_before}}(?:console|global|Math|JSON|Reflect|Intl|EPSILON|MAX_SAFE_INTEGER|MIN_SAFE_INTEGER|MAX_VALUE|MIN_VALUE|NEGATIVE_INFINITY|POSITIVE_INFINITY|E|LN10|LOG10E|LOG2E|PI|SQRT1_2|SQRT2|BYTES_PER_ELEMENT){{b_after}}'
     scope: support.constant.js
     %%exitType%%: %%exitValue%%
   %%~overrideWithAssignment%%

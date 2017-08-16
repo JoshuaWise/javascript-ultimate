@@ -361,7 +361,7 @@ contexts:
     - match: '{{line_terminator}}'
       scope: invalid.illegal.js
       pop: true
-    - match: '/(?:([gimuy]*?(?''option''[gimuy])[gimuy]*?\k''option'')|[gimuy]*)([{{ident_part}}]*+)'
+    - match: '/(?:([gimuys]*?(?''option''[gimuys])[gimuys]*?\k''option'')|[gimuys]*)([{{ident_part}}]*+)'
       scope: string.regexp.js punctuation.definition.string.end.js
       captures:
         1: invalid.illegal.js
