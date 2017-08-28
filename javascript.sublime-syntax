@@ -86,6 +86,20 @@
                         "pop": true
                     }
                 ]
+            },
+            {
+                "match": "<\\!--",
+                "scope": "punctuation.definition.comment.js",
+                "push": [
+                    {
+                        "meta_scope": "comment.block.js"
+                    },
+                    {
+                        "match": "-->",
+                        "scope": "punctuation.definition.comment.js",
+                        "pop": true
+                    }
+                ]
             }
         ],
         "main": [
