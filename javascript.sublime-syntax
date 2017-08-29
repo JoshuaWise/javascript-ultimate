@@ -37,7 +37,7 @@
         "reserved_word": "(?:{{b_before}}(?:{{keyword}}|{{future_reserved_word}}|null|true|false){{b_after}})",
         "statement_keyword": "(?:{{b_before}}(?:import|export|var|let|const|if|with|while|do|for|switch|try|catch|finally|break|continue|case|return|throw|debugger){{b_after}})",
         "statement_keyword_all": "(?:{{statement_keyword}}|{{b_before}}(?:function|class|async|true|false|null|undefined|Infinity|NaN|this|arguments|super|new|yield|typeof|void|delete|await){{b_after}})",
-        "shebang": "^#!/usr/bin/env node(?:{{space}}[^{{line_terminator_chars}}]*+)?+(?={{line_terminator}}|$)",
+        "shebang": "^#!/usr/bin/env node(?:{{space}}[^{{line_terminator_chars}}]*+)?+(?:{{line_terminator}}|$)",
         "arrow_function_with_parenthesis": "(?:{{b_before}}(async){{to_token}})?+\\((?={{to_token}}(?:(?:{{ident}}(?={{to_token}}[,)=])|\\{|\\[|\\.\\.\\.)[^)]*+)?+\\){{to_token}}=>)",
         "arrow_function_with_reserved_word": "(?:{{b_before}}(async){{some_space}})?+({{reserved_word}})(?={{to_token}}=>)",
         "arrow_function_with_ident": "(?:{{b_before}}(async){{some_space}})?+({{ident}})(?={{to_token}}=>)",
@@ -86,20 +86,6 @@
                         "pop": true
                     }
                 ]
-            },
-            {
-                "match": "<\\!--",
-                "scope": "punctuation.definition.comment.js",
-                "push": [
-                    {
-                        "meta_scope": "comment.block.js"
-                    },
-                    {
-                        "match": "-->",
-                        "scope": "punctuation.definition.comment.js",
-                        "pop": true
-                    }
-                ]
             }
         ],
         "main": [
@@ -109,13 +95,9 @@
             },
             {
                 "match": "{{otherwise}}",
-                "set": [
+                "push": [
                     {
                         "match": "{{non_token}}"
-                    },
-                    {
-                        "match": "(?=</[sS][cC][rR][iI][pP][tT]>)",
-                        "pop": true
                     },
                     {
                         "match": "{{otherwise}}",
