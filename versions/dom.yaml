@@ -1,4 +1,5 @@
 name: JavaScript (DOM)
+scope: source.js.dom
 
 library_identifier_reference:
   - match: '{{b_before}}(?>Audio(?>Context)?|Blob|C(?>omment|SS|ustomEvent)|D(?>ocumentFragment|OM(?>Error|Parser))|Event|F(?>ile(?>Reader)?|ormData)|Image(?>Data)?|L10n|M(?>ediaSource|utationObserver)|Notification|O(?>fflineAudioContext|ption)|Path2D|Range|SharedWorker|Text(?>Decoder|Encoder)?|URL|W(?>ebSocket|orker)|XMLHttpRequest){{b_after}}'
@@ -27,3 +28,12 @@ library_dot_reference_contents:
   - match: '{{b_before}}(?>on(?>o(?>rientationchange|ffline)|c(?>hecking|ached|o(?>py|mplete)|ut)|error|noupdate|downloading|p(?>rogress|aste)|updateready|readystatechange|t(?>imeout|ouch(?>start|en(?>d|ter)|move|cancel|leave))|message|storage|blocked)){{b_after}}'
     scope: support.function.js
     set: [_secondary__%%name%%, _optional_postfix_operator]
+
+library_comments:
+  - match: '<\!--'
+    scope: punctuation.definition.comment.js
+    push:
+      - meta_scope: comment.block.js
+      - match: '-->'
+        scope: punctuation.definition.comment.js
+        pop: true
