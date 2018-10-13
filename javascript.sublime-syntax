@@ -1,7 +1,7 @@
 %YAML 1.2
 ---
 {
-    "name": "JavaScript",
+    "name": "JavaScript Ultimate",
     "file_extensions": [
         "js",
         "htc"
@@ -434,7 +434,7 @@
         ],
         "numeric_literal": [
             {
-                "match": "{{b_before}}0([xXbBoO]){{b_after}}",
+                "match": "{{b_before}}0([xXbBoO]n?+){{b_after}}",
                 "scope": "constant.numeric.js",
                 "captures": {
                     "1": "invalid.illegal.js"
@@ -442,22 +442,22 @@
                 "pop": true
             },
             {
-                "match": "{{b_before}}0[xX]\\h++{{b_after}}",
+                "match": "{{b_before}}0[xX]\\h++n?+{{b_after}}",
                 "scope": "constant.numeric.hexadecimal.js",
                 "pop": true
             },
             {
-                "match": "{{b_before}}0[bB][01]++{{b_after}}",
+                "match": "{{b_before}}0[bB][01]++n?+{{b_after}}",
                 "scope": "constant.numeric.binary.js",
                 "pop": true
             },
             {
-                "match": "{{b_before}}0[oO][0-7]++{{b_after}}",
+                "match": "{{b_before}}0[oO][0-7]++n?+{{b_after}}",
                 "scope": "constant.numeric.octal.js",
                 "pop": true
             },
             {
-                "match": "{{b_before}}(?:(?:0|[1-9][0-9]*+)(?:\\.[0-9]*+)?+|\\.[0-9]++)(?:[eE][+-]?+[0-9]++)?+{{b_after}}",
+                "match": "{{b_before}}(?:(?:0|[1-9][0-9]*+)n|(?:(?:0|[1-9][0-9]*+)(?:\\.[0-9]*+)?+|\\.[0-9]++)(?:[eE][+-]?+[0-9]++)?+){{b_after}}",
                 "scope": "constant.numeric.decimal.js",
                 "pop": true
             }
@@ -14496,7 +14496,7 @@
         ],
         "identifier_reference": [
             {
-                "match": "{{b_before}}(?:Object|Function|Boolean|String|Number|Symbol|Error|EvalError|RangeError|ReferenceError|SyntaxError|TypeError|URIError|Date|RegExp|Array|Uint8Array|Uint8ClampedArray|Int8Array|Uint16Array|Int16Array|Uint32Array|Int32Array|Float32Array|Float64Array|Map|Set|WeakMap|WeakSet|ArrayBuffer|DataView|Promise|Proxy){{b_after}}",
+                "match": "{{b_before}}(?:Object|Function|Boolean|String|Number|BigInt|Symbol|Error|EvalError|RangeError|ReferenceError|SyntaxError|TypeError|URIError|Date|RegExp|Array|Uint8Array|Uint8ClampedArray|Int8Array|Uint16Array|Int16Array|Uint32Array|Int32Array|Float32Array|Float64Array|BigInt64Array|BigUint64Array|Map|Set|WeakMap|WeakSet|ArrayBuffer|DataView|Promise|Proxy){{b_after}}",
                 "scope": "support.class.js",
                 "set": "_optional_postfix_operator"
             },
@@ -14535,7 +14535,7 @@
         ],
         "identifier_reference_simple": [
             {
-                "match": "{{b_before}}(?:Object|Function|Boolean|String|Number|Symbol|Error|EvalError|RangeError|ReferenceError|SyntaxError|TypeError|URIError|Date|RegExp|Array|Uint8Array|Uint8ClampedArray|Int8Array|Uint16Array|Int16Array|Uint32Array|Int32Array|Float32Array|Float64Array|Map|Set|WeakMap|WeakSet|ArrayBuffer|DataView|Promise|Proxy){{b_after}}",
+                "match": "{{b_before}}(?:Object|Function|Boolean|String|Number|BigInt|Symbol|Error|EvalError|RangeError|ReferenceError|SyntaxError|TypeError|URIError|Date|RegExp|Array|Uint8Array|Uint8ClampedArray|Int8Array|Uint16Array|Int16Array|Uint32Array|Int32Array|Float32Array|Float64Array|BigInt64Array|BigUint64Array|Map|Set|WeakMap|WeakSet|ArrayBuffer|DataView|Promise|Proxy){{b_after}}",
                 "scope": "support.class.js",
                 "pop": true
             },

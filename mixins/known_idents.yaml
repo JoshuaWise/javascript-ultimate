@@ -1,5 +1,5 @@
 %%name%%:
-  - match: '{{b_before}}(?:Object|Function|Boolean|String|Number|Symbol|Error|EvalError|RangeError|ReferenceError|SyntaxError|TypeError|URIError|Date|RegExp|Array|Uint8Array|Uint8ClampedArray|Int8Array|Uint16Array|Int16Array|Uint32Array|Int32Array|Float32Array|Float64Array|Map|Set|WeakMap|WeakSet|ArrayBuffer|DataView|Promise|Proxy){{b_after}}'
+  - match: '{{b_before}}(?:Object|Function|Boolean|String|Number|BigInt|Symbol|Error|EvalError|RangeError|ReferenceError|SyntaxError|TypeError|URIError|Date|RegExp|Array|Uint8Array|Uint8ClampedArray|Int8Array|Uint16Array|Int16Array|Uint32Array|Int32Array|Float32Array|Float64Array|BigInt64Array|BigUint64Array|Map|Set|WeakMap|WeakSet|ArrayBuffer|DataView|Promise|Proxy){{b_after}}'
     scope: support.class.js
     %%exitType%%: %%exitValue%%
   - match: '{{b_before}}(?:eval|import|isFinite|isNaN|parseFloat|parseInt|decodeURI|decodeURIComponent|encodeURI|encodeURIComponent|setTimeout|setInterval|clearTimeout|clearInterval|setImmediate|clearImmediate){{b_after}}'

@@ -29,7 +29,7 @@ def disable_js_package():
     global packageName
     disabled = userSettings.get("ignored_packages", [])
     pathJSON = path.join("Packages", packageName, "json.sublime-syntax")
-    pathJS = path.join("Packages", packageName, "javascript.dom.sublime-syntax")
+    pathJS = path.join("Packages", packageName, "javascript.sublime-syntax")
     for window in sublime.windows():
         for view in window.views():
             syntax = path.basename(view.settings().get('syntax'))

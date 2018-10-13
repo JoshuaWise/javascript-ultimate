@@ -386,21 +386,21 @@ contexts:
       scope: regexp-operator.js
 
   numeric_literal:
-    - match: '{{b_before}}0([xXbBoO]){{b_after}}'
+    - match: '{{b_before}}0([xXbBoO]n?+){{b_after}}'
       scope: constant.numeric.js
       captures:
         1: invalid.illegal.js
       pop: true
-    - match: '{{b_before}}0[xX]\h++{{b_after}}'
+    - match: '{{b_before}}0[xX]\h++n?+{{b_after}}'
       scope: constant.numeric.hexadecimal.js
       pop: true
-    - match: '{{b_before}}0[bB][01]++{{b_after}}'
+    - match: '{{b_before}}0[bB][01]++n?+{{b_after}}'
       scope: constant.numeric.binary.js
       pop: true
-    - match: '{{b_before}}0[oO][0-7]++{{b_after}}'
+    - match: '{{b_before}}0[oO][0-7]++n?+{{b_after}}'
       scope: constant.numeric.octal.js
       pop: true
-    - match: '{{b_before}}(?:(?:0|[1-9][0-9]*+)(?:\.[0-9]*+)?+|\.[0-9]++)(?:[eE][+-]?+[0-9]++)?+{{b_after}}'
+    - match: '{{b_before}}(?:(?:0|[1-9][0-9]*+)n|(?:(?:0|[1-9][0-9]*+)(?:\.[0-9]*+)?+|\.[0-9]++)(?:[eE][+-]?+[0-9]++)?+){{b_after}}'
       scope: constant.numeric.decimal.js
       pop: true
 

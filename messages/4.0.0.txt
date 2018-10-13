@@ -1,0 +1,1 @@
+As of major version 4, JavaScript Ultimate no longer has a DOM-specific syntax.
