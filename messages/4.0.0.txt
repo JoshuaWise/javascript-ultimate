@@ -1,1 +1,3 @@
 As of major version 4, JavaScript Ultimate no longer has a DOM-specific syntax.
+
+Also, JavaScript Ultimate no longer disables the default JavaScript syntax. The JavaScript Ultimate syntax was renamed from "JavaScript" to "JavaScript Ultimate".

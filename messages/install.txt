@@ -1,15 +1,1 @@
 JavaScript Ultimate is now installed!
-
-If you have "JavaScriptNext" or "Better JavaScript" installed, you need to uninstall that immediately,
-or things won't work properly.
-
-Regardless, you need to restart Sublime Text to finish installation.
-
-
-Uninstalling
-------------
-Before uninstalling JavaScript Ultimate, be sure close all open JavaScript/JSON
-files. Then, look into your User Settings, and remove "JavaScript" from the "ignored_packages" list.
-You can then safely uninstall JavaScript Ultimate.
-
-It's normal to see a few errors from Sublime about not being able to find syntax files. Just exit Sublime and re-open it, and everything should be fixed.
